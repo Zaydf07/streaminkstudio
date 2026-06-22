@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Engine — Magazine Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+    --line:#E3DACA; --line-soft:#EDE6D8;
+    --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+    --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+    --ink:#4B43C4; --ink-d:#39329F;
+    --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+    --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+    --r-lg:16px; --r-md:11px; --r-sm:8px;
+  }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--ff-b);background:var(--bg);color:var(--text);font-size:13.5px}
+    button,input,select{font-family:inherit;color:inherit}
+
+    /* ── LAYOUT ── */
+    .be-mag-layout{
+      display:grid;grid-template-columns:380px 1fr;
+      gap:28px;max-width:1400px;margin:0 auto;padding:36px 28px
+    }
+
+    /* ── FORM ── */
+    .be-mag-form{
+      background:var(--panel);padding:28px;border-radius:var(--r-lg);
+      border:1px solid var(--line);position:sticky;top:20px;align-self:start
+    }
+
+    .be-mag-heading{
+      font-family:var(--ff-d);font-size:24px;font-weight:600;color:var(--text);margin-bottom:22px;line-height:1.2
+    }
+    .be-mag-heading span{display:block;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-top:6px;font-family:var(--ff-m)}
+
+    .be-mag-field{margin-bottom:16px}
+    .be-mag-field label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:7px;display:block;font-family:var(--ff-m)}
+
+    .be-input{
+      width:100%;padding:10px 12px;border-radius:var(--r-sm);
+      border:1px solid var(--line);background:var(--field);font-size:13.5px;font-family:inherit;color:var(--text)
+    }
+    .be-input:focus{outline:none;border-color:var(--blue);background:var(--panel)}
+
+    .be-mag-divider{
+      margin:22px 0 14px;font-size:11px;font-weight:700;color:var(--faint);
+      text-transform:uppercase;letter-spacing:.18em;font-family:var(--ff-m)
+    }
+
+    .be-mag-section-card{
+      background:var(--panel-2);padding:14px;border-radius:var(--r-md);margin-bottom:11px;
+      border:1px solid var(--line)
+    }
+    .be-mag-section-card label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;display:block;font-family:var(--ff-m)}
+    .be-file-input{margin-top:10px;font-size:12px;width:100%;color:var(--muted)}
+
+    .be-generate-btn{
+      width:100%;margin-top:22px;padding:13px;
+      background:var(--grad);color:#fff;
+      font-size:14px;font-weight:600;border:none;border-radius:999px;
+      cursor:pointer;transition:.18s;box-shadow:0 6px 16px -6px rgba(91,108,240,.55)
+    }
+    .be-generate-btn:hover{transform:translateY(-1px)}
+    .be-generate-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    .be-back-link{display:block;text-align:center;margin-top:16px;font-size:12.5px;color:var(--muted);text-decoration:none}
+    .be-back-link:hover{color:var(--ink)}
+
+    /* ── CANVAS ── */
+    .be-mag-canvas{background:var(--panel-2);padding:22px;border-radius:var(--r-lg);position:relative;min-height:700px;border:1px solid var(--line)}
+
+    /* ── TOOLBAR ── */
+    .be-toolbar{
+      position:sticky;top:12px;z-index:100;
+      display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+      background:var(--panel);padding:10px 14px;border-radius:var(--r-md);margin-bottom:18px;
+      border:1px solid var(--line);box-shadow:0 8px 24px rgba(33,28,20,.06);
+      transition:opacity .15s ease
+    }
+    .be-toolbar.hidden{opacity:0;pointer-events:none}
+
+    .be-toolbar button,
+    .be-toolbar select,
+    .be-toolbar input[type="color"]{
+      min-height:32px;padding:6px 10px;border-radius:var(--r-sm);
+      font-size:12.5px;background:var(--field);border:1px solid var(--line);cursor:pointer;color:var(--text)
+    }
+    .be-toolbar button:hover,.be-toolbar select:hover{border-color:var(--blue);color:var(--ink)}
+    .be-toolbar button:active{transform:scale(.96)}
+    .be-toolbar input[type="color"]{width:32px;padding:2px}
+    .be-toolbar button svg{width:14px;height:14px;display:block;stroke:currentColor;vertical-align:middle}
+    .be-save-btn{background:var(--grad)!important;color:#fff!important;font-weight:600;border:none!important}
+
+    /* ── MAGAZINE OUTPUT ── */
+    .be-editor{
+      background:var(--panel);border-radius:var(--r-lg);padding:32px;
+      border:1px solid var(--line);min-height:500px
+    }
+
+    .be-magazine{background:#fff}
+
+    .be-magazine h1{
+      font-family:var(--ff-d);font-size:34px;line-height:1.15;margin-bottom:30px;color:var(--text);font-weight:600
+    }
+
+    .tpl-mag-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+
+    .tpl-mag-col{display:flex;flex-direction:column;gap:12px}
+
+    .tpl-mag-sub{
+      background:var(--ink);color:#fff;text-align:center;padding:10px;
+      border-radius:var(--r-sm);font-weight:700;font-size:14px;font-family:var(--ff-d)
+    }
+
+    .tpl-mag-image-wrap img{
+      width:100%;height:160px;object-fit:cover;border-radius:var(--r-md);display:block
+    }
+
+    .tpl-mag-text{
+      background:var(--field);padding:16px;border-radius:var(--r-md);
+      font-size:14px;line-height:1.65;color:var(--muted);flex:1
+    }
+
+    .be-editable:focus{
+      outline:2px dashed rgba(75,67,196,.4);outline-offset:4px
+    }
+
+    .empty-state{
+      display:flex;align-items:center;justify-content:center;
+      min-height:400px;color:var(--faint);font-size:14.5px;flex-direction:column;gap:12px;text-align:center
+    }
+    .empty-state svg{width:38px;height:38px;stroke:var(--faint)}
+  </style>
+  </head>
+<body>
+
+<!-- FLOATING TOOLBAR -->
+<div id="be-toolbar" class="be-toolbar hidden">
+
+  <button id="be-gradient" title="Apply gradient"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 16l5-5 4 4 5-6 4 4" stroke="currentColor"/></svg></button>
+
+  <select id="be-font-size" title="Font size">
+    <option value="">Size</option>
+    <option value="10">10</option>
+    <option value="12">12</option>
+    <option value="14">14</option>
+    <option value="16">16</option>
+    <option value="18">18</option>
+    <option value="20">20</option>
+    <option value="24">24</option>
+    <option value="28">28</option>
+    <option value="32">32</option>
+  </select>
+
+  <select id="be-font-family" title="Font">
+    <option value="">Font</option>
+    <option value="Inter, sans-serif">Inter</option>
+    <option value="Poppins, sans-serif">Poppins</option>
+    <option value="Roboto, sans-serif">Roboto</option>
+    <option value="Georgia, serif">Georgia</option>
+    <option value="'Times New Roman', serif">Times</option>
+    <option value="monospace">Monospace</option>
+  </select>
+
+  <input type="color" id="be-text-color" title="Text color">
+  <input type="color" id="be-box-bg"     title="Box background">
+  <input type="color" id="be-template-bg" title="Article background">
+
+  <button data-cmd="bold"><b>B</b></button>
+  <button data-cmd="italic"><i>I</i></button>
+  <button data-cmd="underline"><u>U</u></button>
+
+  <button data-align="left" title="Align left"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18M3 12h12M3 18h15"/></svg></button>
+  <button data-align="center" title="Align center"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18M6 12h12M4 18h16"/></svg></button>
+  <button data-align="right" title="Align right"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18M9 12h12M6 18h15"/></svg></button>
+  <button data-align="justify" title="Justify"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+
+  <button id="be-link" title="Insert link"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M10 14a4 4 0 005.66 0l3-3a4 4 0 00-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 00-5.66 0l-3 3a4 4 0 005.66 5.66l1-1"/></svg></button>
+
+  <button id="be-copy-html" title="Copy HTML"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"/></svg></button>
+  <button id="be-download-html" title="Download HTML">HTML</button>
+  <button id="be-download-doc"  title="Download DOC">DOC</button>
+  <button id="be-download-png"  title="Download PNG">PNG</button>
+  <button id="be-download-pdf"  title="Download PDF">PDF</button>
+  <button id="be-save-btn" class="be-save-btn" title="Save">Save</button>
+
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="be-mag-layout">
+
+  <!-- FORM -->
+  <div class="be-mag-form">
+
+    <h2 class="be-mag-heading">
+      AI Blog Generator
+      <span>Magazine layout</span>
+    </h2>
+
+    <div class="be-mag-field">
+      <label>Website URL</label>
+      <input id="be-url" class="be-input" placeholder="https://example.com">
+    </div>
+
+    <div class="be-mag-field">
+      <label>Main blog topic</label>
+      <input id="be-topic" class="be-input" placeholder="e.g. Cosmetic Dentistry">
+    </div>
+
+    <div class="be-mag-divider">Magazine sections</div>
+
+    <div class="be-mag-section-card">
+      <label>Section 1</label>
+      <input class="be-input mag-sec-title" placeholder="Benefits of Teeth Whitening">
+      <input type="file" class="be-file-input mag-sec-img" accept="image/*">
+    </div>
+
+    <div class="be-mag-section-card">
+      <label>Section 2</label>
+      <input class="be-input mag-sec-title" placeholder="Benefits of Teeth Bonding">
+      <input type="file" class="be-file-input mag-sec-img" accept="image/*">
+    </div>
+
+    <div class="be-mag-section-card">
+      <label>Section 3</label>
+      <input class="be-input mag-sec-title" placeholder="Benefits of Veneers">
+      <input type="file" class="be-file-input mag-sec-img" accept="image/*">
+    </div>
+
+    <button id="gen-blog" class="be-generate-btn">Generate magazine</button>
+
+    <a href="/" class="be-back-link">← Back to templates</a>
+
+  </div>
+
+  <!-- CANVAS -->
+  <div class="be-mag-canvas">
+    <div id="be-editor" class="be-editor">
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 9v11"/></svg>
+        Fill in the form and click Generate to build your magazine article.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SAVE MODAL -->
+<div id="saveModal" style="position:fixed;inset:0;background:rgba(33,28,20,.45);display:none;justify-content:center;align-items:center;z-index:1000">
+  <div style="background:var(--panel);padding:26px;border-radius:var(--r-lg);width:360px;border:1px solid var(--line);font-family:var(--ff-b)">
+    <h3 style="margin-bottom:6px;font-size:17px;font-weight:600;color:var(--text);font-family:var(--ff-d)">Save document</h3>
+    <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">Saved to My Documents — reopen any time from the dashboard.</p>
+    <label style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:7px;font-family:var(--ff-m)">Title</label>
+    <input id="saveTitle" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);font-size:13.5px;font-family:inherit;background:var(--field);color:var(--text)" placeholder="Untitled document">
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button onclick="document.getElementById('saveModal').style.display='none'" style="flex:1;padding:10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:13.5px;font-family:inherit;color:var(--text)">Cancel</button>
+      <button id="saveConfirmBtn" style="flex:2;padding:10px;border-radius:999px;border:none;background:var(--grad);color:#fff;cursor:pointer;font-weight:600;font-size:13.5px;font-family:inherit">Save to documents</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-client.js"></script>
+<script>if(_supabase){_supabase.auth.getUser().then(({data:{user}})=>{if(!user)window.location.href='/login?redirect='+encodeURIComponent(location.pathname+location.search);});}</script>
+<script src="/js/docstore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+const toolbar = document.getElementById('be-toolbar');
+const editor  = document.getElementById('be-editor');
+let activeEl  = null;
+
+/* ── SELECTION ── */
+editor.addEventListener('click', e => {
+  const target = e.target.closest('.be-editable');
+  if (!target) {
+    activeEl = null;
+    toolbar.classList.add('hidden');
+    return;
+  }
+  activeEl = target;
+  toolbar.classList.remove('hidden');
+});
+
+toolbar.addEventListener('mousedown', e => {
+  if (e.target.tagName !== 'SELECT' && e.target.tagName !== 'INPUT') e.preventDefault();
+});
+
+function focusActive() {
+  if (activeEl) activeEl.focus({ preventScroll: true });
+}
+
+/* ── TEXT COMMANDS ── */
+document.querySelectorAll('[data-cmd]').forEach(btn => {
+  btn.onclick = () => {
+    if (!activeEl) return;
+    focusActive();
+    document.execCommand(btn.dataset.cmd, false, null);
+  };
+});
+
+document.querySelectorAll('[data-align]').forEach(btn => {
+  btn.onclick = () => {
+    if (!activeEl) return;
+    focusActive();
+    activeEl.style.textAlign = btn.dataset.align;
+  };
+});
+
+document.getElementById('be-font-size').onchange = e => {
+  if (!activeEl || !e.target.value) return;
+  activeEl.style.fontSize = e.target.value + 'px';
+};
+
+document.getElementById('be-font-family').onchange = e => {
+  if (!activeEl || !e.target.value) return;
+  activeEl.style.fontFamily = e.target.value;
+};
+
+document.getElementById('be-text-color').oninput = e => {
+  if (!activeEl) return;
+  activeEl.style.color = e.target.value;
+};
+
+document.getElementById('be-box-bg').oninput = e => {
+  if (!activeEl) return;
+  activeEl.style.background = e.target.value;
+};
+
+document.getElementById('be-template-bg').oninput = e => {
+  const mag = editor.querySelector('.be-magazine');
+  if (mag) mag.style.background = e.target.value;
+};
+
+document.getElementById('be-gradient').onclick = () => {
+  if (!activeEl) return;
+  activeEl.style.background = 'linear-gradient(135deg,#5750D8,#2E8EAC)';
+  activeEl.style.color      = '#fff';
+};
+
+document.getElementById('be-link').onclick = () => {
+  if (!activeEl) return;
+  focusActive();
+  const url = prompt('Enter URL:');
+  if (url) document.execCommand('createLink', false, url);
+};
+
+/* ── EXPORT ── */
+document.getElementById('be-copy-html').onclick = () => {
+  navigator.clipboard.writeText(editor.innerHTML);
+  alert('HTML copied!');
+};
+
+document.getElementById('be-download-html').onclick = () => {
+  const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:Inter,system-ui;margin:40px}img{max-width:100%}.tpl-mag-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.tpl-mag-col{display:flex;flex-direction:column;gap:12px}.tpl-mag-sub{background:#4B43C4;color:#fff;text-align:center;padding:10px;border-radius:10px;font-weight:700}.tpl-mag-text{background:#F2EDE2;padding:16px;border-radius:14px;line-height:1.65}</style></head><body>${editor.innerHTML}</body></html>`], { type: 'text/html' });
+  dlBlob(blob, 'magazine.html');
+};
+
+document.getElementById('be-download-doc').onclick = () => {
+  const blob = new Blob([`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset="utf-8"></head><body>${editor.innerHTML}</body></html>`], { type: 'application/msword' });
+  dlBlob(blob, 'magazine.doc');
+};
+
+document.getElementById('be-download-png').onclick = () => {
+  const target = editor.querySelector('.be-magazine') || editor;
+  html2canvas(target, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
+    dlBlob(null, 'magazine.png', canvas.toDataURL('image/png'));
+  });
+};
+
+document.getElementById('be-download-pdf').onclick = () => {
+  const target = editor.querySelector('.be-magazine') || editor;
+  html2canvas(target, { scale: 2, useCORS: true, allowTaint: true }).then(cnv => {
+    const { jsPDF } = window.jspdf;
+    const w = cnv.width / 2, h = cnv.height / 2;
+    const pdf = new jsPDF({ orientation: w > h ? 'l' : 'p', unit: 'px', format: [w, h], hotfixes: ['px_scaling'] });
+    pdf.addImage(cnv.toDataURL('image/png'), 'PNG', 0, 0, w, h);
+    pdf.save('magazine.pdf');
+  });
+};
+
+function dlBlob(blob, name, dataUrl) {
+  const a   = document.createElement('a');
+  a.href     = dataUrl || URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+}
+
+/* ── GENERATE ── */
+document.getElementById('gen-blog').addEventListener('click', async () => {
+  const btn   = document.getElementById('gen-blog');
+  const topic = document.getElementById('be-topic').value.trim();
+
+  if (!topic) { alert('Enter a main blog topic'); return; }
+
+  btn.textContent = 'Generating…';
+  btn.disabled    = true;
+
+  editor.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>Generating your magazine — this takes ~10 seconds…</div>`;
+
+  try {
+    const fd = new FormData();
+    fd.append('url',      document.getElementById('be-url').value);
+    fd.append('topic',    topic);
+    fd.append('template', 'grid-magazine');
+
+    document.querySelectorAll('.mag-sec-title').forEach((input, i) => {
+      if (input.value.trim()) fd.append(`section_${i + 1}`, input.value.trim());
+    });
+
+    document.querySelectorAll('.mag-sec-img').forEach((input, i) => {
+      if (input.files[0]) fd.append(`images[]`, input.files[0]);
+    });
+
+    const res  = await fetch('/api/generate', { method: 'POST', body: fd });
+    const data = await res.json();
+
+    if (!data.article) throw new Error('No content returned');
+
+    editor.innerHTML = data.article;
+
+    editor.querySelectorAll('h1, h2, h3, p, .tpl-mag-text, .tpl-mag-sub').forEach(el => {
+      el.classList.add('be-editable');
+      el.setAttribute('contenteditable', 'true');
+    });
+
+  } catch (err) {
+    editor.innerHTML = `<div class="empty-state" style="color:#B65334"><svg viewBox="0 0 24 24" fill="none" stroke="#B65334" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.7 3.86a2 2 0 00-3.4 0z"/></svg>${err.message}</div>`;
+    console.error(err);
+  }
+
+  btn.textContent = 'Generate magazine';
+  btn.disabled    = false;
+});
+
+/* ── SAVE / LOAD ── */
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:28px;right:28px;background:#211C14;color:#FBF7EF;padding:12px 20px;border-radius:11px;font-size:13.5px;font-weight:600;z-index:2000;box-shadow:0 8px 24px rgba(33,28,20,.3);font-family:Hanken Grotesk,system-ui,sans-serif';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+const magParams   = new URLSearchParams(location.search);
+let currentDocId  = magParams.get('doc') || null;
+
+if (currentDocId) {
+  DocStore.get(currentDocId).then(doc => {
+    if (doc && doc.content) {
+      editor.innerHTML = doc.content;
+      editor.querySelectorAll('h1, h2, h3, p, .tpl-mag-text, .tpl-mag-sub').forEach(el => {
+        el.classList.add('be-editable');
+        el.setAttribute('contenteditable', 'true');
+      });
+    }
+  });
+}
+
+document.getElementById('be-save-btn').addEventListener('click', () => {
+  const h1 = editor.querySelector('h1');
+  const topicVal = document.getElementById('be-topic').value.trim();
+  document.getElementById('saveTitle').value = h1 ? h1.textContent.trim() : topicVal;
+  document.getElementById('saveModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('saveTitle').focus(), 50);
+});
+
+document.getElementById('saveConfirmBtn').addEventListener('click', async () => {
+  const title = document.getElementById('saveTitle').value.trim() || 'Untitled';
+  const id = await DocStore.save({
+    id: currentDocId,
+    title,
+    template: 'grid-magazine',
+    category: 'magazine',
+    content: editor.innerHTML,
+    canvasStyles: '',
+  });
+  if (id) {
+    currentDocId = id;
+    const u = new URL(location.href);
+    u.searchParams.set('doc', id);
+    history.replaceState(null, '', u.toString());
+    document.getElementById('saveModal').style.display = 'none';
+    showToast('Saved to My Documents');
+  }
+});
+</script>
+<script src="/js/ai-refine.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/auth-gate.js"></script>
+</body>
+</html>

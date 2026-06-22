@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: streamink-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_API_URL
+        value: https://api.groq.com/openai/v1/chat/completions
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: ADMIN_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: FEEDBACK_EMAIL
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: TENOR_API_KEY
+        value: AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ
+      - key: ALLOWED_ORIGIN
+        sync: false

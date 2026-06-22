@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Documents — StreamInk Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1ECE1;--panel:#fff;--panel-2:#FBF7EF;--field:#F2EDE2;--line:#E3DACA;--line-soft:#EDE6D8;--text:#211C14;--muted:#6E6557;--faint:#A89E8C;--ink:#4B43C4;--clay:#B65334;--green:#2E8E6A;--violet:#7B41C9;--grad:linear-gradient(165deg,#5750D8,#3F37AC);--ff-d:'Newsreader',Georgia,serif;--ff-b:'Hanken Grotesk',system-ui,sans-serif;--ff-m:'JetBrains Mono',ui-monospace,monospace;--r-lg:16px;--r-md:11px;--r-sm:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:4px}
+
+/* SIDEBAR — matches dashboard.html exactly */
+.side{width:232px;flex:none;background:var(--panel);border-right:1px solid var(--line-soft);padding:18px 13px 16px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.side::-webkit-scrollbar{width:4px}.side::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.side-brand{display:flex;align-items:center;gap:10px;padding:4px 9px 16px}
+.side-brand b{font-family:var(--ff-d);font-weight:600;font-size:15.5px;display:block;line-height:1.1}
+.side-brand span{font-family:var(--ff-m);letter-spacing:.2em;font-size:9px;color:var(--faint)}
+.side-grp{font-family:var(--ff-m);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);padding:14px 9px 6px}
+.side-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:none;border-radius:var(--r-sm);padding:8px 9px;width:100%;text-align:left;text-decoration:none;transition:.15s}
+.side-item:hover{background:var(--panel-2);color:var(--text)}
+.side-item.on{background:var(--grad);color:#fff}
+.side-foot{margin-top:auto;padding:10px 9px 0;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:2px}
+.side-email{font-family:var(--ff-m);font-size:10px;color:var(--faint);padding:4px 9px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-item.signout{color:var(--clay)}
+
+/* MOBILE NAV */
+.mob-bar{display:none;align-items:center;justify-content:space-between;background:var(--panel);border-bottom:1px solid var(--line-soft);padding:12px 16px;position:sticky;top:0;z-index:30}
+.mob-logo{font-family:var(--ff-d);font-size:17px;font-weight:600;color:var(--text)}
+.mob-menu-btn{background:none;border:none;font-size:22px;padding:4px}
+.mob-drawer{position:fixed;inset:0;z-index:40;display:none}
+.mob-drawer.open{display:block}
+.mob-backdrop{position:absolute;inset:0;background:rgba(33,28,20,.45)}
+.mob-panel{position:absolute;top:0;left:0;bottom:0;width:260px;background:var(--panel);padding:18px 13px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+@media(max-width:760px){.side{display:none}.mob-bar{display:flex}}
+
+/* MAIN */
+.main{flex:1;min-width:0;padding:28px 30px 60px}
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.page-head h1{font-family:var(--ff-d);font-size:28px;font-weight:500;letter-spacing:-.015em}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-input{width:100%;padding:9px 14px 9px 36px;border:1.5px solid var(--line);border-radius:999px;background:var(--panel);font-size:13px;outline:none;transition:.15s}
+.search-input:focus{border-color:var(--ink)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--faint);font-size:14px;pointer-events:none}
+.filter-select{padding:9px 12px;border:1.5px solid var(--line);border-radius:999px;background:var(--panel);font-size:13px;font-weight:500;outline:none;cursor:pointer;color:var(--text)}
+.filter-select:focus{border-color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;font-weight:600;font-size:13px;border:1.5px solid transparent;transition:.18s;text-decoration:none;font-family:inherit;cursor:pointer}
+.btn-primary{background:var(--grad);color:#fff;border:none;box-shadow:0 6px 16px -6px rgba(75,67,196,.5)}
+.btn-primary:hover{opacity:.9}
+
+/* GRID */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+
+/* CARD */
+.doc-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:.18s;position:relative}
+.doc-card:hover{border-color:rgba(75,67,196,.35);box-shadow:0 6px 24px -8px rgba(33,28,20,.14);transform:translateY(-2px)}
+.doc-preview{height:100px;padding:14px 16px;overflow:hidden;font-size:12px;line-height:1.5;color:var(--muted);background:var(--panel-2);border-bottom:1px solid var(--line-soft);position:relative}
+.doc-preview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(transparent,var(--panel-2))}
+.doc-info{padding:14px 16px 12px}
+.doc-name{font-weight:700;font-size:13.5px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-meta{font-size:11.5px;color:var(--faint);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.doc-type{font-family:var(--ff-m);font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
+.doc-card-actions{display:flex;gap:6px;padding:0 16px 14px}
+.doc-action{flex:1;padding:7px;border:1.5px solid var(--line);border-radius:8px;background:var(--panel);font-size:12px;font-weight:600;color:var(--muted);text-align:center;transition:.15s;cursor:pointer;font-family:inherit}
+.doc-action:hover{border-color:var(--ink);color:var(--ink)}
+.doc-action.danger:hover{border-color:var(--clay);color:var(--clay)}
+
+/* type colours */
+.t-blog{background:rgba(75,67,196,.1);color:var(--ink)}
+.t-article{background:rgba(46,142,172,.1);color:#2E8EAC}
+.t-email{background:rgba(46,142,106,.1);color:var(--green)}
+.t-social{background:rgba(182,83,52,.1);color:var(--clay)}
+.t-script{background:rgba(123,65,201,.1);color:var(--violet)}
+.t-book{background:rgba(182,136,30,.1);color:#B68A1E}
+
+/* EMPTY */
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--faint)}
+.empty-icon{font-size:48px;margin-bottom:14px}
+.empty h3{font-size:16px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.empty p{font-size:13.5px;margin-bottom:20px}
+
+/* CONFIRM DIALOG */
+.confirm-overlay{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(33,28,20,.4);backdrop-filter:blur(4px)}
+.confirm-overlay.open{display:flex}
+.confirm-card{background:var(--panel);border-radius:14px;padding:28px 30px;width:min(360px,90vw);box-shadow:0 20px 60px rgba(33,28,20,.2)}
+.confirm-card h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.confirm-card p{font-size:13.5px;color:var(--muted);margin-bottom:22px;line-height:1.55}
+.confirm-btns{display:flex;gap:10px}
+.confirm-cancel{flex:1;padding:10px;border:1.5px solid var(--line);border-radius:999px;background:var(--panel);font-weight:600;font-size:13.5px;cursor:pointer;transition:.15s}
+.confirm-cancel:hover{border-color:var(--ink)}
+.confirm-delete{flex:1;padding:10px;border:none;border-radius:999px;background:var(--clay);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:.15s}
+.confirm-delete:hover{opacity:.88}
+</style>
+</head>
+<body>
+
+<!-- MOBILE BAR -->
+<div class="mob-bar">
+  <span class="mob-logo">StreamInk</span>
+  <button class="mob-menu-btn" onclick="openDrawer()">☰</button>
+</div>
+<div class="mob-drawer" id="mobDrawer">
+  <div class="mob-backdrop" onclick="closeDrawer()"></div>
+  <div class="mob-panel" id="mobPanel"></div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="side" id="sidebar">
+  <div class="side-brand"><b>StreamInk</b><span>STUDIO</span></div>
+  <p class="side-grp">Workspace</p>
+  <a href="/dashboard" class="side-item">🏠 Dashboard</a>
+  <a href="/documents.html" class="side-item on">📄 Documents</a>
+  <a href="/calendar" class="side-item">📅 Calendar</a>
+  <p class="side-grp">Create</p>
+  <a href="/blog-templates" class="side-item">✍️ Blog</a>
+  <a href="/article-templates" class="side-item">📰 Article</a>
+  <a href="/email-editor" class="side-item">📧 Email</a>
+  <a href="/social-editor" class="side-item">📱 Social</a>
+  <a href="/script-writer" class="side-item">🎬 Script</a>
+  <a href="/book-writer" class="side-item">📚 Book</a>
+  <p class="side-grp">Tools</p>
+  <a href="/seo-tools" class="side-item">🔍 SEO Tools</a>
+  <a href="/brand-kit" class="side-item">🎨 Brand Kit</a>
+  <a href="/settings" class="side-item">⚙️ Settings</a>
+  <div class="side-foot">
+    <div class="side-email" id="userEmail"></div>
+    <a href="/" class="side-item">← Back to home</a>
+    <a href="#" id="logoutBtn" class="side-item signout" style="display:none">Sign out</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-head">
+    <h1>My Documents</h1>
+    <a href="/blog-templates" class="btn btn-primary">＋ New document</a>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="search" id="searchInput" placeholder="Search documents…" oninput="filterDocs()">
+    </div>
+    <select class="filter-select" id="typeFilter" onchange="filterDocs()">
+      <option value="">All types</option>
+      <option value="blog">Blog</option>
+      <option value="article">Article</option>
+      <option value="email">Email</option>
+      <option value="social">Social</option>
+      <option value="script">Script</option>
+      <option value="book">Book</option>
+    </select>
+    <select class="filter-select" id="sortFilter" onchange="filterDocs()">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="alpha">A → Z</option>
+    </select>
+  </div>
+
+  <div class="doc-grid" id="docGrid">
+    <div class="empty"><div class="empty-icon">⏳</div><h3>Loading…</h3></div>
+  </div>
+</main>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-card">
+    <h3>Delete document?</h3>
+    <p>This will permanently delete "<span id="confirmName"></span>". This cannot be undone.</p>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-delete" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="/js/docstore.js"></script>
+<script src="/js/auth-gate.js"></script>
+<script>
+let allDocs = [];
+let deletingId = null;
+
+const TYPE_URLS = {
+  blog:    '/editor',
+  article: '/article-editor',
+  email:   '/email-editor',
+  social:  '/social-editor',
+  script:  '/script-writer',
+  book:    '/book-writer',
+};
+
+async function init() {
+  allDocs = await DocStore.getAll();
+  filterDocs();
+
+  // user email
+  const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+  if (key) {
+    try {
+      const s = JSON.parse(localStorage.getItem(key));
+      const email = s?.user?.email || s?.email;
+      if (email) {
+        document.getElementById('userEmail').textContent = email;
+        document.getElementById('logoutBtn').style.display = 'flex';
+      }
+    } catch {}
+  }
+
+  // sync sidebar to mobile drawer
+  document.getElementById('mobPanel').innerHTML = document.getElementById('sidebar').innerHTML;
+}
+
+function filterDocs() {
+  const q    = document.getElementById('searchInput').value.toLowerCase();
+  const type = document.getElementById('typeFilter').value;
+  const sort = document.getElementById('sortFilter').value;
+
+  let docs = allDocs.filter(d => {
+    const matchQ = !q || (d.title || '').toLowerCase().includes(q) || (d.content || '').toLowerCase().includes(q);
+    const matchT = !type || d.type === type;
+    return matchQ && matchT;
+  });
+
+  if (sort === 'newest') docs.sort((a,b) => new Date(b.updatedAt||b.createdAt||0) - new Date(a.updatedAt||a.createdAt||0));
+  else if (sort === 'oldest') docs.sort((a,b) => new Date(a.updatedAt||a.createdAt||0) - new Date(b.updatedAt||b.createdAt||0));
+  else docs.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+
+  renderDocs(docs);
+}
+
+function renderDocs(docs) {
+  const grid = document.getElementById('docGrid');
+  if (!docs.length) {
+    grid.innerHTML = `<div class="empty">
+      <div class="empty-icon">📄</div>
+      <h3>No documents yet</h3>
+      <p>Create your first piece of content with any engine.</p>
+      <a href="/blog-templates" class="btn btn-primary">＋ Start writing</a>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = docs.map(d => {
+    const type    = d.type || 'blog';
+    const preview = (d.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+    const date    = d.updatedAt ? new Date(d.updatedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+    const editUrl = (TYPE_URLS[type] || '/dashboard') + '?doc=' + encodeURIComponent(d.id);
+    return `<div class="doc-card" onclick="openDoc('${d.id}','${type}')">
+      <div class="doc-preview">${preview || '<em>No preview</em>'}</div>
+      <div class="doc-info">
+        <div class="doc-name">${escHtml(d.title || 'Untitled')}</div>
+        <div class="doc-meta">
+          <span class="doc-type t-${type}">${type}</span>
+          <span>${date}</span>
+        </div>
+      </div>
+      <div class="doc-card-actions">
+        <button class="doc-action" onclick="event.stopPropagation();openDoc('${d.id}','${type}')">✏️ Edit</button>
+        <button class="doc-action" onclick="event.stopPropagation();shareDoc('${d.id}','${escHtml(d.title||'Untitled')}')">🔗 Share</button>
+        <button class="doc-action danger" onclick="event.stopPropagation();confirmDelete('${d.id}','${escHtml(d.title||'Untitled')}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openDoc(id, type) {
+  const url = (TYPE_URLS[type] || '/dashboard') + '?doc=' + encodeURIComponent(id);
+  location.href = url;
+}
+
+async function shareDoc(id, title) {
+  try {
+    const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+    let token;
+    if (key) { try { token = JSON.parse(localStorage.getItem(key))?.access_token; } catch {} }
+    const res = await fetch('/api/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+      body: JSON.stringify({ docId: id })
+    });
+    const data = await res.json();
+    if (data.url) {
+      await navigator.clipboard.writeText(data.url).catch(() => {});
+      alert('Share link copied to clipboard!\n\n' + data.url);
+    } else {
+      alert(data.error || 'Could not create share link.');
+    }
+  } catch (e) {
+    alert('Share failed: ' + e.message);
+  }
+}
+
+function confirmDelete(id, title) {
+  deletingId = id;
+  document.getElementById('confirmName').textContent = title;
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('confirmDeleteBtn').onclick = async () => {
+    await DocStore.delete(deletingId);
+    allDocs = allDocs.filter(d => d.id !== deletingId);
+    filterDocs();
+    closeConfirm();
+  };
+}
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); deletingId = null; }
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function openDrawer()  { document.getElementById('mobDrawer').classList.add('open'); }
+function closeDrawer() { document.getElementById('mobDrawer').classList.remove('open'); }
+
+document.getElementById('logoutBtn')?.addEventListener('click', async e => {
+  e.preventDefault();
+  const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+  if (key) localStorage.removeItem(key);
+  location.href = '/login.html';
+});
+
+init();
+</script>
+</body>
+</html>

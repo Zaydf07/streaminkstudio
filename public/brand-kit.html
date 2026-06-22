@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Kit — StreamInk Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+  --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+h1{font-family:var(--ff-d);font-weight:500;font-size:clamp(26px,3.4vw,38px);letter-spacing:-.015em;line-height:1.08}
+h1 .g{color:var(--ink);font-style:italic;font-weight:500}
+
+/* ── APP BAR ── */
+.appbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:16px;height:58px;padding:0 18px;background:rgba(250,247,240,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+.ab-left{display:flex;align-items:center;gap:12px;min-width:0}
+.brandtab{display:inline-flex;align-items:center;flex:none;margin-right:5px;padding-right:13px;border-right:1px solid var(--line)}
+.brandtab img{height:23px;width:auto;display:block}
+.brandtab:hover img{opacity:.76}
+.icon-btn{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;transition:.18s}
+.icon-btn:hover{color:var(--text);border-color:var(--blue)}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--faint);white-space:nowrap}
+.crumb b{color:var(--text);font-weight:600}
+.save-flag{font-size:12px;font-weight:600;color:#2E8E6A;opacity:0;transition:.3s;font-family:var(--ff-m);display:flex;align-items:center;gap:5px}
+.save-flag.show{opacity:1}
+.save-flag svg{width:13px;height:13px}
+
+/* ── PAGE HEAD ── */
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+.page-head{text-align:center;padding:48px 0 6px}
+.eyebrow{display:inline-flex;align-items:center;gap:11px;font-family:var(--ff-m);font-size:11px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;margin-bottom:18px;color:var(--ink)}
+.eyebrow::before{content:"";width:26px;height:1px;background:currentColor;opacity:.55}
+.page-sub{color:var(--muted);font-size:14.5px;max-width:520px;margin:11px auto 0}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 1.1fr;gap:26px;padding:40px 0 70px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px}
+.panel-title{font-family:var(--ff-d);font-weight:600;font-size:17px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line-soft)}
+
+.flabel{display:block;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-family:var(--ff-m);margin:16px 0 7px}
+.flabel:first-of-type{margin-top:0}
+input[type=text],input[type=url],select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;font-size:13.5px;color:var(--text);transition:border-color .15s}
+input::placeholder{color:var(--faint)}
+input:focus,select:focus{outline:none;border-color:var(--blue)}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),linear-gradient(135deg,var(--faint) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+
+.color-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.color-tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-family:var(--ff-m);margin-bottom:5px}
+.color-field{display:flex;align-items:center;gap:8px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:6px 10px;transition:.15s}
+.color-field:focus-within{border-color:var(--blue)}
+.color-swatch{width:30px;height:30px;border-radius:7px;border:none;cursor:pointer;padding:0;flex-shrink:0;background:none}
+.color-hex{border:none;background:transparent;font-size:13px;font-family:var(--ff-m);font-weight:600;color:var(--text);width:100%;outline:none}
+
+.logo-upload{display:flex;align-items:center;gap:14px;margin-top:4px}
+.logo-preview{width:60px;height:60px;border-radius:12px;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;background:var(--field);overflow:hidden;flex-shrink:0;cursor:pointer;color:var(--faint)}
+.logo-preview img{width:100%;height:100%;object-fit:contain}
+.logo-preview svg{width:22px;height:22px}
+.logo-info{flex:1}
+.logo-btn{display:inline-block;background:var(--panel-2);border:1px solid var(--line);padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;color:var(--text);transition:.15s}
+.logo-btn:hover{border-color:var(--blue)}
+.logo-hint{font-size:11px;color:var(--faint);margin-top:5px}
+.logo-clear{display:none;background:none;border:none;color:var(--clay);font-size:11px;font-weight:600;cursor:pointer;margin-top:4px;padding:0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:600;font-size:14px;border-radius:999px;padding:12px 18px;border:1px solid transparent;transition:.18s;width:100%}
+.btn-primary{color:#fff;background:var(--grad);box-shadow:0 6px 16px -6px rgba(91,108,240,.55);margin-top:22px}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-line{color:var(--muted);border-color:var(--line);background:transparent;margin-top:10px}
+.btn-line:hover{color:var(--clay);border-color:var(--clay);background:rgba(182,83,52,.06)}
+
+/* ── PREVIEW ── */
+.preview-wrap{display:flex;flex-direction:column;gap:18px}
+.preview-label{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);font-family:var(--ff-m);margin-bottom:8px}
+
+.brand-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:32px 34px;position:relative;overflow:hidden}
+.bc-accent{position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--bk-primary,#4B43C4),var(--bk-accent,#2E8EAC))}
+.bc-logo{width:50px;height:50px;border-radius:11px;background:var(--bk-primary,#4B43C4);display:flex;align-items:center;justify-content:center;font-family:var(--ff-d);font-size:21px;font-weight:600;color:#fff;margin-bottom:18px;overflow:hidden}
+.bc-logo img{width:100%;height:100%;object-fit:contain}
+.bc-name{font-family:var(--bk-font,'Newsreader',Georgia,serif);font-size:25px;font-weight:600;color:var(--bk-primary,#4B43C4);margin-bottom:4px}
+.bc-tagline{font-size:14px;color:var(--bk-accent,#2E8EAC);font-weight:500;margin-bottom:20px;font-family:var(--bk-font,inherit)}
+.bc-divider{height:1px;background:var(--line-soft);margin-bottom:18px}
+.bc-sample{font-size:14px;color:var(--muted);line-height:1.65;font-family:var(--bk-font,inherit);margin-bottom:22px}
+.bc-cta{display:inline-block;padding:10px 24px;border-radius:99px;background:var(--bk-primary,#4B43C4);color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:var(--bk-font,inherit)}
+.bc-url{margin-top:18px;font-size:12px;color:var(--faint);display:flex;align-items:center;gap:6px}
+.bc-url svg{width:13px;height:13px}
+
+.doc-card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px}
+.doc-card .panel-title{font-size:14px;margin-bottom:13px;padding-bottom:13px}
+.doc-card ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.doc-card li{font-size:13px;color:var(--text);display:flex;gap:8px;align-items:flex-start}
+.doc-card li svg{width:14px;height:14px;flex:none;margin-top:2px;stroke:#2E8E6A}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--text);color:#FBF7EF;padding:12px 20px;border-radius:var(--r-md);font-size:13.5px;font-weight:600;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:9999}
+.toast.show{opacity:1}
+
+/* engine toggles */
+.bk-engine-list{display:flex;flex-direction:column}
+.bk-engine-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;gap:16px;user-select:none}
+.bk-engine-row:hover .bk-engine-name{color:var(--ink)}
+.bk-engine-info{flex:1;min-width:0}
+.bk-engine-name{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;transition:.15s}
+.bk-engine-desc{display:block;font-size:11.5px;color:var(--faint)}
+.bk-toggle{position:relative;width:40px;height:22px;flex:none}
+.bk-toggle input{opacity:0;width:0;height:0;position:absolute}
+.bk-slider{position:absolute;inset:0;background:var(--line);border-radius:999px;transition:.22s;cursor:pointer}
+.bk-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.22s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.bk-toggle input:checked + .bk-slider{background:var(--ink)}
+.bk-toggle input:checked + .bk-slider::before{transform:translateX(18px)}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="ab-left">
+    <a class="brandtab" href="/dashboard"><img src="/images/streamink-mark.png" alt="StreamInk Studio"></a>
+    <a class="icon-btn" href="/dashboard">← Dashboard</a>
+    <span class="crumb">Brand kit</span>
+  </div>
+  <span class="save-flag" id="autoSaveIndicator"><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8E6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Auto-saved</span>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Your brand</span>
+    <h1>Set it once, write <span class="g">on brand</span> everywhere</h1>
+    <p class="page-sub">Save your name, colors, font, and tone here — StreamInk pre-fills them across every engine.</p>
+  </div>
+
+  <div class="layout">
+
+    <!-- ── FORM ── -->
+    <div class="panel">
+      <div class="panel-title">Brand identity</div>
+
+      <label class="flabel">Brand name</label>
+      <input type="text" id="bk-name" placeholder="e.g. SmilePro Dental">
+
+      <label class="flabel">Tagline</label>
+      <input type="text" id="bk-tagline" placeholder="e.g. Where smiles shine brighter">
+
+      <label class="flabel">Website URL</label>
+      <input type="url" id="bk-url" placeholder="https://example.com">
+
+      <label class="flabel">Brand colors</label>
+      <div class="color-row">
+        <div>
+          <div class="color-tag">Primary</div>
+          <div class="color-field">
+            <input id="bk-primary-picker" type="color" class="color-swatch" value="#4B43C4">
+            <input id="bk-primary-hex" class="color-hex" value="#4B43C4" maxlength="7" placeholder="#4B43C4">
+          </div>
+        </div>
+        <div>
+          <div class="color-tag">Accent</div>
+          <div class="color-field">
+            <input id="bk-accent-picker" type="color" class="color-swatch" value="#2E8EAC">
+            <input id="bk-accent-hex" class="color-hex" value="#2E8EAC" maxlength="7" placeholder="#2E8EAC">
+          </div>
+        </div>
+      </div>
+
+      <label class="flabel">Brand font</label>
+      <select id="bk-font">
+        <option value="'Newsreader',Georgia,serif">Newsreader — Editorial serif</option>
+        <option value="Inter">Inter — Clean &amp; modern</option>
+        <option value="Georgia">Georgia — Classic &amp; elegant</option>
+        <option value="'Playfair Display',Georgia">Playfair Display — Luxury editorial</option>
+        <option value="Montserrat">Montserrat — Bold &amp; geometric</option>
+        <option value="'Merriweather',serif">Merriweather — Readable &amp; warm</option>
+        <option value="'Source Sans Pro',sans-serif">Source Sans Pro — Professional</option>
+        <option value="'DM Sans',sans-serif">DM Sans — Contemporary</option>
+      </select>
+
+      <label class="flabel">Default tone</label>
+      <select id="bk-tone">
+        <option value="professional">Professional</option>
+        <option value="friendly">Friendly</option>
+        <option value="persuasive">Persuasive</option>
+        <option value="educational">Educational</option>
+        <option value="conversational">Conversational</option>
+        <option value="authoritative">Authoritative</option>
+        <option value="luxury">Luxury</option>
+        <option value="bold">Bold</option>
+      </select>
+
+      <label class="flabel">Brand logo</label>
+      <div class="logo-upload">
+        <div class="logo-preview" id="logoPreview" onclick="document.getElementById('logoFile').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.6"/><path d="M21 15l-5-5-9 9"/></svg>
+        </div>
+        <div class="logo-info">
+          <label class="logo-btn" for="logoFile">Upload logo</label>
+          <input type="file" id="logoFile" accept="image/*" style="display:none">
+          <div class="logo-hint">PNG, JPG, SVG — shown in previews</div>
+          <button class="logo-clear" id="logoClearBtn" onclick="clearLogo()" type="button">Remove logo</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="saveBrandKit()" type="button">Save brand kit</button>
+      <button class="btn btn-line" onclick="clearBrandKit()" type="button">Reset to defaults</button>
+    </div>
+
+    <!-- ── PREVIEW ── -->
+    <div class="preview-wrap">
+
+      <div>
+        <div class="preview-label">Live preview</div>
+        <div class="brand-card" id="brandPreviewCard">
+          <div class="bc-accent"></div>
+          <div class="bc-logo" id="previewLogoBox">✦</div>
+          <div class="bc-name" id="previewName">Your Brand Name</div>
+          <div class="bc-tagline" id="previewTagline">Your tagline goes here</div>
+          <div class="bc-divider"></div>
+          <div class="bc-sample">
+            Your brand identity shapes every piece of content StreamInk creates for you.
+            When you save your kit, your brand name, colors, and tone auto-fill across all editors — so every article, email, and social post starts on brand.
+          </div>
+          <button class="bc-cta" id="previewCta" type="button">Get Started</button>
+          <div class="bc-url" id="previewUrl" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/></svg>
+            <span id="previewUrlText"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="panel-title">Where your brand kit appears</div>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.55">Toggle which engines auto-fill your brand name, colours, tone, and logo when you open them.</p>
+
+        <div class="bk-engine-list">
+          <label class="bk-engine-row">
+            <div class="bk-engine-info">
+              <span class="bk-engine-name">Blog Editor</span>
+              <span class="bk-engine-desc">Brand name, URL &amp; tone pre-filled</span>
+            </div>
+            <div class="bk-toggle">
+              <input type="checkbox" id="eng-blog" checked onchange="autoSave()">
+              <span class="bk-slider"></span>
+            </div>
+          </label>
+          <label class="bk-engine-row">
+            <div class="bk-engine-info">
+              <span class="bk-engine-name">Article Engine</span>
+              <span class="bk-engine-desc">Website URL &amp; tone pre-filled</span>
+            </div>
+            <div class="bk-toggle">
+              <input type="checkbox" id="eng-article" checked onchange="autoSave()">
+              <span class="bk-slider"></span>
+            </div>
+          </label>
+          <label class="bk-engine-row">
+            <div class="bk-engine-info">
+              <span class="bk-engine-name">Email Newsletter</span>
+              <span class="bk-engine-desc">Sender name, logo, colours &amp; tone pre-filled</span>
+            </div>
+            <div class="bk-toggle">
+              <input type="checkbox" id="eng-email" checked onchange="autoSave()">
+              <span class="bk-slider"></span>
+            </div>
+          </label>
+          <label class="bk-engine-row">
+            <div class="bk-engine-info">
+              <span class="bk-engine-name">Social Posts</span>
+              <span class="bk-engine-desc">Brand colours on canvas, name in brief</span>
+            </div>
+            <div class="bk-toggle">
+              <input type="checkbox" id="eng-social" checked onchange="autoSave()">
+              <span class="bk-slider"></span>
+            </div>
+          </label>
+          <label class="bk-engine-row">
+            <div class="bk-engine-info">
+              <span class="bk-engine-name">Script Writer</span>
+              <span class="bk-engine-desc">Tone pre-selected</span>
+            </div>
+            <div class="bk-toggle">
+              <input type="checkbox" id="eng-script" checked onchange="autoSave()">
+              <span class="bk-slider"></span>
+            </div>
+          </label>
+          <label class="bk-engine-row" style="border-bottom:none">
+            <div class="bk-engine-info">
+              <span class="bk-engine-name">Book Writer</span>
+              <span class="bk-engine-desc">Tone pre-selected</span>
+            </div>
+            <div class="bk-toggle">
+              <input type="checkbox" id="eng-book" checked onchange="autoSave()">
+              <span class="bk-slider"></span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="bkToast"></div>
+
+<script>
+const STORAGE_KEY = 'StreamInk_BrandKit';
+
+/* ── LOAD ── */
+function loadKit() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+  catch { return {}; }
+}
+
+function populateForm(kit) {
+  if (kit.name)    document.getElementById('bk-name').value    = kit.name;
+  if (kit.tagline) document.getElementById('bk-tagline').value = kit.tagline;
+  if (kit.url)     document.getElementById('bk-url').value     = kit.url;
+  if (kit.primary) {
+    document.getElementById('bk-primary-picker').value = kit.primary;
+    document.getElementById('bk-primary-hex').value    = kit.primary;
+  }
+  if (kit.accent) {
+    document.getElementById('bk-accent-picker').value = kit.accent;
+    document.getElementById('bk-accent-hex').value    = kit.accent;
+  }
+  if (kit.font)  document.getElementById('bk-font').value  = kit.font;
+  if (kit.tone)  document.getElementById('bk-tone').value  = kit.tone;
+  if (kit.logo)  setLogoPreview(kit.logo);
+  // restore engine toggles (default all on if no saved state)
+  if (kit.engines) {
+    ['blog','article','email','social','script','book'].forEach(e => {
+      const el = document.getElementById('eng-' + e);
+      if (el) el.checked = kit.engines[e] !== false;
+    });
+  }
+}
+
+/* ── LOGO PREVIEW ── */
+const LOGO_PLACEHOLDER = `<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.6"/><path d="M21 15l-5-5-9 9"/></svg>`;
+
+function setLogoPreview(dataUrl) {
+  const box = document.getElementById('logoPreview');
+  box.innerHTML = `<img src="${dataUrl}" alt="logo">`;
+  document.getElementById('logoClearBtn').style.display = 'block';
+}
+
+function clearLogo() {
+  document.getElementById('logoPreview').innerHTML = LOGO_PLACEHOLDER;
+  document.getElementById('logoClearBtn').style.display = 'none';
+  document.getElementById('logoFile').value = '';
+  updatePreview();
+  autoSave();
+}
+
+document.getElementById('logoFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    setLogoPreview(ev.target.result);
+    updatePreview();
+    autoSave();
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ── LIVE PREVIEW ── */
+function updatePreview() {
+  const name    = document.getElementById('bk-name').value    || 'Your Brand Name';
+  const tagline = document.getElementById('bk-tagline').value || 'Your tagline goes here';
+  const url     = document.getElementById('bk-url').value;
+  const primary = document.getElementById('bk-primary-hex').value || '#4B43C4';
+  const accent  = document.getElementById('bk-accent-hex').value  || '#2E8EAC';
+  const font    = document.getElementById('bk-font').value || "'Newsreader',Georgia,serif";
+
+  const card = document.getElementById('brandPreviewCard');
+  card.style.setProperty('--bk-primary', primary);
+  card.style.setProperty('--bk-accent',  accent);
+  card.style.setProperty('--bk-font',    font);
+
+  document.getElementById('previewName').textContent    = name;
+  document.getElementById('previewTagline').textContent = tagline;
+
+  const logoImg = document.getElementById('logoPreview').querySelector('img');
+  const logoBox = document.getElementById('previewLogoBox');
+  if (logoImg) {
+    logoBox.innerHTML = `<img src="${logoImg.src}" style="width:100%;height:100%;object-fit:contain">`;
+  } else {
+    logoBox.textContent = name.charAt(0).toUpperCase() || '✦';
+    logoBox.style.background = primary;
+  }
+
+  const urlRow  = document.getElementById('previewUrl');
+  const urlText = document.getElementById('previewUrlText');
+  if (url) {
+    urlRow.style.display = 'flex';
+    try { urlText.textContent = new URL(url).hostname; } catch { urlText.textContent = url; }
+  } else {
+    urlRow.style.display = 'none';
+  }
+}
+
+/* ── COLOR SYNC ── */
+document.getElementById('bk-primary-picker').addEventListener('input', e => {
+  document.getElementById('bk-primary-hex').value = e.target.value;
+  updatePreview(); autoSave();
+});
+document.getElementById('bk-primary-hex').addEventListener('input', e => {
+  const v = e.target.value;
+  if (/^#[0-9a-f]{6}$/i.test(v)) {
+    document.getElementById('bk-primary-picker').value = v;
+    updatePreview();
+  }
+  autoSave();
+});
+document.getElementById('bk-accent-picker').addEventListener('input', e => {
+  document.getElementById('bk-accent-hex').value = e.target.value;
+  updatePreview(); autoSave();
+});
+document.getElementById('bk-accent-hex').addEventListener('input', e => {
+  const v = e.target.value;
+  if (/^#[0-9a-f]{6}$/i.test(v)) {
+    document.getElementById('bk-accent-picker').value = v;
+    updatePreview();
+  }
+  autoSave();
+});
+
+/* ── AUTO-SAVE on text/select input ── */
+let autoSaveTimer;
+function autoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    persistKit();
+    const ind = document.getElementById('autoSaveIndicator');
+    ind.classList.add('show');
+    setTimeout(() => ind.classList.remove('show'), 2000);
+  }, 600);
+}
+
+['bk-name','bk-tagline','bk-url','bk-font','bk-tone'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => { updatePreview(); autoSave(); });
+  document.getElementById(id).addEventListener('change', () => { updatePreview(); autoSave(); });
+});
+
+/* ── PERSIST ── */
+function buildKitData() {
+  const logoImg = document.getElementById('logoPreview').querySelector('img');
+  const chk = id => document.getElementById(id)?.checked !== false;
+  return {
+    name:    document.getElementById('bk-name').value.trim(),
+    tagline: document.getElementById('bk-tagline').value.trim(),
+    url:     document.getElementById('bk-url').value.trim(),
+    primary: document.getElementById('bk-primary-hex').value || '#4B43C4',
+    accent:  document.getElementById('bk-accent-hex').value  || '#2E8EAC',
+    font:    document.getElementById('bk-font').value,
+    tone:    document.getElementById('bk-tone').value,
+    logo:    logoImg ? logoImg.src : '',
+    engines: {
+      blog:    chk('eng-blog'),
+      article: chk('eng-article'),
+      email:   chk('eng-email'),
+      social:  chk('eng-social'),
+      script:  chk('eng-script'),
+      book:    chk('eng-book'),
+    },
+  };
+}
+
+function persistKit() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(buildKitData()));
+}
+
+function saveBrandKit() {
+  persistKit();
+  showToast('Brand kit saved');
+}
+
+function clearBrandKit() {
+  if (!confirm('Reset your Brand Kit to defaults?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  document.getElementById('bk-name').value    = '';
+  document.getElementById('bk-tagline').value = '';
+  document.getElementById('bk-url').value     = '';
+  document.getElementById('bk-primary-picker').value = '#4B43C4';
+  document.getElementById('bk-primary-hex').value    = '#4B43C4';
+  document.getElementById('bk-accent-picker').value  = '#2E8EAC';
+  document.getElementById('bk-accent-hex').value     = '#2E8EAC';
+  document.getElementById('bk-font').value  = "'Newsreader',Georgia,serif";
+  document.getElementById('bk-tone').value  = 'professional';
+  clearLogo();
+  updatePreview();
+  showToast('Brand kit reset');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('bkToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── INIT ── */
+populateForm(loadKit());
+updatePreview();
+</script>
+
+</body>
+</html>

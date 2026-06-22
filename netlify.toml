@@ -1,0 +1,155 @@
+# Netlify configuration for StreamInk Studio
+# Architecture: Netlify (frontend CDN) + Render.com (Express API backend)
+#
+# How it works:
+#  - Netlify serves all HTML/CSS/JS from /public as a static site (fast, global CDN)
+#  - All /api/* and server-side requests are proxied to your Render backend
+#  - Set RENDER_BACKEND_URL in Netlify environment variables (Site settings → Env vars)
+
+[build]
+  publish = "public"
+  # No build command needed — pure static files
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# ── Proxy all API calls to Render backend ──────────────────────────────────
+# Replace https://streamink.onrender.com with your actual Render URL
+
+[[redirects]]
+  from   = "/api/*"
+  to     = "https://streamink.onrender.com/api/:splat"
+  status = 200
+  force  = true
+  [redirects.headers]
+    X-Forwarded-Host = ":netlify"
+
+[[redirects]]
+  from   = "/auth/*"
+  to     = "https://streamink.onrender.com/auth/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/admin"
+  to     = "https://streamink.onrender.com/admin"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/share/*"
+  to     = "https://streamink.onrender.com/share/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/js/config.js"
+  to     = "https://streamink.onrender.com/js/config.js"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/forgot-password"
+  to     = "/forgot-password.html"
+  status = 200
+
+[[redirects]]
+  from   = "/dashboard"
+  to     = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from   = "/login"
+  to     = "/login.html"
+  status = 200
+
+[[redirects]]
+  from   = "/signup"
+  to     = "/signup.html"
+  status = 200
+
+[[redirects]]
+  from   = "/pricing"
+  to     = "/pricing.html"
+  status = 200
+
+[[redirects]]
+  from   = "/settings"
+  to     = "/settings.html"
+  status = 200
+
+[[redirects]]
+  from   = "/brand-kit"
+  to     = "/brand-kit.html"
+  status = 200
+
+[[redirects]]
+  from   = "/documents"
+  to     = "/documents.html"
+  status = 200
+
+[[redirects]]
+  from   = "/blog-templates"
+  to     = "/blog-templates.html"
+  status = 200
+
+[[redirects]]
+  from   = "/article-templates"
+  to     = "/article-templates.html"
+  status = 200
+
+[[redirects]]
+  from   = "/social-templates"
+  to     = "/social-templates.html"
+  status = 200
+
+[[redirects]]
+  from   = "/editor"
+  to     = "/editor.html"
+  status = 200
+
+[[redirects]]
+  from   = "/article-editor"
+  to     = "/article-editor.html"
+  status = 200
+
+[[redirects]]
+  from   = "/email-editor"
+  to     = "/email-editor.html"
+  status = 200
+
+[[redirects]]
+  from   = "/social-editor"
+  to     = "/social-editor.html"
+  status = 200
+
+[[redirects]]
+  from   = "/book-writer"
+  to     = "/book-writer.html"
+  status = 200
+
+[[redirects]]
+  from   = "/script-writer"
+  to     = "/script-writer.html"
+  status = 200
+
+[[redirects]]
+  from   = "/magazine"
+  to     = "/magazine.html"
+  status = 200
+
+[[redirects]]
+  from   = "/seo-tools"
+  to     = "/seo-tools.html"
+  status = 200
+
+[[redirects]]
+  from   = "/calendar"
+  to     = "/calendar.html"
+  status = 200
+
+# Catch-all → branded 404
+[[redirects]]
+  from   = "/*"
+  to     = "/404.html"
+  status = 404

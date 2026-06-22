@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — StreamInk Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1;--panel:#fff;--panel-2:#FBF7EF;--line:#E3DACA;--line-soft:#EDE6D8;
+  --text:#211C14;--muted:#6E6557;--faint:#A89E8C;
+  --ink:#4B43C4;--green:#2E8E6A;--clay:#B65334;--violet:#7B41C9;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-b:'Hanken Grotesk',system-ui,sans-serif;--ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+
+/* LAYOUT */
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.side{width:220px;flex:none;background:var(--panel);border-right:1px solid var(--line-soft);padding:18px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh}
+.side-logo{font-family:var(--ff-m);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);padding:6px 10px 18px;border-bottom:1px solid var(--line-soft);margin-bottom:10px}
+.side-logo span{display:block;font-size:16px;letter-spacing:0;color:var(--ink);font-family:var(--ff-b);font-weight:700;margin-bottom:3px}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;border:none;background:none;font-size:13px;font-weight:500;color:var(--muted);width:100%;text-align:left;cursor:pointer;transition:.12s}
+.nav-btn:hover{background:var(--panel-2);color:var(--text)}
+.nav-btn.on{background:rgba(75,67,196,.08);color:var(--ink);font-weight:600}
+.nav-btn .ic{font-size:15px;width:18px;text-align:center}
+.side-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line-soft)}
+.side-foot small{display:block;font-size:11px;color:var(--faint);padding:4px 10px}
+
+/* MAIN */
+.main{flex:1;min-width:0;padding:28px 32px 60px}
+.main-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px}
+.main-head h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(46,142,106,.1);color:var(--green);font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:999px;font-family:var(--ff-m)}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* TABS */
+.tab-panel{display:none}
+.tab-panel.on{display:block}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.stat-val{font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1;margin-bottom:5px}
+.stat-label{font-size:12px;color:var(--muted);font-weight:500}
+.stat.ink .stat-val{color:var(--ink)}
+.stat.green .stat-val{color:var(--green)}
+.stat.violet .stat-val{color:var(--violet)}
+.stat.clay .stat-val{color:var(--clay)}
+
+/* TABLES */
+.table-wrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:24px}
+.table-head{padding:14px 18px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.table-head h3{font-size:14px;font-weight:600}
+.table-head small{font-size:12px;color:var(--faint)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;font-family:var(--ff-m);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);text-align:left;border-bottom:1px solid var(--line-soft)}
+td{padding:11px 16px;font-size:13px;border-bottom:1px solid var(--line-soft)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--panel-2)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;font-family:var(--ff-m)}
+.pill-free{background:rgba(168,158,140,.15);color:var(--muted)}
+.pill-pro{background:rgba(75,67,196,.12);color:var(--ink)}
+.pill-agency{background:rgba(123,65,201,.12);color:var(--violet)}
+
+/* CHARTS */
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+@media(max-width:760px){.charts{grid-template-columns:1fr}}
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chart-card h3{font-size:13.5px;font-weight:600;margin-bottom:16px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-label{font-size:12px;color:var(--muted);width:110px;flex:none;text-transform:capitalize}
+.bar-track{flex:1;height:8px;background:var(--line);border-radius:999px;overflow:hidden}
+.bar-fill{height:100%;border-radius:999px;background:var(--grad);transition:width .6s}
+.bar-val{font-family:var(--ff-m);font-size:11.5px;font-weight:600;color:var(--ink);width:40px;text-align:right;flex:none}
+
+/* LOCK SCREEN */
+.lock{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);flex-direction:column;gap:14px;text-align:center;padding:24px}
+.lock-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:36px 40px;width:min(360px,100%)}
+.lock-card h2{font-size:20px;font-weight:700;margin-bottom:6px}
+.lock-card p{font-size:13px;color:var(--muted);margin-bottom:20px}
+.lock-input{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:8px;font-size:14px;font-family:var(--ff-m);outline:none;transition:.15s}
+.lock-input:focus{border-color:var(--ink)}
+.lock-btn{margin-top:12px;width:100%;padding:11px;border:none;border-radius:999px;background:var(--grad);color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.lock-err{font-size:12px;color:var(--clay);margin-top:8px;display:none}
+
+/* REFRESH BTN */
+.btn-refresh{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:.15s}
+.btn-refresh:hover{border-color:var(--ink);color:var(--ink)}
+
+/* EMPTY */
+.empty{padding:36px;text-align:center;color:var(--faint);font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock" id="lockScreen">
+  <div class="lock-card">
+    <h2>Admin Access</h2>
+    <p>Enter your admin secret to continue.</p>
+    <input class="lock-input" type="password" id="secretInput" placeholder="Admin secret…" onkeydown="if(event.key==='Enter')unlock()">
+    <button class="lock-btn" onclick="unlock()">Enter →</button>
+    <p class="lock-err" id="lockErr">Incorrect secret. Try again.</p>
+  </div>
+</div>
+
+<!-- ADMIN UI (hidden until unlocked) -->
+<div class="layout" id="adminUI" style="display:none">
+
+  <!-- SIDEBAR -->
+  <nav class="side">
+    <div class="side-logo"><span>StreamInk</span>Admin Panel</div>
+    <button class="nav-btn on" onclick="showTab('overview',this)"><span class="ic">📊</span>Overview</button>
+    <button class="nav-btn" onclick="showTab('users',this)"><span class="ic">👤</span>Users</button>
+    <button class="nav-btn" onclick="showTab('usage',this)"><span class="ic">⚡</span>Usage</button>
+    <button class="nav-btn" onclick="showTab('logs',this)"><span class="ic">📋</span>Activity Log</button>
+    <div class="side-foot">
+      <small>StreamInk Studio Admin</small>
+      <small id="adminTime"></small>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-head">
+      <div>
+        <h1 id="tabTitle">Overview</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="badge" id="statusBadge">Live</span>
+        <button class="btn-refresh" onclick="loadData()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-panel on" id="tab-overview">
+      <div class="stats">
+        <div class="stat ink"><div class="stat-val" id="statUsers">—</div><div class="stat-label">Total users</div></div>
+        <div class="stat green"><div class="stat-val" id="statMrr">—</div><div class="stat-label">Monthly revenue (MRR)</div></div>
+        <div class="stat violet"><div class="stat-val" id="statPro">—</div><div class="stat-label">Pro subscribers</div></div>
+        <div class="stat clay"><div class="stat-val" id="statAgency">—</div><div class="stat-label">Agency subscribers</div></div>
+      </div>
+      <div class="charts">
+        <div class="chart-card">
+          <h3>Credits by engine</h3>
+          <div id="engineChart"><div class="empty">No data yet</div></div>
+        </div>
+        <div class="chart-card">
+          <h3>Users by plan</h3>
+          <div id="planChart"><div class="empty">No data yet</div></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Recent activity</h3><small id="logCount"></small></div>
+        <table>
+          <thead><tr><th>Engine</th><th>Credits</th><th>User</th><th>Time</th></tr></thead>
+          <tbody id="recentLogs"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS TAB -->
+    <div class="tab-panel" id="tab-users">
+      <div class="table-wrap">
+        <div class="table-head"><h3>All users</h3><small id="userCount"></small></div>
+        <table>
+          <thead><tr><th>Email</th><th>Plan</th><th>Credits used</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="userRows"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USAGE TAB -->
+    <div class="tab-panel" id="tab-usage">
+      <div class="charts">
+        <div class="chart-card">
+          <h3>Credits per engine (all time)</h3>
+          <div id="usageEngineChart"><div class="empty">Loading…</div></div>
+        </div>
+        <div class="chart-card">
+          <h3>Subscription breakdown</h3>
+          <div id="usagePlanChart"><div class="empty">Loading…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS TAB -->
+    <div class="tab-panel" id="tab-logs">
+      <div class="table-wrap">
+        <div class="table-head"><h3>Activity log</h3><small>Last 50 actions</small></div>
+        <table>
+          <thead><tr><th>Engine</th><th>Credits</th><th>User ID</th><th>Time</th></tr></thead>
+          <tbody id="logRows"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let adminSecret = '';
+let statsData   = null;
+let usersData   = [];
+
+function unlock() {
+  const val = document.getElementById('secretInput').value.trim();
+  if (!val) return;
+  adminSecret = val;
+  // Try to fetch stats to verify
+  fetch('/api/admin/stats', { headers: { 'x-admin-secret': adminSecret } })
+    .then(r => {
+      if (r.status === 403) {
+        document.getElementById('lockErr').style.display = 'block';
+        adminSecret = '';
+      } else {
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('adminUI').style.display    = 'flex';
+        r.json().then(d => { statsData = d; renderAll(); });
+        loadUsers();
+      }
+    })
+    .catch(() => { document.getElementById('lockErr').style.display = 'block'; });
+}
+
+function loadData() {
+  Promise.all([
+    fetch('/api/admin/stats', { headers: { 'x-admin-secret': adminSecret } }).then(r => r.json()),
+    fetch('/api/admin/users', { headers: { 'x-admin-secret': adminSecret } }).then(r => r.json()),
+  ]).then(([stats, users]) => {
+    statsData = stats;
+    usersData = users.users || [];
+    renderAll();
+  });
+}
+
+function loadUsers() {
+  fetch('/api/admin/users', { headers: { 'x-admin-secret': adminSecret } })
+    .then(r => r.json()).then(d => { usersData = d.users || []; renderUsers(); });
+}
+
+function renderAll() {
+  if (!statsData) return;
+  const d = statsData;
+  document.getElementById('statUsers').textContent   = fmt(d.totalUsers || 0);
+  document.getElementById('statMrr').textContent     = '$' + fmt(d.mrr || 0) + '/mo';
+  document.getElementById('statPro').textContent     = fmt(d.byPlan?.pro || 0);
+  document.getElementById('statAgency').textContent  = fmt(d.byPlan?.agency || 0);
+  renderBarChart('engineChart',  d.byEngine || {}, '#4B43C4');
+  renderBarChart('planChart',    d.byPlan   || {}, '#2E8E6A');
+  renderBarChart('usageEngineChart', d.byEngine || {}, '#4B43C4');
+  renderBarChart('usagePlanChart',   d.byPlan   || {}, '#7B41C9');
+  renderLogs(d.recentLogs || []);
+  document.getElementById('logCount').textContent = `${(d.recentLogs||[]).length} entries`;
+  document.getElementById('adminTime').textContent = 'Updated ' + new Date().toLocaleTimeString();
+}
+
+function renderBarChart(id, data, color) {
+  const el  = document.getElementById(id);
+  const max = Math.max(...Object.values(data), 1);
+  if (!Object.keys(data).length) { el.innerHTML = '<div class="empty">No data yet</div>'; return; }
+  el.innerHTML = Object.entries(data)
+    .sort((a,b) => b[1]-a[1])
+    .map(([k,v]) => `
+      <div class="bar-row">
+        <span class="bar-label">${k}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%;background:${color}"></div></div>
+        <span class="bar-val">${fmt(v)}</span>
+      </div>`).join('');
+}
+
+function renderLogs(logs) {
+  const tbodies = ['recentLogs', 'logRows'];
+  const html = logs.length
+    ? logs.map(l => `<tr>
+        <td>${l.engine || '—'}</td>
+        <td><strong>${l.credits || 0}</strong> cr</td>
+        <td style="font-family:var(--ff-m);font-size:11px;color:var(--faint)">${(l.user_id||'').slice(0,12)}…</td>
+        <td style="color:var(--faint)">${ago(l.created_at)}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="4" class="empty">No activity logged yet</td></tr>';
+  tbodies.forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerHTML = html; });
+}
+
+function renderUsers() {
+  const tbody = document.getElementById('userRows');
+  document.getElementById('userCount').textContent = `${usersData.length} users`;
+  tbody.innerHTML = usersData.length
+    ? usersData.map(u => {
+        const plan = u.user_metadata?.plan || 'free';
+        const uid  = u.id;
+        return `<tr>
+          <td style="font-size:12.5px">${u.email || '—'}</td>
+          <td><span class="pill pill-${plan}">${plan}</span></td>
+          <td>${u.user_metadata?.credits_used ?? '—'}</td>
+          <td style="color:var(--faint)">${fmt_date(u.created_at)}</td>
+          <td>
+            <div style="display:flex;gap:5px;flex-wrap:wrap">
+              <select onchange="changePlan('${uid}',this.value);this.value=''" style="font-size:11px;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--panel-2);cursor:pointer">
+                <option value="">Plan ▾</option>
+                <option value="free">→ Free</option>
+                <option value="pro">→ Pro</option>
+                <option value="agency">→ Agency</option>
+              </select>
+              <button onclick="resetCredits('${uid}')" style="font-size:11px;padding:3px 9px;border-radius:6px;border:1px solid var(--line);background:var(--panel-2);cursor:pointer;color:var(--clay)">Reset credits</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="5" class="empty">No users yet</td></tr>';
+}
+
+async function changePlan(userId, plan) {
+  if (!plan) return;
+  const r = await fetch('/api/admin/user/plan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-secret': adminSecret },
+    body: JSON.stringify({ userId, plan })
+  });
+  const d = await r.json();
+  if (d.ok) { showToast(`Plan changed to ${plan}`); loadData(); }
+  else alert('Error: ' + d.error);
+}
+
+async function resetCredits(userId) {
+  if (!confirm('Reset this user\'s credits to 0?')) return;
+  const r = await fetch('/api/admin/user/reset-credits', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-secret': adminSecret },
+    body: JSON.stringify({ userId })
+  });
+  const d = await r.json();
+  if (d.ok) { showToast('Credits reset to 0'); loadData(); }
+  else alert('Error: ' + d.error);
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#211C14;color:#F1ECE1;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:.3s';
+  document.body.appendChild(t);
+  setTimeout(() => t.style.opacity = '1', 10);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');
+  btn.classList.add('on');
+  const titles = { overview:'Overview', users:'Users', usage:'Usage Analytics', logs:'Activity Log' };
+  document.getElementById('tabTitle').textContent = titles[name] || name;
+}
+
+function fmt(n)       { return Number(n).toLocaleString(); }
+function fmt_date(s)  { if(!s) return '—'; return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function ago(s)       {
+  if(!s) return '—';
+  const diff = Date.now() - new Date(s).getTime();
+  if (diff < 60000)   return 'just now';
+  if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+  if (diff < 86400000)return Math.floor(diff/3600000) + 'h ago';
+  return Math.floor(diff/86400000) + 'd ago';
+}
+
+document.getElementById('secretInput').addEventListener('keydown', e => { if(e.key==='Enter') unlock(); });
+setInterval(() => { if(adminSecret) loadData(); }, 60000);
+</script>
+</body>
+</html>

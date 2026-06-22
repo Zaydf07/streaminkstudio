@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamInk Studio — Write everything. Publish anywhere.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500;1,6..72,600&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1; --paper:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --ink-soft:#6E6557; --faint:#A89E8C;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --clay:#B65334; --teal:#2E8EAC;
+  --ff-d:'Newsreader',Georgia,serif;
+  --ff-b:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
+  --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+  --shadow-card:0 1px 2px rgba(33,28,20,.04),0 14px 34px -18px rgba(33,28,20,.20);
+  --shadow-lift:0 2px 4px rgba(33,28,20,.05),0 26px 50px -20px rgba(33,28,20,.30);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-b);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.55}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(75,67,196,.16)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 30px}
+.kicker{font-family:var(--ff-m);font-size:11.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--clay)}
+.kicker.ink{color:var(--ink)}
+
+/* ---------- Nav ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(241,236,225,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-soft)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:96px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{height:34px;width:auto;display:block}
+.brand-name{font-family:var(--ff-d);font-weight:600;font-size:22px;letter-spacing:.005em;line-height:1}
+.brand-name small{display:block;font-family:var(--ff-m);font-weight:500;font-size:9px;letter-spacing:.36em;color:var(--faint);text-transform:uppercase;margin-top:3px}
+.nav-links{display:flex;gap:30px;font-size:14.5px;font-weight:500;color:var(--ink-soft);white-space:nowrap}
+.nav-cta{display:flex;align-items:center;gap:18px;white-space:nowrap}
+.nav-links a{position:relative;padding:6px 0}
+.nav-links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;background:var(--clay);transition:right .26s ease}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{right:0}
+.nav-cta{display:flex;align-items:center;gap:20px}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--ff-b);font-weight:600;font-size:14.5px;border-radius:999px;padding:11px 22px;border:1px solid transparent;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease,color .18s ease}
+.btn-ink{color:#fff;background:var(--ink);box-shadow:0 10px 24px -12px rgba(75,67,196,.7)}
+.btn-ink:hover{transform:translateY(-1px);background:var(--ink-d);box-shadow:0 14px 30px -12px rgba(75,67,196,.75)}
+.btn-ghost{border-color:var(--line);color:var(--text);background:var(--paper)}
+.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+.nav-login{font-size:14.5px;font-weight:600;color:var(--ink-soft)}
+.nav-login:hover{color:var(--text)}
+@media(max-width:880px){.nav-links,.nav-login{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;padding:104px 0 84px}
+.hero-rule{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px);
+  background-size:100% 34px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 24%,#000 64%,transparent);mask-image:linear-gradient(180deg,transparent,#000 24%,#000 64%,transparent);opacity:.5}
+.hero-in{position:relative;text-align:center;max-width:880px;margin:0 auto}
+.hero .kicker{display:inline-flex;align-items:center;gap:12px;margin-bottom:26px}
+.hero .kicker::before,.hero .kicker::after{content:"";width:30px;height:1px;background:currentColor;opacity:.5}
+h1{font-family:var(--ff-d);font-weight:500;font-size:clamp(44px,6.6vw,82px);line-height:1.02;letter-spacing:-.02em}
+h1 .ink-word{position:relative;white-space:nowrap;font-style:italic;font-weight:500;color:var(--ink)}
+.ink-stroke{position:absolute;left:-3%;right:-3%;bottom:-.16em;width:106%;height:.34em;overflow:visible}
+.ink-stroke path{fill:none;stroke:var(--clay);stroke-width:6;stroke-linecap:round;stroke-dasharray:620;stroke-dashoffset:620;animation:draw 1.3s .45s cubic-bezier(.6,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.hero-sub{font-size:19px;color:var(--ink-soft);max-width:620px;margin:30px auto 40px;line-height:1.66;text-wrap:pretty}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-lg{padding:15px 30px;font-size:16px}
+.hero-meta{margin-top:34px;font-family:var(--ff-m);font-size:12px;letter-spacing:.04em;color:var(--faint)}
+.hero-meta b{color:var(--ink-soft);font-weight:600}
+
+/* ---------- Engines ---------- */
+.engines{background:var(--panel-2);padding:96px 0 100px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:14px;flex-wrap:wrap}
+.sec-title{font-family:var(--ff-d);font-weight:500;font-size:clamp(32px,3.8vw,46px);letter-spacing:-.015em;line-height:1.08;margin-top:14px}
+.sec-title em{font-style:italic;color:var(--ink)}
+.sec-note{font-size:15.5px;color:var(--ink-soft);max-width:360px;line-height:1.6}
+.spectrum-legend{display:flex;align-items:center;gap:14px;margin:30px 0 40px;font-family:var(--ff-m);font-size:10.5px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.spectrum-legend .dots{display:flex;gap:7px;flex:1}
+.spectrum-legend .dots i{flex:1;height:4px;border-radius:99px;background:var(--d)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+.card{--hue:var(--ink);position:relative;display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px 26px 24px;box-shadow:var(--shadow-card);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;overflow:hidden}
+.card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lift);border-color:color-mix(in srgb,var(--hue) 40%,var(--line))}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--hue);transform:scaleX(0);transform-origin:left;transition:transform .32s ease}
+.card:hover::before{transform:scaleX(1)}
+/* ---- service previews (live "being written" scenes) ---- */
+.card-vis{position:relative;margin:-28px -26px 26px;height:160px;overflow:hidden;border-bottom:1px solid color-mix(in srgb,var(--hue) 16%,var(--line));background:color-mix(in srgb,var(--hue) 7%,#FBF7EF)}
+.card-vis .card-stop{position:absolute;top:13px;right:14px;z-index:5;font-family:var(--ff-m);font-size:9.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--hue);background:rgba(255,255,255,.84);padding:4px 10px;border-radius:999px;backdrop-filter:blur(3px);display:flex;align-items:center;gap:7px;box-shadow:0 2px 8px -3px rgba(33,28,20,.25)}
+.card-vis .card-stop::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--hue);box-shadow:none}
+.card-vis .card-icon{position:absolute;left:16px;bottom:14px;z-index:6;width:40px;height:40px;border-radius:var(--r-md);display:grid;place-items:center;font-family:var(--ff-d);font-weight:600;font-size:18px;color:var(--hue);background:#fff;border:1px solid color-mix(in srgb,var(--hue) 22%,var(--line));box-shadow:0 8px 18px -8px rgba(33,28,20,.4)}
+.card:hover .card-vis .card-icon{border-color:color-mix(in srgb,var(--hue) 42%,var(--line))}
+.card::before{z-index:7}
+/* scene engine */
+.scene{position:absolute;inset:0;color:var(--text)}
+.doc{position:absolute;background:#fff;border:1px solid color-mix(in srgb,var(--hue) 16%,var(--line));border-radius:8px;box-shadow:0 12px 26px -14px rgba(33,28,20,.4)}
+.car{display:inline-block;width:1.5px;height:1em;background:var(--hue);margin-left:1px;vertical-align:-1px;animation:cb .5s steps(1) infinite}
+@keyframes cb{50%{opacity:0}}
+.bar{display:block;height:2.6px;border-radius:2px;background:color-mix(in srgb,var(--hue) 12%,#d8d0c0);width:0;transition:width .3s ease}
+.bar.in{width:var(--w,100%)}
+.fade{opacity:0;transform:translateY(5px);transition:opacity .32s ease,transform .32s ease}
+.fade.in{opacity:1;transform:none}
+.kick{font-family:var(--ff-b);font-weight:700;font-size:6.5px;letter-spacing:1.6px;color:var(--hue)}
+.sc-article .doc{left:20px;right:20px;top:16px;bottom:16px;padding:12px 14px;display:flex;flex-direction:column}
+.sc-article .head{font-family:var(--ff-d);font-weight:600;font-size:13px;line-height:1.16;color:var(--text);margin:4px 0 0;min-height:1.16em}
+.sc-article .byl{font-family:var(--ff-d);font-style:italic;font-size:7.5px;color:var(--ink-soft);margin-top:4px}
+.sc-article .cols{display:flex;gap:11px;margin-top:9px}
+.sc-article .col{flex:1;display:flex;flex-direction:column;gap:5.4px}
+.sc-blog .doc{left:30px;right:30px;top:14px;bottom:14px;padding:13px 16px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.sc-blog .head{font-family:var(--ff-d);font-weight:600;font-size:15px;line-height:1.18;margin-top:5px;min-height:1.18em}
+.sc-blog .sub{font-family:var(--ff-d);font-style:italic;font-size:8px;color:var(--ink-soft);margin-top:5px}
+.sc-blog .dot{width:3px;height:3px;border-radius:50%;background:var(--hue);margin:7px 0}
+.sc-blog .col{display:flex;flex-direction:column;gap:5.4px;align-items:center;width:62%}
+.sc-social .doc{left:50%;transform:translateX(-50%);width:150px;top:12px;bottom:12px;right:auto;padding:0;overflow:hidden;display:flex;flex-direction:column}
+.sc-social .img{height:64px;background:linear-gradient(135deg,color-mix(in srgb,var(--hue) 35%,#fff),color-mix(in srgb,var(--hue) 88%,#140a22));position:relative;overflow:hidden;flex:none}
+.sc-social .img::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 18px,rgba(255,255,255,.16) 18px 20px)}
+.sc-social .body{padding:8px 11px;display:flex;flex-direction:column;gap:5px}
+.sc-social .hrow{display:flex;align-items:center;gap:6px}
+.sc-social .av{width:13px;height:13px;border-radius:50%;background:var(--hue);flex:none}
+.sc-social .hname{font-weight:700;font-size:7.5px;color:var(--text)}
+.sc-social .hsub{font-size:6.5px;color:var(--ink-soft)}
+.sc-social .cap{font-weight:600;font-size:8px;color:#46413a;min-height:1em}
+.sc-social .tags{display:flex;gap:5px;margin-top:1px}
+.sc-social .tag{font-weight:700;font-size:6.5px;color:var(--hue);background:color-mix(in srgb,var(--hue) 12%,#fff);padding:2.5px 6px;border-radius:99px}
+.sc-email .doc{left:46px;right:46px;top:14px;bottom:14px;padding:0;overflow:hidden;display:flex;flex-direction:column}
+.sc-email .mast{background:color-mix(in srgb,var(--hue) 86%,#140a22);color:#fff;font-weight:700;font-size:7.5px;letter-spacing:2px;padding:8px 16px;flex:none}
+.sc-email .ebody{padding:11px 16px;display:flex;flex-direction:column;gap:6px}
+.sc-email .etitle{font-family:var(--ff-d);font-weight:600;font-size:13px;color:var(--text);min-height:1em}
+.sc-email .btn{align-self:flex-start;background:var(--hue);color:#fff;font-weight:700;font-size:7px;padding:5px 10px;border-radius:8px;margin-top:2px}
+.sc-book .cov{position:absolute;left:50%;transform:translateX(-50%);width:112px;top:14px;bottom:14px;border-radius:7px;background:linear-gradient(180deg,#27306A 0%,#6A4E94 42%,#C56A33 74%,#EBA85A 100%);box-shadow:0 14px 30px -12px rgba(33,28,20,.5);display:flex;flex-direction:column;align-items:center;text-align:center;padding:13px 10px 12px;overflow:hidden}
+.sc-book .cov::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:3px;border-radius:2px;background:rgba(255,255,255,.22);z-index:3}
+.sc-book .frame{position:absolute;inset:11px;border:1px solid rgba(255,255,255,.45);border-radius:3px;z-index:3}
+.sc-book .sun{position:absolute;top:26px;right:17px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 42% 38%,#FFEFD0,#F2B65E);box-shadow:0 0 15px rgba(245,190,100,.75);z-index:1}
+.sc-book .mts{position:absolute;left:0;right:0;bottom:0;height:46px;background:#1b2140;clip-path:polygon(0 100%,0 60%,16% 34%,32% 56%,50% 22%,68% 52%,84% 32%,100% 58%,100% 100%);z-index:1}
+.sc-book .bnovel{font-weight:700;font-size:6px;letter-spacing:2px;color:rgba(255,255,255,.85);margin-top:2px;position:relative;z-index:2}
+.sc-book .btitle{font-family:var(--ff-d);font-weight:600;font-size:16px;line-height:1.12;color:#fff;margin-top:15px;position:relative;z-index:2;min-height:1.12em;text-shadow:0 1px 4px rgba(0,0,0,.38)}
+.sc-book .bauth{font-family:var(--ff-d);font-style:italic;font-size:7.5px;color:rgba(255,255,255,.9);margin-top:auto;margin-bottom:1px;position:relative;z-index:2;text-shadow:0 1px 3px rgba(0,0,0,.42)}
+.sc-script .doc{left:40px;right:40px;top:14px;bottom:14px;padding:11px 16px;font-family:var(--ff-m);font-size:8.4px;line-height:1.5;color:#4a443b}
+.sc-script .sh{font-weight:700;color:#332f28;margin-top:5px}
+.sc-script .ac{color:var(--ink-soft)}
+.sc-script .ch{text-align:center;font-weight:700;color:#332f28;margin-top:5px}
+.sc-script .dl{text-align:center;color:#5a554d}
+.sc-script .fo{text-align:right;color:#332f28;margin-top:5px}
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-icon{width:52px;height:52px;border-radius:var(--r-md);display:grid;place-items:center;font-family:var(--ff-d);font-weight:600;font-size:21px;color:var(--hue);background:color-mix(in srgb,var(--hue) 11%,var(--panel-2));border:1px solid color-mix(in srgb,var(--hue) 22%,var(--line))}
+.card-stop{font-family:var(--ff-m);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--hue);display:flex;align-items:center;gap:8px}
+.card-stop::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--hue);box-shadow:0 0 0 4px color-mix(in srgb,var(--hue) 15%,transparent)}
+.card h3{font-family:var(--ff-d);font-weight:600;font-size:24px;letter-spacing:-.01em}
+.card-tag{font-family:var(--ff-m);font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:6px 0 14px}
+.card p{font-size:14.5px;color:var(--ink-soft);line-height:1.62;margin-bottom:18px}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.card li{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;font-weight:500;color:var(--text)}
+.card li svg{flex:none;width:15px;height:15px;margin-top:2.5px}
+.card li svg path{stroke:var(--hue)}
+.card-cta{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--hue);padding-top:16px;border-top:1px solid var(--line-soft)}
+.card-cta .arr{transition:transform .2s ease}
+.card:hover .card-cta .arr{transform:translateX(5px)}
+a.card{cursor:pointer}
+a.card:focus-visible{outline:2px solid var(--hue);outline-offset:3px}
+
+/* ---------- Workflow ---------- */
+.flow{padding:100px 0}
+.flow-head{text-align:center;max-width:580px;margin:0 auto}
+.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:54px;position:relative}
+.flow-grid::before{content:"";position:absolute;top:28px;left:9%;right:9%;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0,var(--line) 7px,transparent 7px,transparent 14px)}
+.step{position:relative;padding:0 22px;text-align:center}
+.step-num{width:56px;height:56px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line);font-family:var(--ff-d);font-weight:500;font-size:22px;color:var(--ink);position:relative;z-index:1;transition:border-color .2s,box-shadow .2s}
+.step:hover .step-num{border-color:var(--ink);box-shadow:0 0 0 4px rgba(75,67,196,.08)}
+.step h4{font-family:var(--ff-d);font-weight:600;font-size:20px;margin-bottom:9px;letter-spacing:-.01em}
+.step p{font-size:13.5px;color:var(--ink-soft);line-height:1.62}
+@media(max-width:840px){.flow-grid{grid-template-columns:repeat(2,1fr);gap:40px 0}.flow-grid::before{display:none}}
+
+/* ---------- Benefits ---------- */
+.benefits{background:var(--panel-2);padding:92px 0;border-top:1px solid var(--line)}
+.ben-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:46px 40px;margin-top:50px}
+@media(max-width:860px){.ben-grid{grid-template-columns:1fr;gap:34px}}
+.ben{display:flex;flex-direction:column;gap:11px}
+.ben-n{font-family:var(--ff-m);font-size:11px;font-weight:600;letter-spacing:.2em;color:var(--clay)}
+.ben h4{font-family:var(--ff-d);font-weight:600;font-size:21px;letter-spacing:-.01em;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.ben p{font-size:14.5px;color:var(--ink-soft);line-height:1.64}
+
+/* ---------- Exports ---------- */
+.exports{background:#1C1810;color:#F1ECE1;padding:78px 0;position:relative;overflow:hidden}
+.exports::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(680px 320px at 6% 120%,rgba(75,67,196,.26),transparent 62%),
+  radial-gradient(680px 320px at 94% -20%,rgba(182,83,52,.20),transparent 60%)}
+.exports-layout{position:relative;display:flex;align-items:flex-start;gap:60px;flex-wrap:wrap}
+.exports-left{flex:1 1 380px;min-width:280px}
+.exports-right{flex:1 1 380px;min-width:280px}
+.exports .kicker{color:#D98E72;margin-bottom:16px;display:block}
+.exports h2{font-family:var(--ff-d);font-weight:500;font-size:clamp(28px,3.2vw,38px);max-width:440px;line-height:1.16;letter-spacing:-.01em}
+.exports h2 em{font-style:italic;color:#B7B1F0}
+.exports p{color:#A89E8C;font-size:15px;margin-top:12px;max-width:430px;line-height:1.6}
+.chips{display:flex;gap:11px;flex-wrap:wrap;max-width:470px;margin-top:28px}
+.chip{font-family:var(--ff-m);font-size:12px;font-weight:500;letter-spacing:.04em;padding:11px 17px;border-radius:999px;border:1px solid rgba(241,236,225,.16);background:rgba(241,236,225,.05);color:#E7E0D1}
+.chip b{color:#fff;font-weight:600}
+
+/* ---------- CTA strip ---------- */
+.cta{padding:96px 0;text-align:center}
+.cta h2{font-family:var(--ff-d);font-weight:500;font-size:clamp(32px,4.4vw,52px);letter-spacing:-.02em;line-height:1.06;max-width:680px;margin:0 auto}
+.cta h2 em{font-style:italic;color:var(--ink)}
+.cta p{font-size:16px;color:var(--ink-soft);margin:20px auto 34px;max-width:480px}
+.cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- Feedback ---------- */
+.feedback-section{padding:64px 0 56px;background:var(--paper)}
+/* Feedback embedded in dark exports section (class sits on .feedback-inner itself) */
+.exports-right{padding-top:4px}
+.feedback-inner.exports-feedback{max-width:100%;margin:0;text-align:left;padding:0}
+.exports-right .feedback-eyebrow{color:#D98E72;background:rgba(217,142,114,.12)}
+.exports-right .feedback-title{color:#F1ECE1}
+.exports-right .feedback-sub{color:#A89E8C}
+.exports-right .feedback-field label{color:#C8C0B4}
+.exports-right .feedback-field input,
+.exports-right .feedback-field textarea,
+.exports-right .feedback-field select{background:rgba(255,255,255,.06);border-color:rgba(241,236,225,.16);color:#F1ECE1}
+.exports-right .feedback-field input::placeholder,
+.exports-right .feedback-field textarea::placeholder{color:rgba(241,236,225,.35)}
+.exports-right .feedback-field input:focus,
+.exports-right .feedback-field textarea:focus,
+.exports-right .feedback-field select:focus{border-color:#D98E72;box-shadow:0 0 0 3px rgba(217,142,114,.15)}
+.exports-right .feedback-field select option{background:#1C1810;color:#F1ECE1}
+.exports-right .feedback-star{color:rgba(241,236,225,.25)}
+.exports-right .feedback-star.lit{color:#F5A623}
+.exports-right .feedback-stars:hover .feedback-star{color:#F5A623}
+.exports-right .feedback-stars .feedback-star:hover~.feedback-star{color:rgba(241,236,225,.25)}
+.exports-right .feedback-success-msg{color:#A89E8C}
+.feedback-inner{max-width:560px;margin:0 auto;text-align:center;padding:0 24px}
+.feedback-eyebrow{display:inline-block;font-family:var(--ff-m);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);padding:4px 14px;border-radius:100px;margin-bottom:16px}
+.feedback-title{font-family:var(--ff-d);font-size:clamp(22px,4vw,30px);font-weight:700;color:var(--ink);margin:0 0 8px;line-height:1.2}
+.feedback-sub{font-size:14px;color:var(--ink-soft);margin:0 0 32px;line-height:1.6}
+.feedback-form{display:flex;flex-direction:column;gap:12px;text-align:left}
+.feedback-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feedback-field{display:flex;flex-direction:column;gap:5px}
+.feedback-field label{font-size:12px;font-weight:600;color:var(--ink-soft);letter-spacing:.02em}
+.feedback-field input,.feedback-field textarea,.feedback-field select{width:100%;padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;font-family:var(--ff-s);font-size:13.5px;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s;outline:none;box-sizing:border-box;resize:none}
+.feedback-field input:focus,.feedback-field textarea:focus,.feedback-field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.feedback-field textarea{min-height:110px;line-height:1.6}
+.feedback-stars{display:flex;gap:6px;flex-direction:row}
+.feedback-star{font-size:22px;cursor:pointer;color:#D5CEC5;transition:color .1s,transform .1s;line-height:1;user-select:none}
+.feedback-star.lit{color:#F5A623}
+.feedback-star:hover,.feedback-star:hover~.feedback-star{color:#F5A623}
+.feedback-stars:hover .feedback-star{color:#F5A623}
+.feedback-stars .feedback-star:hover~.feedback-star{color:#D5CEC5}
+.feedback-submit{align-self:flex-start;padding:11px 28px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:var(--ff-s);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s,transform .15s;letter-spacing:.01em}
+.feedback-submit:hover{background:color-mix(in srgb,var(--accent) 85%,#000);transform:translateY(-1px)}
+.feedback-success{display:none;text-align:center;padding:28px 0}
+.feedback-success-icon{font-size:36px;margin-bottom:10px}
+.feedback-success-msg{font-size:15px;color:var(--ink-soft);line-height:1.6}
+
+/* ---------- Footer ---------- */
+footer{border-top:1px solid var(--line)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:32px 0;border-top:1px solid var(--line)}
+.foot-brand{display:flex;align-items:center;gap:10px;font-family:var(--ff-d);font-weight:600;font-size:16px}
+.foot-brand img{height:24px;width:auto}
+.foot-meta{font-family:var(--ff-m);font-size:11px;letter-spacing:.04em;color:var(--faint)}
+.foot-links{display:flex;gap:26px;font-size:13.5px;font-weight:500;color:var(--ink-soft)}
+.foot-links a:hover{color:var(--ink)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+  .ink-stroke path{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="StreamInk Studio home">
+      <img class="brand-mark" src="/images/streamink-mark.png" alt="">
+      <span class="brand-name">StreamInk<small>Studio</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#engines">Engines</a>
+      <a href="#workflow">How it works</a>
+      <a href="#benefits">Why StreamInk</a>
+      <a href="#exports">Exports</a>
+      <a href="/pricing">Pricing</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-ink" href="/login" style="padding:10px 22px;font-size:14px">Log in</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-rule" aria-hidden="true"></div>
+  <div class="wrap hero-in">
+    <span class="kicker">AI Content &amp; Writing Platform</span>
+    <h1>Write everything.<br>Publish <span class="ink-word">anywhere.<svg class="ink-stroke" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true"><path d="M8 26 C 120 8, 240 36, 360 20 S 560 14, 592 24"/></svg></span></h1>
+    <p class="hero-sub">Six purpose-built engines for one creative pipeline — from research-driven articles and full-length books to scroll-stopping social posts. Describe it once; StreamInk drafts, designs, and exports it.</p>
+    <div class="hero-actions">
+      <a class="btn btn-ink btn-lg" href="/dashboard">Start creating — it's free</a>
+      <a class="btn btn-ghost btn-lg" href="#workflow">See how it works</a>
+    </div>
+    <p class="hero-meta">One workspace &nbsp;·&nbsp; <b>6 engines</b> &nbsp;·&nbsp; <b>12+</b> genres &amp; script formats &nbsp;·&nbsp; <b>PDF, HTML &amp; PNG</b> export</p>
+  </div>
+</section>
+
+<!-- ============ ENGINES ============ -->
+<section class="engines" id="engines">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="kicker">The Studio</p>
+        <h2 class="sec-title">Six engines, one <em>ink spectrum</em></h2>
+      </div>
+      <p class="sec-note">Every engine sits at a point on the StreamInk spectrum — from long-form depth at one end to screen-ready storytelling at the other.</p>
+    </div>
+    <div class="spectrum-legend">
+      <span>Long-form</span>
+      <span class="dots"><i style="--d:#2E8EAC"></i><i style="--d:#3E6FB0"></i><i style="--d:#4B43C4"></i><i style="--d:#6A45BE"></i><i style="--d:#7B41C9"></i><i style="--d:#9A3F72"></i></span>
+      <span>Story-form</span>
+    </div>
+
+    <div class="grid">
+
+      <a class="card" style="--hue:#2E8EAC" href="/article-templates">
+        <div class="card-vis" data-scene>
+          <div class="scene sc-article">
+            <div class="doc">
+              <div class="kick fade" data-seq="1">FEATURE</div>
+              <div class="head" data-seq="2" data-text="The Quiet Revolution in City Farming"></div>
+              <div class="byl fade" data-seq="3">By A. Mercado · Field Notes</div>
+              <div class="cols">
+                <div class="col"><span class="bar" data-seq="4" style="--w:100%"></span><span class="bar" data-seq="5" style="--w:92%"></span><span class="bar" data-seq="6" style="--w:100%"></span><span class="bar" data-seq="7" style="--w:74%"></span></div>
+                <div class="col"><span class="bar" data-seq="8" style="--w:88%"></span><span class="bar" data-seq="9" style="--w:100%"></span><span class="bar" data-seq="10" style="--w:80%"></span><span class="bar" data-seq="11" style="--w:60%"></span></div>
+              </div>
+            </div>
+          </div>
+          <span class="card-stop">Stop 01</span>
+          <div class="card-icon">Ar</div>
+        </div>
+        <h3>Article Engine</h3>
+        <p class="card-tag">Editorial · Feature · Report · Opinion</p>
+        <p>Generate research-driven articles across 12 professional layouts — features, reports, op-eds, press releases, interview formats and more.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>12 layouts across 5 categories</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>9 industry filters (Legal, Healthcare, PR &amp; more)</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>SEO-ready · PDF &amp; HTML export</li>
+        </ul>
+        <span class="card-cta">Open Article Engine <span class="arr">→</span></span>
+      </a>
+
+      <a class="card" style="--hue:#3E6FB0" href="/blog-templates">
+        <div class="card-vis" data-scene>
+          <div class="scene sc-blog">
+            <div class="doc">
+              <div class="kick fade" data-seq="1">JOURNAL</div>
+              <div class="head" data-seq="2" data-text="On Doing Less, Better"></div>
+              <div class="sub fade" data-seq="3">forty unhurried minutes a morning</div>
+              <div class="dot fade" data-seq="4"></div>
+              <div class="col"><span class="bar" data-seq="5" style="--w:100%"></span><span class="bar" data-seq="6" style="--w:86%"></span><span class="bar" data-seq="7" style="--w:94%"></span><span class="bar" data-seq="8" style="--w:64%"></span></div>
+            </div>
+          </div>
+          <span class="card-stop">Stop 02</span>
+          <div class="card-icon">Bl</div>
+        </div>
+        <h3>Blog Engine</h3>
+        <p class="card-tag">Editorial · Magazine · Minimal · Special</p>
+        <p>Pick from 12 templates — Editorial, Magazine, Minimal and Special formats — then customise with a full drag-and-drop design editor.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>12 templates · 10 audience niches</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Drag-and-drop images, backgrounds &amp; fonts</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>PNG, PDF, HTML &amp; DOCX export</li>
+        </ul>
+        <span class="card-cta">Open Blog Engine <span class="arr">→</span></span>
+      </a>
+
+      <a class="card" style="--hue:#4B43C4" href="/social-editor">
+        <div class="card-vis" data-scene>
+          <div class="scene sc-social">
+            <div class="doc">
+              <div class="img fade" data-seq="1"></div>
+              <div class="body">
+                <div class="hrow fade" data-seq="2"><span class="av"></span><div><div class="hname">peakform.fit</div><div class="hsub">Original · 2h</div></div></div>
+                <div class="cap" data-seq="3" data-text="Week 6 — stronger every day."></div>
+                <div class="tags"><span class="tag fade" data-seq="4">#fitness</span><span class="tag fade" data-seq="5">#training</span><span class="tag fade" data-seq="6">#strong</span></div>
+              </div>
+            </div>
+          </div>
+          <span class="card-stop">Stop 03</span>
+          <div class="card-icon">So</div>
+        </div>
+        <h3>Social Posts</h3>
+        <p class="card-tag">Instagram · Twitter/X · LinkedIn · Facebook</p>
+        <p>Generate AI copy and branded visuals sized perfectly for each platform — 3 headline variants per generation, auto hashtags included.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>4 platforms · correct canvas per format</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>3 headline variants + auto hashtags</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Publish direct or export as PNG</li>
+        </ul>
+        <span class="card-cta">Open Social Creator <span class="arr">→</span></span>
+      </a>
+
+      <a class="card" style="--hue:#6A45BE" href="/email-editor">
+        <div class="card-vis" data-scene>
+          <div class="scene sc-email">
+            <div class="doc">
+              <div class="mast fade" data-seq="1">BRIGHT SMILE DENTAL</div>
+              <div class="ebody">
+                <div class="etitle" data-seq="2" data-text="Time for your checkup"></div>
+                <span class="bar" data-seq="3" style="--w:100%"></span><span class="bar" data-seq="4" style="--w:92%"></span><span class="bar" data-seq="5" style="--w:80%"></span>
+                <div class="btn fade" data-seq="6">Book a visit</div>
+              </div>
+            </div>
+          </div>
+          <span class="card-stop">Stop 04</span>
+          <div class="card-icon">Em</div>
+        </div>
+        <h3>Email Newsletter</h3>
+        <p class="card-tag">Mailchimp · ConvertKit · ESP-ready</p>
+        <p>Drag-and-drop section builder with 4 canvas widths (Mobile 375 → Full 900). AI writes the copy, you assemble the layout.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Section builder · starter templates included</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Inline CSS · safe across all email clients</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>One-click HTML copy or full file export</li>
+        </ul>
+        <span class="card-cta">Open Email Editor <span class="arr">→</span></span>
+      </a>
+
+      <a class="card" style="--hue:#7B41C9" href="/book-writer?view=editor">
+        <div class="card-vis" data-scene>
+          <div class="scene sc-book">
+            <div class="cov">
+              <span class="sun fade" data-seq="1"></span>
+              <span class="mts"></span>
+              <div class="frame"></div>
+              <div class="bnovel fade" data-seq="2">AN ADVENTURE</div>
+              <div class="btitle" data-seq="3" data-text="Beyond the Ridge"></div>
+              <div class="bauth fade" data-seq="4">R. Calloway</div>
+            </div>
+          </div>
+          <span class="card-stop">Stop 05</span>
+          <div class="card-icon">Bk</div>
+        </div>
+        <h3>AI Book Writer</h3>
+        <p class="card-tag">Novel · Sci-Fi · Memoir · Self-Help · Children's</p>
+        <p>Set your genre, style and chapter length — AI writes the full book chapter by chapter. Edit in a page-accurate canvas and export with a custom cover.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>14 genres · 8 writing styles · 4 chapter lengths</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Page canvas editor + AI assistant panel</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>AI cover art · 5 fonts · PDF &amp; DOCX export</li>
+        </ul>
+        <span class="card-cta">Open Book Writer <span class="arr">→</span></span>
+      </a>
+
+      <a class="card" style="--hue:#9A3F72" href="/script-writer?view=editor">
+        <div class="card-vis" data-scene>
+          <div class="scene sc-script">
+            <div class="doc">
+              <div data-seq="1" data-text="FADE IN:"></div>
+              <div class="sh" data-seq="2" data-text="INT. DINER — NIGHT"></div>
+              <div class="ac" data-seq="3" data-text="Rain streaks the window. Maya stares at a cold cup of coffee."></div>
+              <div class="ch" data-seq="4" data-text="MAYA"></div>
+              <div class="dl" data-seq="5" data-text="You were never going to stay."></div>
+              <div class="fo" data-seq="6" data-text="FADE OUT."></div>
+            </div>
+          </div>
+          <span class="card-stop">Stop 06</span>
+          <div class="card-icon">Sc</div>
+        </div>
+        <h3>AI Script Writer</h3>
+        <p class="card-tag">Film · TV · YouTube · Podcast · Stage · Ads</p>
+        <p>12 script formats from Feature Films to 30-second commercials. Industry-standard formatting with a live screenplay canvas and AI Scene Director.</p>
+        <ul>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>12 script types · 14 genres · 10 tones</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Live screenplay canvas · AI Scene Director</li>
+          <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Industry PDF · US Letter, A4 &amp; Legal sizes</li>
+        </ul>
+        <span class="card-cta">Open Script Writer <span class="arr">→</span></span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORKFLOW ============ -->
+<section class="flow" id="workflow">
+  <div class="wrap">
+    <div class="flow-head">
+      <p class="kicker ink">How it works</p>
+      <h2 class="sec-title">From idea to export in four strokes</h2>
+    </div>
+    <div class="flow-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Choose an engine</h4>
+        <p>Pick the format you're creating — article, blog, social, email, book, or script.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Describe your idea</h4>
+        <p>Give a topic, tone, and audience. AI drafts a complete, structured first version.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Refine &amp; design</h4>
+        <p>Edit with the AI assistant, adjust layouts, fonts, images, and brand visuals.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Export &amp; publish</h4>
+        <p>Download print-ready PDF, paste email-safe HTML, or save PNG for social.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENEFITS ============ -->
+<section class="benefits" id="benefits">
+  <div class="wrap">
+    <div class="flow-head" style="text-align:left;max-width:560px;margin:0">
+      <p class="kicker">Why StreamInk</p>
+      <h2 class="sec-title">One desk for every kind of writing you do</h2>
+    </div>
+    <div class="ben-grid">
+      <div class="ben">
+        <span class="ben-n">01</span>
+        <h4>One workspace, six crafts</h4>
+        <p>Stop juggling a doc tool, a design app, an email builder, and a screenwriting suite. Every format lives at the same desk, with one consistent editor and one library.</p>
+      </div>
+      <div class="ben">
+        <span class="ben-n">02</span>
+        <h4>A real draft, not a blank page</h4>
+        <p>Each engine is tuned for its medium, so the first version already has the right structure, hierarchy, and tone — you start editing instead of starting over.</p>
+      </div>
+      <div class="ben">
+        <span class="ben-n">03</span>
+        <h4>Design without leaving the words</h4>
+        <p>Layouts, fonts, covers, and brand visuals are built into the editor. Shape how a piece looks the moment it reads right — no export-and-rebuild round trip.</p>
+      </div>
+      <div class="ben">
+        <span class="ben-n">04</span>
+        <h4>Export anywhere, no lock-in</h4>
+        <p>Print-ready PDF, SEO-clean HTML, email-safe inline CSS, or social-ready PNG. Everything leaves the studio in the format your channel actually expects.</p>
+      </div>
+      <div class="ben">
+        <span class="ben-n">05</span>
+        <h4>An assistant that stays in voice</h4>
+        <p>Refine line by line with an AI editor that holds your tone and intent — expanding, tightening, or rephrasing without flattening what makes the piece yours.</p>
+      </div>
+      <div class="ben">
+        <span class="ben-n">06</span>
+        <h4>From sentence to series</h4>
+        <p>The same desk scales from a single social caption to a twelve-chapter book or a feature-length script — your work grows without changing tools.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXPORTS ============ -->
+<section class="exports" id="exports">
+  <div class="wrap exports-layout">
+    <!-- Left: heading + chips -->
+    <div class="exports-left">
+      <span class="kicker">Exports</span>
+      <h2>Every format your content needs to <em>leave the studio</em></h2>
+      <p>No lock-in. Everything you create exports cleanly into the tools and platforms you already publish with.</p>
+      <div class="chips">
+        <span class="chip"><b>PDF</b> · print-ready</span>
+        <span class="chip"><b>HTML</b> · SEO-ready</span>
+        <span class="chip"><b>PNG</b> · social visuals</span>
+        <span class="chip"><b>Email</b> · inline CSS</span>
+        <span class="chip"><b>Screenplay</b> · industry PDF</span>
+        <span class="chip"><b>Book</b> · PDF with cover</span>
+      </div>
+    </div>
+    <!-- Right: feedback form -->
+    <div class="exports-right">
+      <div class="feedback-inner exports-feedback">
+      <div class="feedback-eyebrow">Share your thoughts</div>
+      <h2 class="feedback-title">How's StreamInk working for you?</h2>
+      <p class="feedback-sub">We'd love to hear what you think — your feedback shapes what we build next.</p>
+
+      <form class="feedback-form" id="feedbackForm" onsubmit="submitFeedback(event)">
+        <div class="feedback-row">
+          <div class="feedback-field">
+            <label for="fbName">Your name</label>
+            <input type="text" id="fbName" placeholder="Jane Smith" autocomplete="name">
+          </div>
+          <div class="feedback-field">
+            <label for="fbEmail">Email <span style="font-weight:400;color:#bbb">(optional)</span></label>
+            <input type="email" id="fbEmail" placeholder="jane@example.com" autocomplete="email">
+          </div>
+        </div>
+        <div class="feedback-field">
+          <label for="fbType">What are you using StreamInk for?</label>
+          <select id="fbType">
+            <option value="">Select one…</option>
+            <option>Email newsletters</option>
+            <option>Blog / article writing</option>
+            <option>Social media content</option>
+            <option>Multiple tools</option>
+            <option>Just exploring</option>
+          </select>
+        </div>
+        <div class="feedback-field">
+          <label>Overall rating</label>
+          <div class="feedback-stars" id="fbStars">
+            <span class="feedback-star" data-v="1" onclick="setRating(1)">★</span>
+            <span class="feedback-star" data-v="2" onclick="setRating(2)">★</span>
+            <span class="feedback-star" data-v="3" onclick="setRating(3)">★</span>
+            <span class="feedback-star" data-v="4" onclick="setRating(4)">★</span>
+            <span class="feedback-star" data-v="5" onclick="setRating(5)">★</span>
+          </div>
+        </div>
+        <div class="feedback-field">
+          <label for="fbMsg">Your message</label>
+          <textarea id="fbMsg" placeholder="Tell us what's working well, what could be better, or anything else on your mind…" required></textarea>
+        </div>
+        <button type="submit" class="feedback-submit">Send feedback →</button>
+      </form>
+
+      <div class="feedback-success" id="feedbackSuccess">
+        <div class="feedback-success-icon">✦</div>
+        <p class="feedback-success-msg"><strong>Thank you!</strong><br>Your message means a lot to us.<br>We read every single one.</p>
+      </div>
+      </div><!-- /.feedback-inner.exports-feedback -->
+    </div><!-- /.exports-right -->
+  </div><!-- /.wrap.exports-layout -->
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap foot">
+    <span class="foot-brand"><img src="/images/streamink-mark.png" alt="">StreamInk Studio</span>
+    <span class="foot-meta">© 2026 — where every word finds its stream</span>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="#engines">Engines</a>
+      <a href="#workflow">Workflow</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/dashboard">Open Studio</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+  function playScene(scene){
+    var steps=[].slice.call(scene.querySelectorAll('[data-seq]')).sort(function(a,b){return a.dataset.seq-b.dataset.seq;});
+    var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    steps.forEach(function(el){
+      if(el.dataset.text!=null) el.textContent='';
+      el.classList.remove('in');
+      if(el.classList.contains('bar')) el.style.width='0';
+    });
+    if(reduce){ steps.forEach(function(el){ if(el.dataset.text!=null)el.textContent=el.dataset.text; el.classList.add('in'); }); return; }
+    var i=0;
+    (function next(){
+      if(i>=steps.length) return;
+      var el=steps[i++];
+      if(el.dataset.text!=null){
+        el.classList.add('in');
+        var full=el.dataset.text, n=0;
+        var car=document.createElement('i'); car.className='car';
+        el.appendChild(car);
+        (function tick(){
+          el.textContent=full.slice(0,++n); el.appendChild(car);
+          if(n<full.length){ setTimeout(tick, 13+Math.random()*30); }
+          else { setTimeout(function(){ if(el.contains(car)) el.removeChild(car); }, 360); setTimeout(next, 150); }
+        })();
+      } else {
+        el.classList.add('in');
+        setTimeout(next, el.classList.contains('bar')?42:80);
+      }
+    })();
+  }
+  var scenes=[].slice.call(document.querySelectorAll('[data-scene]'));
+  // pre-clear so nothing flashes before play
+  scenes.forEach(function(s){ s.querySelectorAll('[data-seq]').forEach(function(el){ if(el.dataset.text!=null)el.textContent=''; }); });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ var el=e.target; setTimeout(function(){ playScene(el); }, (scenes.indexOf(el)%3)*170); io.unobserve(el); } });
+    },{threshold:.4});
+    scenes.forEach(function(s){ io.observe(s); });
+  } else { scenes.forEach(playScene); }
+  scenes.forEach(function(s){
+    var card=s.closest('.card');
+    if(card) card.addEventListener('mouseenter',function(){ playScene(s); });
+  });
+})();
+
+// ── Feedback form ──
+var _fbRating = 0;
+window.setRating = function(v) {
+  _fbRating = v;
+  document.querySelectorAll('.feedback-star').forEach(function(s) {
+    s.classList.toggle('lit', parseInt(s.dataset.v) <= v);
+  });
+};
+window.submitFeedback = async function(e) {
+  e.preventDefault();
+  var form = document.getElementById('feedbackForm');
+  var btn  = form.querySelector('.feedback-submit');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  var name    = form.querySelector('#fbName')  ? form.querySelector('#fbName').value  : '';
+  var email   = form.querySelector('#fbEmail') ? form.querySelector('#fbEmail').value : '';
+  var use     = form.querySelector('#fbType')  ? form.querySelector('#fbType').value  : '';
+  var message = form.querySelector('#fbMsg')   ? form.querySelector('#fbMsg').value   : '';
+
+  try {
+    await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, use: use, rating: _fbRating, message: message })
+    });
+  } catch(_) {}
+
+  form.style.display = 'none';
+  document.getElementById('feedbackSuccess').style.display = 'block';
+};
+</script>
+
+</body>
+</html>

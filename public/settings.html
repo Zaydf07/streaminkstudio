@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — StreamInk Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+  --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+/* ── SIDEBAR ── */
+.st-nav{width:240px;min-width:240px;background:var(--panel);border-right:1px solid var(--line-soft);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+.st-nav-logo{padding:22px 20px 18px;border-bottom:1px solid var(--line-soft)}
+.st-nav-logo img{height:24px;width:auto;display:block;margin-bottom:9px}
+.st-nav-logo-tag{font-size:11px;color:var(--faint);font-family:var(--ff-m);letter-spacing:.1em;text-transform:uppercase}
+
+.st-nav-section{padding:20px 16px 8px;font-size:10.5px;font-weight:700;color:var(--faint);letter-spacing:.18em;text-transform:uppercase;font-family:var(--ff-m)}
+.st-nav-link{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:var(--r-sm);margin:2px 8px;text-decoration:none;font-size:13.5px;font-weight:500;color:var(--muted);transition:.15s;cursor:pointer;border:none;background:none;width:calc(100% - 16px);text-align:left}
+.st-nav-link:hover{background:var(--field);color:var(--text)}
+.st-nav-link.active{background:rgba(75,67,196,.08);color:var(--ink);font-weight:600}
+.st-nav-link .ic{width:16px;height:16px;flex:none;opacity:.75}
+.st-nav-bottom{margin-top:auto;padding:16px;border-top:1px solid var(--line-soft)}
+.st-nav-bottom a{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-sm);font-size:12.5px;color:var(--muted);text-decoration:none}
+.st-nav-bottom a:hover{background:var(--field);color:var(--text)}
+
+/* ── MAIN ── */
+.st-main{flex:1;overflow-y:auto;padding:42px 48px}
+.st-top{margin-bottom:30px}
+.st-top h1{font-family:var(--ff-d);font-weight:500;font-size:28px;letter-spacing:-.015em;margin-bottom:5px}
+.st-top p{font-size:13.5px;color:var(--muted)}
+
+/* ── SECTION ── */
+.st-section{display:none}
+.st-section.active{display:block}
+
+/* ── CARD ── */
+.st-card{background:var(--panel);border-radius:var(--r-lg);padding:26px;border:1px solid var(--line);margin-bottom:18px;max-width:760px}
+.st-card-title{font-family:var(--ff-d);font-weight:600;font-size:16.5px;margin-bottom:5px;display:flex;align-items:center;gap:9px}
+.st-card-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+
+/* ── FORM ── */
+.st-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-family:var(--ff-m);display:block;margin:16px 0 7px}
+.st-label:first-of-type{margin-top:0}
+.st-label small{font-weight:400;color:var(--faint);margin-left:6px;text-transform:none;letter-spacing:0;font-family:var(--ff-b)}
+.st-input,.st-select{width:100%;padding:10px 12px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--field);font-size:13.5px;font-family:inherit;transition:border-color .15s;color:var(--text)}
+.st-input:focus,.st-select:focus{outline:none;border-color:var(--blue)}
+.st-select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),linear-gradient(135deg,var(--faint) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+
+.st-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ── TOGGLE ── */
+.st-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line-soft)}
+.st-toggle-row:last-child{border-bottom:none;padding-bottom:0}
+.st-toggle-info{flex:1;margin-right:16px}
+.st-toggle-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.st-toggle-desc{font-size:12px;color:var(--faint);margin-top:2px}
+.toggle{position:relative;width:42px;height:23px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--line);border-radius:999px;cursor:pointer;transition:.25s}
+.toggle-slider::before{content:'';position:absolute;width:17px;height:17px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked + .toggle-slider{background:var(--ink)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(19px)}
+
+/* ── SAVE BAR ── */
+.st-save-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--panel-2);border-radius:var(--r-md);border:1px solid var(--line);margin-top:4px;max-width:760px}
+.st-save-bar span{font-size:12.5px;color:var(--muted)}
+.st-save-btn{padding:10px 22px;border-radius:999px;border:none;background:var(--grad);color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;transition:.18s;box-shadow:0 6px 16px -6px rgba(91,108,240,.55)}
+.st-save-btn:hover{transform:translateY(-1px)}
+
+/* ── DATA ACTIONS ── */
+.st-data-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.st-stat{background:var(--panel-2);border-radius:var(--r-md);padding:18px;text-align:center;border:1px solid var(--line)}
+.st-stat-val{font-family:var(--ff-d);font-size:30px;font-weight:600;color:var(--text)}
+.st-stat-lbl{font-size:11px;color:var(--faint);margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-family:var(--ff-m)}
+
+.st-action-btn{padding:10px 16px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--panel);font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.18s;margin-right:10px;margin-bottom:10px;color:var(--text)}
+.st-action-btn:hover{border-color:var(--blue);color:var(--ink)}
+.st-action-btn svg{width:14px;height:14px;flex:none}
+.st-action-danger{border-color:rgba(182,83,52,.35);color:var(--clay)}
+.st-action-danger:hover{background:rgba(182,83,52,.06);border-color:var(--clay);color:var(--clay)}
+
+/* ── DANGER ZONE ── */
+.st-danger{background:rgba(182,83,52,.05);border:1px solid rgba(182,83,52,.25);border-radius:var(--r-lg);padding:20px 24px;max-width:760px}
+.st-danger h3{font-family:var(--ff-d);font-size:15px;font-weight:600;color:var(--clay);margin-bottom:4px}
+.st-danger p{font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+
+/* ── TOAST ── */
+.st-toast{position:fixed;bottom:28px;right:28px;background:var(--text);color:#FBF7EF;padding:12px 20px;border-radius:var(--r-md);font-size:13.5px;font-weight:600;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:9999}
+.st-toast.show{opacity:1}
+
+/* ── ABOUT ── */
+.st-about-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.st-about-link{padding:9px 18px;border-radius:999px;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--ink);text-decoration:none;background:var(--field);transition:.18s}
+.st-about-link:hover{background:rgba(75,67,196,.08);border-color:var(--blue)}
+
+.st-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.st-info-box{background:var(--panel-2);padding:14px 16px;border-radius:var(--r-md);border:1px solid var(--line)}
+.st-info-box .lbl{font-size:10.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.14em;margin-bottom:4px;font-family:var(--ff-m)}
+.st-info-box .val{font-family:var(--ff-d);font-size:16px;font-weight:600;color:var(--text)}
+.st-about-text{font-size:13.5px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+
+.st-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st-type-item{padding:12px 16px;border-radius:var(--r-md);border:1px solid var(--line);display:flex;gap:11px;align-items:center}
+.st-type-ic{width:34px;height:34px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--ff-d);font-weight:600;font-size:13px;flex:none}
+.st-type-item .nm{font-size:13px;font-weight:700;color:var(--text)}
+.st-type-item .ds{font-size:11.5px;color:var(--faint);margin-top:1px}
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="st-nav">
+  <div class="st-nav-logo">
+    <img src="/images/streamink-mark.png" alt="StreamInk Studio">
+    <div class="st-nav-logo-tag">Settings</div>
+  </div>
+
+  <div class="st-nav-section">Settings</div>
+  <button class="st-nav-link active" data-section="writing" onclick="showSection('writing', this)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg> Writing defaults</button>
+  <button class="st-nav-link" data-section="export" onclick="showSection('export', this)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Export defaults</button>
+  <button class="st-nav-link" data-section="billing" onclick="showSection('billing', this)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg> Plan &amp; billing</button>
+  <button class="st-nav-link" data-section="data" onclick="showSection('data', this)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 5v14a9 3 0 01-18 0V5"/><path d="M21 12a9 3 0 01-18 0"/></svg> Data &amp; storage</button>
+  <button class="st-nav-link" data-section="about" onclick="showSection('about', this)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> About</button>
+
+  <div class="st-nav-section">Quick links</div>
+  <a href="/brand-kit" class="st-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg> Brand kit</a>
+  <a href="/dashboard" class="st-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg> Dashboard</a>
+
+  <div class="st-nav-bottom">
+    <a href="/dashboard">← Back to dashboard</a>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main class="st-main">
+  <div class="st-top">
+    <h1 id="sectionTitle">Writing defaults</h1>
+    <p id="sectionSub">Pre-fill your preferred settings across all editors.</p>
+  </div>
+
+  <!-- WRITING DEFAULTS -->
+  <div id="section-writing" class="st-section active">
+
+    <div class="st-card">
+      <div class="st-card-title">Writing defaults</div>
+      <div class="st-card-sub">These values are pre-selected when you open any editor. You can always change them per document.</div>
+
+      <div class="st-row">
+        <div>
+          <label class="st-label">Default tone</label>
+          <select id="s-tone" class="st-select">
+            <option value="professional">Professional</option>
+            <option value="friendly">Friendly</option>
+            <option value="persuasive">Persuasive</option>
+            <option value="educational">Educational</option>
+            <option value="conversational">Conversational</option>
+            <option value="authoritative">Authoritative</option>
+            <option value="storytelling">Storytelling</option>
+            <option value="luxury">Luxury</option>
+            <option value="bold">Bold</option>
+          </select>
+        </div>
+        <div>
+          <label class="st-label">Default length</label>
+          <select id="s-length" class="st-select">
+            <option value="short">Short (300–400 words)</option>
+            <option value="medium">Medium (600–800 words)</option>
+            <option value="long">Long (1000–1200 words)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="st-row" style="margin-top:0">
+        <div>
+          <label class="st-label">Default article style</label>
+          <select id="s-style" class="st-select">
+            <option value="editorial">Editorial</option>
+            <option value="journalistic">Journalistic</option>
+            <option value="expert">Expert analysis</option>
+            <option value="professional">Professional</option>
+            <option value="conversational">Conversational</option>
+          </select>
+        </div>
+        <div>
+          <label class="st-label">Default platform <small>(social)</small></label>
+          <select id="s-platform" class="st-select">
+            <option value="instagram">Instagram</option>
+            <option value="twitter">Twitter/X</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="facebook">Facebook</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="st-card">
+      <div class="st-card-title">Editor behaviour</div>
+      <div class="st-card-sub">Control how editors behave when you open them.</div>
+
+      <div class="st-toggle-row">
+        <div class="st-toggle-info">
+          <div class="st-toggle-name">Auto-fill Brand Kit on open</div>
+          <div class="st-toggle-desc">Automatically fill brand name, URL, and tone from your Brand Kit</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="s-autofill" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="st-toggle-row">
+        <div class="st-toggle-info">
+          <div class="st-toggle-name">Show AI Refine on text selection</div>
+          <div class="st-toggle-desc">Display the AI Refine panel when you select text in editors</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="s-refine" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="st-toggle-row">
+        <div class="st-toggle-info">
+          <div class="st-toggle-name">Confirm before overwriting documents</div>
+          <div class="st-toggle-desc">Ask before replacing an existing saved document</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="s-confirm" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="st-save-bar">
+      <span>Changes are saved to your browser</span>
+      <button class="st-save-btn" onclick="saveSettings()">Save writing settings</button>
+    </div>
+
+  </div>
+
+  <!-- EXPORT DEFAULTS -->
+  <div id="section-export" class="st-section">
+
+    <div class="st-card">
+      <div class="st-card-title">Export defaults</div>
+      <div class="st-card-sub">Set the default format and size used when you export documents.</div>
+
+      <div class="st-row">
+        <div>
+          <label class="st-label">Default export format</label>
+          <select id="s-format" class="st-select">
+            <option value="pdf">PDF (recommended)</option>
+            <option value="png">PNG image</option>
+            <option value="html">HTML file</option>
+            <option value="doc">Word document (.doc)</option>
+          </select>
+        </div>
+        <div>
+          <label class="st-label">Default page size <small>(blog/article)</small></label>
+          <select id="s-pagesize" class="st-select">
+            <option value="blog">Blog (700px)</option>
+            <option value="a4">A4</option>
+            <option value="a3">A3</option>
+            <option value="instagram">Instagram square</option>
+            <option value="facebook">Facebook cover</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="st-label">Default PDF quality</label>
+      <select id="s-pdfquality" class="st-select">
+        <option value="2">High (2× scale, recommended)</option>
+        <option value="3">Ultra (3× scale, larger file)</option>
+        <option value="1">Standard (1× scale, smallest file)</option>
+      </select>
+    </div>
+
+    <div class="st-card">
+      <div class="st-card-title">Email export defaults</div>
+      <div class="st-card-sub">Default settings for newsletter exports.</div>
+
+      <div class="st-toggle-row">
+        <div class="st-toggle-info">
+          <div class="st-toggle-name">Include unsubscribe footer</div>
+          <div class="st-toggle-desc">Add an unsubscribe link to the bottom of exported emails</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="s-unsub" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="st-toggle-row">
+        <div class="st-toggle-info">
+          <div class="st-toggle-name">Include "View in browser" link</div>
+          <div class="st-toggle-desc">Add a web version link to email exports</div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="s-viewbrowser" checked><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+
+    <div class="st-save-bar">
+      <span>Changes are saved to your browser</span>
+      <button class="st-save-btn" onclick="saveSettings()">Save export settings</button>
+    </div>
+
+  </div>
+
+  <!-- PLAN & BILLING -->
+  <div id="section-billing" class="st-section">
+    <div class="st-card" id="billing-card">
+      <div class="st-card-title">Current plan</div>
+      <div class="st-card-sub">Your subscription and credit usage for this month.</div>
+
+      <div class="st-data-grid" style="margin-bottom:24px">
+        <div class="st-stat"><div class="st-stat-val" id="bill-plan">—</div><div class="st-stat-lbl">Plan</div></div>
+        <div class="st-stat"><div class="st-stat-val" id="bill-used">—</div><div class="st-stat-lbl">Credits used</div></div>
+        <div class="st-stat"><div class="st-stat-val" id="bill-left">—</div><div class="st-stat-lbl">Credits left</div></div>
+      </div>
+
+      <!-- credit bar -->
+      <div style="margin-bottom:24px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;color:var(--faint);font-family:var(--ff-m)">
+          <span>Monthly usage</span><span id="bill-pct">—</span>
+        </div>
+        <div style="height:8px;background:var(--line);border-radius:999px;overflow:hidden">
+          <div id="bill-bar" style="height:100%;border-radius:999px;background:linear-gradient(90deg,#4B43C4,#7B41C9);transition:width .5s;width:0%"></div>
+        </div>
+        <p style="font-size:12px;color:var(--faint);margin-top:6px" id="bill-reset">Resets on the 1st of next month</p>
+      </div>
+
+      <!-- plan cards -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px" id="plan-cards">
+        <div class="plan-opt" id="plan-free" style="border:2px solid var(--line);border-radius:10px;padding:16px;text-align:center;transition:.18s">
+          <div style="font-family:var(--ff-m);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px">Free</div>
+          <div style="font-size:22px;font-weight:800;color:var(--text);line-height:1">$0</div>
+          <div style="font-size:11px;color:var(--faint);margin:4px 0 12px">100 cr/month</div>
+          <div style="font-size:11.5px;color:var(--muted)">Current</div>
+        </div>
+        <div class="plan-opt" id="plan-pro" style="border:2px solid var(--line);border-radius:10px;padding:16px;text-align:center;transition:.18s;cursor:pointer" onclick="upgradePlan('pro')">
+          <div style="font-family:var(--ff-m);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin-bottom:6px">Pro</div>
+          <div style="font-size:22px;font-weight:800;color:var(--text);line-height:1">$29</div>
+          <div style="font-size:11px;color:var(--faint);margin:4px 0 12px">2,000 cr/month</div>
+          <div style="font-size:12px;font-weight:700;color:var(--ink)">Upgrade →</div>
+        </div>
+        <div class="plan-opt" id="plan-agency" style="border:2px solid var(--line);border-radius:10px;padding:16px;text-align:center;transition:.18s;cursor:pointer" onclick="upgradePlan('agency')">
+          <div style="font-family:var(--ff-m);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--violet,#7B41C9);margin-bottom:6px">Agency</div>
+          <div style="font-size:22px;font-weight:800;color:var(--text);line-height:1">$79</div>
+          <div style="font-size:11px;color:var(--faint);margin:4px 0 12px">Unlimited</div>
+          <div style="font-size:12px;font-weight:700;color:var(--violet,#7B41C9)">Upgrade →</div>
+        </div>
+      </div>
+
+      <a href="/pricing.html" style="font-size:13px;color:var(--ink);font-weight:600;text-decoration:none">Compare all plans →</a>
+    </div>
+
+    <div class="st-card">
+      <div class="st-card-title">Credit usage by engine</div>
+      <div class="st-card-sub">How your credits were spent this month.</div>
+      <div id="bill-engine-chart" style="padding:8px 0">
+        <p style="font-size:13px;color:var(--faint)">Connect Supabase to see usage breakdown.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA & STORAGE -->
+  <div id="section-data" class="st-section">
+
+    <div class="st-card">
+      <div class="st-card-title">Your documents</div>
+      <div class="st-card-sub">Overview of your locally stored content.</div>
+
+      <div class="st-data-grid">
+        <div class="st-stat">
+          <div class="st-stat-val" id="ds-total">—</div>
+          <div class="st-stat-lbl">Total docs</div>
+        </div>
+        <div class="st-stat">
+          <div class="st-stat-val" id="ds-week">—</div>
+          <div class="st-stat-lbl">This week</div>
+        </div>
+        <div class="st-stat">
+          <div class="st-stat-val" id="ds-size">—</div>
+          <div class="st-stat-lbl">Storage used</div>
+        </div>
+      </div>
+
+      <button class="st-action-btn" onclick="exportDocs()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Export all documents (JSON)</button>
+      <button class="st-action-btn" onclick="exportBrandKit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Export Brand Kit (JSON)</button>
+    </div>
+
+    <div class="st-card">
+      <div class="st-card-title">Import</div>
+      <div class="st-card-sub">Restore documents from a previously exported JSON file.</div>
+      <label class="st-action-btn" style="display:inline-flex;cursor:pointer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg> Import documents from JSON
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importDocs(event)">
+      </label>
+    </div>
+
+    <div class="st-danger">
+      <h3>Danger zone</h3>
+      <p>These actions are permanent and cannot be undone. Your documents are stored locally in your browser — once cleared, they cannot be recovered.</p>
+      <button class="st-action-btn st-action-danger" onclick="clearSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg> Reset all settings</button>
+      <button class="st-action-btn st-action-danger" onclick="clearAllDocs()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg> Delete all documents</button>
+    </div>
+
+  </div>
+
+  <!-- ABOUT -->
+  <div id="section-about" class="st-section">
+
+    <div class="st-card">
+      <div class="st-card-title">About StreamInk Studio</div>
+      <div class="st-card-sub">Your all-in-one AI content creation workspace.</div>
+
+      <div class="st-info-grid">
+        <div class="st-info-box">
+          <div class="lbl">Version</div>
+          <div class="val">2.0.0 — Phase 4</div>
+        </div>
+        <div class="st-info-box">
+          <div class="lbl">AI engine</div>
+          <div class="val">Groq LLM</div>
+        </div>
+      </div>
+
+      <div class="st-about-text">
+        StreamInk Studio is a full-stack AI content creation platform. Create articles, blog posts, social media content, and email newsletters — all powered by AI and fully editable.
+      </div>
+
+      <div class="st-about-links">
+        <a href="/" class="st-about-link">Homepage</a>
+        <a href="/pricing" class="st-about-link">Pricing</a>
+        <a href="/dashboard" class="st-about-link">My documents</a>
+        <a href="/brand-kit" class="st-about-link">Brand kit</a>
+      </div>
+    </div>
+
+    <div class="st-card">
+      <div class="st-card-title">Content types</div>
+      <div class="st-card-sub">All the tools available in StreamInk Studio.</div>
+      <div class="st-type-grid">
+        <div class="st-type-item">
+          <div class="st-type-ic">Ar</div>
+          <div><div class="nm">Article Engine</div><div class="ds">Editorial, Feature, Authority</div></div>
+        </div>
+        <div class="st-type-item">
+          <div class="st-type-ic">Bl</div>
+          <div><div class="nm">Blog Engine</div><div class="ds">Center Hero, Hero Article, Magazine</div></div>
+        </div>
+        <div class="st-type-item">
+          <div class="st-type-ic">So</div>
+          <div><div class="nm">Social Posts</div><div class="ds">Instagram, Twitter, LinkedIn, Facebook</div></div>
+        </div>
+        <div class="st-type-item">
+          <div class="st-type-ic">Em</div>
+          <div><div class="nm">Email Newsletter</div><div class="ds">AI-crafted email campaigns</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="st-toast" id="stToast"></div>
+
+<script src="/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-client.js"></script>
+<script>if(_supabase){_supabase.auth.getUser().then(({data:{user}})=>{if(!user)window.location.href='/login';});}</script>
+<script src="/js/docstore.js"></script>
+<script>
+const SETTINGS_KEY = 'StreamInk_Settings';
+
+/* ── LOAD ── */
+function loadSettings() {
+  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); }
+  catch { return {}; }
+}
+
+function populateForm(s) {
+  const set = (id, val) => { if (val !== undefined) { const el = document.getElementById(id); if (el) el.value = val; } };
+  const chk = (id, val) => { if (val !== undefined) { const el = document.getElementById(id); if (el) el.checked = val; } };
+  set('s-tone',      s.defaultTone);
+  set('s-length',    s.defaultLength);
+  set('s-style',     s.defaultStyle);
+  set('s-platform',  s.defaultPlatform);
+  set('s-format',    s.exportFormat);
+  set('s-pagesize',  s.pageSize);
+  set('s-pdfquality',s.pdfQuality);
+  chk('s-autofill',  s.autoFill !== false);
+  chk('s-refine',    s.showRefine !== false);
+  chk('s-confirm',   s.confirmOverwrite !== false);
+  chk('s-unsub',     s.emailUnsub !== false);
+  chk('s-viewbrowser', s.emailViewBrowser !== false);
+}
+
+/* ── SAVE ── */
+function saveSettings() {
+  const s = {
+    defaultTone:       document.getElementById('s-tone').value,
+    defaultLength:     document.getElementById('s-length').value,
+    defaultStyle:      document.getElementById('s-style').value,
+    defaultPlatform:   document.getElementById('s-platform').value,
+    exportFormat:      document.getElementById('s-format').value,
+    pageSize:          document.getElementById('s-pagesize').value,
+    pdfQuality:        document.getElementById('s-pdfquality').value,
+    autoFill:          document.getElementById('s-autofill').checked,
+    showRefine:        document.getElementById('s-refine').checked,
+    confirmOverwrite:  document.getElementById('s-confirm').checked,
+    emailUnsub:        document.getElementById('s-unsub').checked,
+    emailViewBrowser:  document.getElementById('s-viewbrowser').checked,
+  };
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  showToast('Settings saved');
+}
+
+/* ── SECTION NAV ── */
+const sectionMeta = {
+  writing: { title: 'Writing defaults',  sub: 'Pre-fill your preferred settings across all editors.' },
+  export:  { title: 'Export defaults',   sub: 'Configure default formats and quality for exports.' },
+  data:    { title: 'Data & storage',    sub: 'Manage your saved documents and storage.' },
+  about:   { title: 'About',             sub: 'Version info and tool overview.' },
+  billing: { title: 'Plan & Billing',    sub: 'Manage your subscription and track credit usage.' },
+};
+
+function showSection(id, btn) {
+  document.querySelectorAll('.st-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.st-nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  btn.classList.add('active');
+  const m = sectionMeta[id];
+  document.getElementById('sectionTitle').textContent = m.title;
+  document.getElementById('sectionSub').textContent   = m.sub;
+  if (id === 'data')    loadDataStats();
+  if (id === 'billing') loadBillingInfo();
+}
+
+/* ── DATA STATS ── */
+async function loadDataStats() {
+  const stats = await DocStore.stats();
+  const docs  = await DocStore.getAll();
+  const week  = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const thisWeek = docs.filter(d => new Date(d.createdAt).getTime() > week).length;
+  document.getElementById('ds-total').textContent = stats.count;
+  document.getElementById('ds-week').textContent  = thisWeek;
+  const kb = (stats.bytes / 1024).toFixed(1);
+  document.getElementById('ds-size').textContent = stats.bytes < 1024 * 1024 ? kb + ' KB' : (stats.bytes / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+/* ── EXPORT ── */
+async function exportDocs() {
+  const docs = await DocStore.getAll();
+  const blob = new Blob([JSON.stringify(docs, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'streamink-documents-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('Documents exported');
+}
+
+function exportBrandKit() {
+  const kit = localStorage.getItem('StreamInk_BrandKit') || '{}';
+  const blob = new Blob([kit], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'streamink-brand-kit.json';
+  a.click();
+  showToast('Brand Kit exported');
+}
+
+/* ── IMPORT ── */
+function importDocs(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try {
+      const docs = JSON.parse(e.target.result);
+      if (!Array.isArray(docs)) throw new Error('Invalid format');
+      let count = 0;
+      for (const doc of docs) {
+        if (doc.content) { await DocStore.save(doc); count++; }
+      }
+      showToast(`Imported ${count} document${count !== 1 ? 's' : ''}`);
+      loadDataStats();
+    } catch(err) {
+      showToast('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ── CLEAR ── */
+function clearSettings() {
+  if (!confirm('Reset all settings to defaults?')) return;
+  localStorage.removeItem(SETTINGS_KEY);
+  populateForm({});
+  showToast('Settings reset to defaults');
+}
+
+async function clearAllDocs() {
+  const stats = await DocStore.stats();
+  if (!confirm(`Delete all ${stats.count} documents? This cannot be undone.`)) return;
+  const docs = await DocStore.getAll();
+  for (const d of docs) await DocStore.delete(d.id);
+  loadDataStats();
+  showToast('All documents deleted');
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  const t = document.getElementById('stToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── INIT ── */
+populateForm(loadSettings());
+
+/* ── BILLING ── */
+async function loadBillingInfo() {
+  const cfg = window.STREAMINK_CONFIG || {};
+  if (!cfg.supabaseUrl) return;
+
+  const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+  if (!key) return;
+  let session;
+  try { session = JSON.parse(localStorage.getItem(key)); } catch { return; }
+  const token = session?.access_token || session?.session?.access_token;
+  const uid   = session?.user?.id;
+  if (!token || !uid) return;
+
+  try {
+    const r = await fetch(`${cfg.supabaseUrl}/rest/v1/subscriptions?select=plan,credits_limit,credits_used,current_period_end&user_id=eq.${uid}`, {
+      headers: { 'apikey': cfg.supabaseAnonKey, 'Authorization': `Bearer ${token}` }
+    });
+    if (!r.ok) return;
+    const rows = await r.json();
+    const sub = rows[0];
+    if (!sub) return;
+
+    const plan  = sub.plan || 'free';
+    const used  = sub.credits_used  || 0;
+    const limit = sub.credits_limit || 100;
+    const left  = limit < 0 ? '∞' : Math.max(0, limit - used);
+    const pct   = limit < 0 ? 0 : Math.min(used / limit * 100, 100);
+
+    document.getElementById('bill-plan').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+    document.getElementById('bill-used').textContent = used.toLocaleString();
+    document.getElementById('bill-left').textContent = typeof left === 'number' ? left.toLocaleString() : left;
+    document.getElementById('bill-pct').textContent  = limit < 0 ? 'Unlimited' : Math.round(pct) + '%';
+    document.getElementById('bill-bar').style.width  = pct + '%';
+    document.getElementById('bill-bar').style.background = pct >= 90 ? '#B65334' : pct >= 70 ? '#D4883A' : 'linear-gradient(90deg,#4B43C4,#7B41C9)';
+
+    if (sub.current_period_end) {
+      const d = new Date(sub.current_period_end);
+      document.getElementById('bill-reset').textContent = 'Resets ' + d.toLocaleDateString('en-US',{month:'long',day:'numeric'});
+    }
+
+    // highlight active plan card
+    ['free','pro','agency'].forEach(p => {
+      const el = document.getElementById('plan-' + p);
+      if (!el) return;
+      if (p === plan) {
+        el.style.borderColor = '#4B43C4';
+        el.style.background  = 'rgba(75,67,196,.04)';
+      } else {
+        el.style.borderColor = 'var(--line)';
+        el.style.background  = '';
+      }
+    });
+
+    // usage by engine
+    const lr = await fetch(`${cfg.supabaseUrl}/rest/v1/usage_logs?select=engine,credits&user_id=eq.${uid}&order=created_at.desc&limit=200`, {
+      headers: { 'apikey': cfg.supabaseAnonKey, 'Authorization': `Bearer ${token}` }
+    });
+    if (!lr.ok) return;
+    const logs = await lr.json();
+    const byEngine = {};
+    logs.forEach(l => { byEngine[l.engine] = (byEngine[l.engine] || 0) + (l.credits || 0); });
+    const maxVal = Math.max(...Object.values(byEngine), 1);
+    const chartEl = document.getElementById('bill-engine-chart');
+    if (Object.keys(byEngine).length) {
+      chartEl.innerHTML = Object.entries(byEngine).sort((a,b)=>b[1]-a[1]).map(([eng,cr]) => `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="width:90px;font-size:12px;color:var(--muted);flex:none;text-transform:capitalize">${eng}</span>
+          <div style="flex:1;height:7px;background:var(--line);border-radius:999px;overflow:hidden">
+            <div style="height:100%;border-radius:999px;background:linear-gradient(90deg,#4B43C4,#7B41C9);width:${Math.round(cr/maxVal*100)}%"></div>
+          </div>
+          <span style="font-family:var(--ff-m);font-size:11.5px;font-weight:600;color:var(--ink);width:36px;text-align:right">${cr}</span>
+        </div>`).join('');
+    }
+  } catch (e) { console.warn('[billing]', e.message); }
+}
+
+function upgradePlan(plan) {
+  window.location.href = '/pricing.html#' + plan;
+}
+</script>
+<script src="/js/auth-gate.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose a Platform — StreamInk Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+  --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+h1{font-family:var(--ff-d);font-weight:500;font-size:clamp(28px,3.6vw,42px);letter-spacing:-.015em;line-height:1.08}
+h1 .g{color:var(--ink);font-style:italic;font-weight:500}
+
+/* ── APP BAR ── */
+.appbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:16px;height:58px;padding:0 18px;background:rgba(250,247,240,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+.ab-left{display:flex;align-items:center;gap:12px;min-width:0}
+.brandtab{display:inline-flex;align-items:center;flex:none;margin-right:5px;padding-right:13px;border-right:1px solid var(--line)}
+.brandtab img{height:23px;width:auto;display:block}
+.brandtab:hover img{opacity:.76}
+.icon-btn{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;transition:.18s}
+.icon-btn:hover{color:var(--text);border-color:var(--blue)}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--faint);white-space:nowrap}
+.crumb b{color:var(--text);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:13px;border-radius:999px;padding:9px 17px;border:1px solid transparent;transition:.18s;text-decoration:none}
+.btn-primary{color:#fff;background:var(--grad);box-shadow:0 6px 16px -6px rgba(91,108,240,.55)}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-ghost{color:var(--muted);border-color:var(--line);background:transparent}
+.btn-ghost:hover{color:var(--text);border-color:var(--blue)}
+
+/* ── PAGE HEAD ── */
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+.page-head{text-align:center;padding:54px 0 8px}
+.eyebrow{display:inline-flex;align-items:center;gap:11px;font-family:var(--ff-m);font-size:11px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;margin-bottom:18px;color:var(--ink)}
+.eyebrow::before{content:"";width:26px;height:1px;background:currentColor;opacity:.55}
+.page-sub{color:var(--muted);font-size:14.5px;max-width:520px;margin:11px auto 0}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:42px 0 60px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.grid{grid-template-columns:1fr}}
+
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;padding:0;transition:transform .2s,border-color .2s,box-shadow .2s;width:100%}
+.card:hover{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 18px 40px -18px rgba(91,108,240,.4)}
+.card.sel{background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;border:2px solid transparent;box-shadow:0 0 0 1px rgba(91,108,240,.4),0 16px 40px -16px rgba(91,108,240,.55)}
+.card .check{position:absolute;top:12px;right:12px;width:25px;height:25px;border-radius:50%;background:var(--grad);display:none;place-items:center;z-index:3;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.card.sel .check{display:grid}
+
+.pprev{aspect-ratio:1/1;position:relative;overflow:hidden}
+.pprev.wide{aspect-ratio:16/9}
+.pprev::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(20,18,46,.55),transparent 60%)}
+.pprev .ptext{position:absolute;left:12px;right:12px;bottom:10px;z-index:1;color:#fff}
+.pprev .ptext .kick{font-family:var(--ff-m);font-size:9px;letter-spacing:.16em;text-transform:uppercase;opacity:.8}
+.pprev .ptext h4{font-family:var(--ff-d);font-weight:600;font-size:13px;margin-top:2px}
+
+.ig{background:linear-gradient(135deg,#F26BAA,#FFC65C,#5CE8B5)}
+.tw{background:linear-gradient(135deg,#211C14,#4B43C4)}
+.li{background:linear-gradient(135deg,#2E8EAC,#4B43C4)}
+.fb{background:linear-gradient(135deg,#4B43C4,#7B41C9)}
+
+.card-meta{padding:14px 16px 18px;display:flex;align-items:center;gap:11px}
+.plat-ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-family:var(--ff-d);font-weight:600;font-size:14px;color:#fff;flex:none}
+.card-meta h3{font-family:var(--ff-d);font-weight:600;font-size:15px}
+.card-meta .size{font-size:11.5px;color:var(--faint);margin-top:2px}
+
+/* ── SELECTION BAR ── */
+.selbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:16px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:9px 11px 9px 20px;box-shadow:0 20px 50px -12px rgba(0,0,0,.35);max-width:calc(100% - 40px)}
+.selbar .sel-info{font-size:13px;color:var(--muted);white-space:nowrap}
+.selbar .sel-info b{color:var(--text);font-family:var(--ff-d);font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="ab-left">
+    <a class="brandtab" href="/dashboard"><img src="/images/streamink-mark.png" alt="StreamInk Studio"></a>
+    <a class="icon-btn" href="/dashboard">← Dashboard</a>
+    <span class="crumb">Social Posts <span>/</span> <b>Choose platform</b></span>
+  </div>
+  <div></div>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Social post studio</span>
+    <h1>Pick your <span class="g">canvas</span></h1>
+    <p class="page-sub">Each platform gets a perfectly sized canvas, ready for your headline, image, and hashtags.</p>
+  </div>
+
+  <div class="grid" id="platformGrid">
+
+    <button class="card sel" type="button" data-platform="instagram" data-name="Instagram" data-size="1080 × 1080 · Square">
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="pprev ig"><div class="ptext"><p class="kick">Square post</p><h4>Your Headline</h4></div></div>
+      <div class="card-meta">
+        <div class="plat-ic" style="background:var(--grad)">Ig</div>
+        <div><h3>Instagram</h3><p class="size">1080 × 1080 · Square</p></div>
+      </div>
+    </button>
+
+    <button class="card" type="button" data-platform="twitter" data-name="Twitter / X" data-size="1200 × 675 · Landscape">
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="pprev wide tw"><div class="ptext"><p class="kick">Post card</p><h4>Your Headline</h4></div></div>
+      <div class="card-meta">
+        <div class="plat-ic" style="background:var(--grad)">Tw</div>
+        <div><h3>Twitter / X</h3><p class="size">1200 × 675 · Landscape</p></div>
+      </div>
+    </button>
+
+    <button class="card" type="button" data-platform="linkedin" data-name="LinkedIn" data-size="1200 × 627 · Landscape">
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="pprev wide li"><div class="ptext"><p class="kick">Article card</p><h4>Your Headline</h4></div></div>
+      <div class="card-meta">
+        <div class="plat-ic" style="background:var(--grad)">Li</div>
+        <div><h3>LinkedIn</h3><p class="size">1200 × 627 · Landscape</p></div>
+      </div>
+    </button>
+
+    <button class="card" type="button" data-platform="facebook" data-name="Facebook" data-size="1200 × 630 · Landscape">
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="pprev wide fb"><div class="ptext"><p class="kick">Shared post</p><h4>Your Headline</h4></div></div>
+      <div class="card-meta">
+        <div class="plat-ic" style="background:var(--grad)">Fb</div>
+        <div><h3>Facebook</h3><p class="size">1200 × 630 · Landscape</p></div>
+      </div>
+    </button>
+
+  </div>
+</div>
+
+<div class="selbar">
+  <span class="sel-info"><b id="selName">Instagram</b> · <span id="selSize">1080 × 1080 · Square</span></span>
+  <button class="btn btn-primary" id="useBtn" type="button">Open Social Editor →</button>
+</div>
+
+<script>
+const cards = Array.from(document.querySelectorAll('.card'));
+let selected = cards.find(c => c.classList.contains('sel')) || cards[0];
+
+function updateSelbar() {
+  document.getElementById('selName').textContent = selected.dataset.name;
+  document.getElementById('selSize').textContent = selected.dataset.size;
+}
+updateSelbar();
+
+cards.forEach(card => {
+  card.addEventListener('click', () => {
+    cards.forEach(c => c.classList.remove('sel'));
+    card.classList.add('sel');
+    selected = card;
+    updateSelbar();
+  });
+});
+
+document.getElementById('useBtn').addEventListener('click', () => {
+  window.location.href = `/social-editor?platform=${selected.dataset.platform}`;
+});
+</script>
+
+</body>
+</html>

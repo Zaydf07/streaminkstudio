@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose a Layout — StreamInk Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+  --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+h1{font-family:var(--ff-d);font-weight:500;font-size:clamp(28px,3.6vw,42px);letter-spacing:-.015em;line-height:1.08}
+h1 .g{color:var(--ink);font-style:italic;font-weight:500}
+
+/* ── APP BAR ── */
+.appbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:16px;height:58px;padding:0 18px;background:rgba(250,247,240,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+.ab-left{display:flex;align-items:center;gap:12px;min-width:0}
+.brandtab{display:inline-flex;align-items:center;flex:none;margin-right:5px;padding-right:13px;border-right:1px solid var(--line)}
+.brandtab img{height:23px;width:auto;display:block}
+.brandtab:hover img{opacity:.76}
+.icon-btn{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;transition:.18s}
+.icon-btn:hover{color:var(--text);border-color:var(--blue)}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--faint);white-space:nowrap}
+.crumb b{color:var(--text);font-weight:600}
+.steps{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--faint);font-family:var(--ff-m)}
+.step{display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px}
+.step .n{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;background:var(--panel-2);border:1px solid var(--line)}
+.step.on{color:var(--text);background:var(--panel-2);border:1px solid var(--line)}
+.step.on .n{background:var(--grad);border:none;color:#fff}
+.step-sep{width:16px;height:1px;background:var(--line)}
+.ab-right{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:13px;border-radius:999px;padding:9px 17px;border:1px solid transparent;transition:.18s;text-decoration:none}
+.btn-primary{color:#fff;background:var(--grad);box-shadow:0 6px 16px -6px rgba(91,108,240,.55)}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-ghost{color:var(--muted);border-color:var(--line);background:transparent}
+.btn-ghost:hover{color:var(--text);border-color:var(--blue)}
+.skip{font-size:13px;color:var(--faint)}
+.skip:hover{color:var(--muted)}
+@media(max-width:980px){.steps{display:none}}
+
+/* ── PAGE HEAD ── */
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px;position:relative}
+.page-head{text-align:center;padding:40px 0 6px}
+.eyebrow{display:inline-flex;align-items:center;gap:11px;font-family:var(--ff-m);font-size:11px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;margin-bottom:18px;color:var(--clay)}
+.eyebrow::before{content:"";width:26px;height:1px;background:currentColor;opacity:.55}
+.eyebrow.vi{color:var(--ink)}
+.page-sub{color:var(--muted);font-size:14.5px;max-width:560px;margin:11px auto 0}
+
+/* ── TOOLBAR ── */
+.toolbar{position:sticky;top:58px;z-index:50;background:rgba(243,238,228,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft);padding:15px 0 13px;margin-top:24px}
+.toolbar-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.search{flex:1;min-width:190px;max-width:290px;position:relative}
+.search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:9px 16px 9px 36px;font-size:13px}
+.search input::placeholder{color:var(--faint)}
+.search input:focus{outline:none;border-color:var(--blue)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--faint)}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px;flex-wrap:wrap}
+.tab{font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:999px;padding:7px 14px;display:flex;gap:7px;align-items:center;transition:.15s}
+.tab .ct{font-size:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:99px;padding:1px 7px;color:var(--faint)}
+.tab:hover{color:var(--text)}
+.tab.on{color:#fff;background:var(--grad)}
+.tab.on .ct{background:rgba(255,255,255,.18);border-color:transparent;color:#fff}
+.aud-row{display:flex;align-items:center;gap:10px;margin-top:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.aud-label{flex:none;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-family:var(--ff-m)}
+.chip{flex:none;font-size:12px;font-weight:500;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 13px;transition:.15s}
+.chip:hover{color:var(--text);border-color:var(--blue)}
+.chip.on{color:#fff;border-color:transparent;background:var(--grad)}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:26px 0 48px;position:relative}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.grid{grid-template-columns:1fr}}
+
+/* ── CARD ── */
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;padding:0;transition:transform .2s,border-color .2s,box-shadow .2s;width:100%;isolation:isolate;opacity:0;transform:translateY(16px);animation:cardin .55s cubic-bezier(.2,.7,.2,1) forwards}
+.card:nth-child(1){animation-delay:.02s}.card:nth-child(2){animation-delay:.06s}
+.card:nth-child(3){animation-delay:.10s}.card:nth-child(4){animation-delay:.14s}
+.card:nth-child(5){animation-delay:.18s}.card:nth-child(6){animation-delay:.22s}
+.card:nth-child(7){animation-delay:.26s}.card:nth-child(8){animation-delay:.30s}
+.card:nth-child(9){animation-delay:.34s}.card:nth-child(10){animation-delay:.38s}
+.card:nth-child(11){animation-delay:.42s}.card:nth-child(12){animation-delay:.46s}
+@keyframes cardin{to{opacity:1;transform:none}}
+.card:hover{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 18px 40px -18px rgba(91,108,240,.4)}
+.card.sel{background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;border:2px solid transparent;box-shadow:0 0 0 1px rgba(91,108,240,.4),0 16px 40px -16px rgba(91,108,240,.55);animation:cardin .55s cubic-bezier(.2,.7,.2,1) forwards,selglow 2.6s ease-in-out infinite}
+@keyframes selglow{0%,100%{box-shadow:0 0 0 1px rgba(91,108,240,.4),0 16px 40px -16px rgba(91,108,240,.5)}50%{box-shadow:0 0 0 1px rgba(157,77,232,.5),0 20px 52px -14px rgba(157,77,232,.6)}}
+.card .check{position:absolute;top:12px;right:12px;width:25px;height:25px;border-radius:50%;background:var(--grad);display:none;place-items:center;z-index:3;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.card.sel .check{display:grid}
+.card .sheen{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;overflow:hidden;opacity:0;transition:opacity .2s}
+.card:hover .sheen{opacity:1}
+.card .sheen::before{content:"";position:absolute;top:-60%;left:-30%;width:40%;height:220%;transform:rotate(18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);animation:cardsheen 1.1s ease forwards}
+@keyframes cardsheen{from{left:-40%}to{left:130%}}
+.badge-new{position:absolute;top:12px;left:12px;z-index:3;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:99px;color:#0D0B1E;font-family:var(--ff-m)}
+.badge-new.popular{background:#FFC65C}.badge-new.fresh{background:#5CE8B5}.badge-new.pro{background:#C7B6FF}
+
+/* ── PREVIEW MINIS ── */
+.prev{position:relative;aspect-ratio:16/10.5;background:linear-gradient(180deg,#EEE9DD,#E1DBC9);border-bottom:1px solid var(--line);overflow:hidden}
+.prev.dark-stage{background:linear-gradient(180deg,#262344,#191731)}
+.tpl{position:absolute;left:16px;right:16px;top:12px;bottom:-8px;background:#fff;border-radius:5px 5px 0 0;box-shadow:0 10px 24px -6px rgba(28,22,80,.32);padding:13px 15px;color:#6A669A;transition:transform .28s ease,box-shadow .28s ease;overflow:hidden}
+.card:hover .tpl{transform:translateY(-5px) rotate(-.4deg);box-shadow:0 20px 36px -8px rgba(28,22,80,.45)}
+.tpl.dark{background:#191A28;color:#A9A8C4}
+.tpl.cream{background:#FAF4E4}
+.tpl.photo{display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(180deg,rgba(20,18,46,.15),rgba(20,18,46,.78)),url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=500&q=70&auto=format&fit=crop');background-size:cover;background-position:center;position:relative}
+.tpl.photo::before{content:"";position:absolute;inset:0;z-index:0;background:repeating-linear-gradient(112deg,transparent 0 9px,rgba(255,255,255,.14) 9px 10.5px);animation:rain 1.5s linear infinite;pointer-events:none}
+@keyframes rain{from{transform:translate3d(0,0,0)}to{transform:translate3d(30px,0,0)}}
+.tpl .kick{font-size:5.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#4B43C4;position:relative;z-index:1}
+.tpl h4{font-family:var(--ff-d);font-weight:600;font-size:11px;line-height:1.18;color:#221C5E;margin:3px 0 2px;position:relative;z-index:1}
+.tpl.dark h4{color:#EFEDFB}
+.tpl .by{font-size:5.2px;color:#9A96BE;letter-spacing:.03em}
+.tpl p{font-size:5.4px;line-height:1.62;color:#8783AE;position:relative;z-index:1}
+.tpl .cols{display:flex;gap:7px}
+.tpl .cols>*{flex:1;min-width:0}
+.tpl .timg{border-radius:3px;flex:none;position:relative;overflow:hidden}
+.timg.sky{background:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center}
+.timg.dawn{background:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center}
+.timg.leaf{background:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center}
+.timg.inkk{background:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center}
+.timg::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);background-size:220% 100%;animation:imgsheen 3.4s ease-in-out infinite;opacity:0}
+.card:hover .timg::after{opacity:1}
+@keyframes imgsheen{0%{background-position:140% 0}100%{background-position:-40% 0}}
+.tpl .numli{display:flex;gap:6px;align-items:baseline;margin-top:4px}
+.tpl .numli b{font-family:var(--ff-d);font-weight:600;font-size:9.5px;flex:none}
+.tpl .code{background:#23243C;border-radius:3px;padding:5px 7px;font-family:'Courier New',monospace;font-size:5px;line-height:1.75;color:#8E8DC0;margin-top:4px;position:relative;z-index:1}
+.tpl .code i{color:#2E8EAC;font-style:normal}
+.tpl .code b{color:#C792EA;font-weight:600}
+@media(prefers-reduced-motion:reduce){
+  .card,.card.sel,.badge-new,.tpl .timg,.timg::after,.tpl.photo::before{animation:none!important}
+  .tpl,.card:hover .tpl{transition:none!important;transform:none!important}
+}
+
+/* ── HOVER ACTIONS ── */
+.hover-act{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(33,28,20,.5);opacity:0;transition:.2s;z-index:2}
+.card:hover .hover-act{opacity:1}
+.mini-btn{font-size:12px;font-weight:600;border-radius:999px;padding:8px 15px;border:1px solid rgba(255,255,255,.45);color:#fff;background:rgba(255,255,255,.1)}
+.mini-btn.fill{background:var(--grad);border-color:transparent}
+
+/* ── CARD META ── */
+.card-meta{padding:14px 16px 16px}
+.card-name{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.card-name h3{font-family:var(--ff-d);font-weight:600;font-size:16px}
+.cat{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:99px;border:1px solid;font-family:var(--ff-m)}
+.cat.editorial{color:#2E8EAC;border-color:rgba(46,142,172,.4);background:rgba(46,142,172,.08)}
+.cat.magazine{color:#F26BAA;border-color:rgba(242,107,170,.4);background:rgba(242,107,170,.1)}
+.cat.minimal{color:#2E8E6A;border-color:rgba(46,142,106,.35);background:rgba(46,142,106,.08)}
+.cat.special{color:#B68A1E;border-color:rgba(182,138,30,.4);background:rgba(182,138,30,.1)}
+.card-desc{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.55}
+.card-fit{font-size:11px;color:var(--faint);margin-top:8px;display:flex;gap:6px;align-items:center}
+.card-fit svg{width:11px;height:11px;stroke:var(--faint);flex:none}
+
+
+/* ── EMPTY ── */
+.empty-state{grid-column:1/-1;text-align:center;color:var(--faint);font-size:14px;padding:60px 0 120px;display:none}
+
+/* ── AMBIENT GLOWS ── */
+.glowfield{position:absolute;inset:-40px 0 0;z-index:-1;overflow:hidden;pointer-events:none}
+.glowblob{position:absolute;border-radius:50%;filter:blur(95px);opacity:.6;animation:floaty 18s ease-in-out infinite}
+.glowblob.a{width:380px;height:380px;background:radial-gradient(circle,rgba(75,67,196,.09),transparent 70%);top:30px;left:-90px}
+.glowblob.b{width:420px;height:420px;background:radial-gradient(circle,rgba(182,83,52,.07),transparent 70%);top:360px;right:-100px;animation-delay:-6s}
+.glowblob.c{width:340px;height:340px;background:radial-gradient(circle,rgba(75,67,196,.06),transparent 70%);top:740px;left:40%;animation-delay:-10s}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-24px) scale(1.08)}66%{transform:translate(-22px,18px) scale(.95)}}
+@media(prefers-reduced-motion:reduce){.glowblob{animation:none!important}}
+@media(max-width:600px){
+  .wrap{padding:0 16px}
+  .page-head{padding:32px 0 4px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ APP BAR ══ -->
+<header class="appbar">
+  <div class="ab-left">
+    <a class="brandtab" href="/dashboard"><img src="/images/streamink-mark.png" alt="StreamInk Studio"></a>
+    <a class="icon-btn" href="/dashboard">← Dashboard</a>
+    <span class="crumb">Blog Engine <span>/</span> <b>Choose layout</b></span>
+  </div>
+  <nav class="steps">
+    <span class="step on"><span class="n">1</span> Layout</span>
+    <span class="step-sep"></span>
+    <span class="step"><span class="n">2</span> Content</span>
+    <span class="step-sep"></span>
+    <span class="step"><span class="n">3</span> Design &amp; export</span>
+  </nav>
+  <div class="ab-right">
+    <a class="btn btn-ghost" href="/editor">Blank canvas</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="glowfield"><span class="glowblob a"></span><span class="glowblob b"></span><span class="glowblob c"></span></div>
+
+  <!-- ══ PAGE HEAD ══ -->
+  <div class="page-head">
+    <span class="eyebrow vi">Blog template gallery</span>
+    <h1>Set the <span class="g">stage</span> for your words</h1>
+    <p class="page-sub">Choose from 12 professionally designed templates. Every layout is fully editable — customize fonts, colors, and content to match your brand.</p>
+  </div>
+
+  <!-- ══ TOOLBAR ══ -->
+  <div class="toolbar">
+    <div class="toolbar-row">
+      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="searchInput" placeholder="Search layouts…"></label>
+      <div class="tabs" id="catTabs">
+        <button class="tab on" data-cat="all" type="button">All <span class="ct">12</span></button>
+        <button class="tab" data-cat="editorial" type="button">Editorial <span class="ct">4</span></button>
+        <button class="tab" data-cat="magazine" type="button">Magazine <span class="ct">3</span></button>
+        <button class="tab" data-cat="minimal" type="button">Minimal <span class="ct">3</span></button>
+        <button class="tab" data-cat="special" type="button">Special <span class="ct">2</span></button>
+      </div>
+    </div>
+    <div class="aud-row">
+      <span class="aud-label">I blog about →</span>
+      <button class="chip" data-aud="health" type="button">Healthcare</button>
+      <button class="chip" data-aud="nutrition" type="button">Nutrition &amp; Wellness</button>
+      <button class="chip" data-aud="fashion" type="button">Fashion &amp; Beauty</button>
+      <button class="chip" data-aud="research" type="button">Research &amp; Academia</button>
+      <button class="chip" data-aud="startup" type="button">Startups &amp; Business</button>
+      <button class="chip" data-aud="education" type="button">Education</button>
+      <button class="chip" data-aud="creator" type="button">Content Creation</button>
+      <button class="chip" data-aud="food" type="button">Food &amp; Lifestyle</button>
+      <button class="chip" data-aud="realestate" type="button">Real Estate</button>
+      <button class="chip" data-aud="wellness" type="button">Wellness Coaching</button>
+    </div>
+  </div>
+
+  <!-- ══ TEMPLATE GRID ══ -->
+  <div class="grid" id="templateGrid">
+
+    <!-- 1. Center Hero -->
+    <button class="card sel" type="button" data-cat="editorial" data-aud="health nutrition startup education" data-name="Center Hero" data-url="/editor?template=center-hero">
+      <span class="badge-new popular">Popular</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <div class="timg dawn" style="height:38%"></div>
+          <h4 style="text-align:center;margin-top:5px">Slow Mornings, Better Work</h4>
+          <p class="by" style="text-align:center">Mira Tan · Wellness · 5 min read</p>
+          <p style="text-align:center;margin-top:2px">What happened when I swapped my 6am inbox for forty unhurried minutes — and why my output went up anyway.</p>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Center Hero</h3><span class="cat editorial">Editorial</span></div>
+        <p class="card-desc">Classic top-image layout with centered title and flowing body text. Perfect for feature articles.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best all-rounder — works for any topic</p>
+      </div>
+    </button>
+
+    <!-- 2. Hero Article -->
+    <button class="card" type="button" data-cat="editorial" data-aud="startup education research" data-name="Hero Article" data-url="/editor?template=hero-article">
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <h4 style="font-size:11px">A Field Guide to Better Meetings</h4>
+          <p class="by">Jon Park · Operations · 7 min read</p>
+          <div class="cols" style="margin-top:4px">
+            <p style="flex:1.4">Most meetings fail in the first two minutes — before anyone speaks. The agenda already decided it. Here is how to write one that earns its hour…</p>
+            <div class="timg sky" style="flex:1;height:38px"></div>
+          </div>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Hero Article</h3><span class="cat editorial">Editorial</span></div>
+        <p class="card-desc">Long-form editorial with a dominant title bar and an elegant floating pull-image.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for essays &amp; deep dives</p>
+      </div>
+    </button>
+
+    <!-- 3. Split Feature -->
+    <button class="card" type="button" data-cat="editorial" data-aud="fashion food creator" data-name="Split Feature" data-url="/editor?template=split-feature">
+      <span class="badge-new fresh">New</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <div class="cols" style="height:100%">
+            <div class="timg leaf" style="flex:1;height:96%"></div>
+            <div>
+              <p class="kick">Travel</p>
+              <h4 style="font-size:9.5px">Three Days in the Tea Country</h4>
+              <p style="margin-top:2px">Mist, switchbacks, and the best roti of my life — a slow loop through Ella without a plan.</p>
+            </div>
+          </div>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Split Feature</h3><span class="cat editorial">Editorial</span></div>
+        <p class="card-desc">Striking 50/50 split with full-height image on one side and rich content on the other.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for visual storytelling</p>
+      </div>
+    </button>
+
+    <!-- 4. Full Width Story -->
+    <button class="card" type="button" data-cat="editorial" data-aud="creator fashion food" data-name="Full Width Story" data-url="/editor?template=full-width">
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev dark-stage">
+        <div class="tpl photo">
+          <p class="kick" style="color:#D7E2F5">Photo story</p>
+          <h4 style="color:#fff;font-size:11.5px">Monsoon, From a Train Window</h4>
+          <p style="color:#C5D2EC">Nine hours on the coastal line as the rains finally arrived.</p>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Full Width Story</h3><span class="cat editorial">Editorial</span></div>
+        <p class="card-desc">Immersive full-bleed image with text overlay. Stunning for photography and breaking news.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for photo-led posts</p>
+      </div>
+    </button>
+
+    <!-- 5. Grid Magazine -->
+    <button class="card" type="button" data-cat="magazine" data-aud="fashion food creator realestate" data-name="Grid Magazine" data-url="/magazine">
+      <span class="badge-new popular">Popular</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <p style="text-align:center;font-family:var(--ff-d);font-weight:600;font-size:8px;color:#221C5E;letter-spacing:.1em">THE WEEKLY EDIT</p>
+          <div style="height:1px;background:#E2E0F0;margin:3px 0 5px"></div>
+          <div class="cols">
+            <div><div class="timg dawn" style="height:24px"></div><p style="font-size:4.9px;margin-top:2px;font-weight:700;color:#221C5E;line-height:1.3">The new bakeries worth the queue</p></div>
+            <div><div class="timg sky" style="height:24px"></div><p style="font-size:4.9px;margin-top:2px;font-weight:700;color:#221C5E;line-height:1.3">Small flats, big redesigns</p></div>
+            <div><div class="timg leaf" style="height:24px"></div><p style="font-size:4.9px;margin-top:2px;font-weight:700;color:#221C5E;line-height:1.3">Five weekend walks</p></div>
+          </div>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Grid Magazine</h3><span class="cat magazine">Magazine</span></div>
+        <p class="card-desc">Three-column grid inspired by premium magazines. Great for multi-topic publications.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for multi-story roundups</p>
+      </div>
+    </button>
+
+    <!-- 6. News Columns -->
+    <button class="card" type="button" data-cat="magazine" data-aud="research startup education" data-name="News Columns" data-url="/editor?template=news-columns">
+      <span class="badge-new fresh">New</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <p style="text-align:center;font-family:var(--ff-d);font-weight:600;font-size:9px;color:#221C5E">The Daily Ledger</p>
+          <div style="border-top:1.5px solid #221C5E;border-bottom:.5px solid #221C5E;height:3px;margin:2px 0 4px"></div>
+          <div class="cols">
+            <div><div class="timg sky" style="height:18px"></div><p style="margin-top:2px">Council backs riverfront plan after marathon session…</p></div>
+            <p><b style="color:#221C5E">Markets steady.</b> Local exporters shrugged off the rate decision as orders held firm through May, with shipping costs easing…</p>
+          </div>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>News Columns</h3><span class="cat magazine">Magazine</span></div>
+        <p class="card-desc">Newspaper-inspired two-column layout with masthead. Ideal for news sites and journals.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for newsy blogs</p>
+      </div>
+    </button>
+
+    <!-- 7. Mosaic Board -->
+    <button class="card" type="button" data-cat="magazine" data-aud="creator fashion realestate" data-name="Mosaic Board" data-url="/editor?template=mosaic">
+      <span class="badge-new pro">Pro</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <div class="cols" style="height:72%">
+            <div class="timg inkk" style="flex:1.5;height:100%;display:flex;align-items:flex-end;padding:5px"><span style="font-size:6px;font-weight:700;color:#fff;line-height:1.3;position:relative;z-index:1">Studio tour: where we make things</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+              <div class="timg dawn" style="flex:1"></div>
+              <div class="timg leaf" style="flex:1"></div>
+            </div>
+          </div>
+          <p style="margin-top:4px;font-size:4.9px;color:#9A96BE">+ 6 more stories this week</p>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Mosaic Board</h3><span class="cat magazine">Magazine</span></div>
+        <p class="card-desc">Dynamic asymmetric mosaic with a large hero card flanked by smaller story tiles.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for portfolio-style blogs</p>
+      </div>
+    </button>
+
+    <!-- 8. Minimal Blog -->
+    <button class="card" type="button" data-cat="minimal" data-aud="education research wellness" data-name="Minimal Blog" data-url="/editor?template=minimal-blog">
+      <span class="badge-new popular">Popular</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl" style="padding:20px 18px">
+          <h4 style="font-size:12.5px">On Writing Less</h4>
+          <p class="by">March 2026 · 3 min read</p>
+          <p style="margin-top:6px;max-width:88%">Every sentence you delete pays rent to the ones that stay. The hard part is believing the page can hold silence — and that your reader will thank you for it.</p>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Minimal Blog</h3><span class="cat minimal">Minimal</span></div>
+        <p class="card-desc">Typography-first, distraction-free writing layout. Let your words be the star of the show.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for pure writing</p>
+      </div>
+    </button>
+
+    <!-- 9. Personal Journal -->
+    <button class="card" type="button" data-cat="minimal" data-aud="wellness food creator" data-name="Personal Journal" data-url="/editor?template=personal-journal">
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl cream">
+          <p style="font-family:var(--ff-d);font-style:italic;font-size:7px;color:#8A7C52">Saturday, April 12</p>
+          <h4 style="font-size:10px;color:#4F4630;margin-top:2px">The market was out of mangoes</h4>
+          <p style="color:#857A58;margin-top:3px">…so we bought rambutan instead and ate them on the seawall, and honestly it might have been better this way.</p>
+          <p style="font-family:var(--ff-d);font-style:italic;font-size:6px;color:#B3A57E;margin-top:5px">— more tomorrow</p>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Personal Journal</h3><span class="cat minimal">Minimal</span></div>
+        <p class="card-desc">Warm, intimate layout with a diary-like feel. Perfect for personal blogs and travel writing.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for personal stories</p>
+      </div>
+    </button>
+
+    <!-- 10. Tech Dark -->
+    <button class="card" type="button" data-cat="minimal" data-aud="startup education creator" data-name="Tech Dark" data-url="/editor?template=tech-dark">
+      <span class="badge-new pro">Pro</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev dark-stage">
+        <div class="tpl dark">
+          <p class="kick" style="color:#2E8EAC">Tutorial</p>
+          <h4 style="font-size:9.5px">Caching Strategies That Don't Bite Back</h4>
+          <div class="code"><i>const</i> cache = <b>new</b> Map();<br><i>if</i> (cache.has(key)) <b>return</b> cache.get(key);</div>
+          <p style="color:#8E8DC0;margin-top:3px">Stale-while-revalidate, explained with one diagram and zero jargon.</p>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Tech Dark</h3><span class="cat minimal">Minimal</span></div>
+        <p class="card-desc">Dark-mode developer blog with code-block styling. Built for tutorials and technical writing.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for dev &amp; tech tutorials</p>
+      </div>
+    </button>
+
+    <!-- 11. Photo Essay -->
+    <button class="card" type="button" data-cat="special" data-aud="fashion food creator realestate" data-name="Photo Essay" data-url="/editor?template=photo-essay">
+      <span class="badge-new pro">Pro</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <div class="timg sky" style="height:34%"></div>
+          <div class="cols" style="margin-top:4px">
+            <div class="timg dawn" style="height:15px;flex:1"></div>
+            <div class="timg leaf" style="height:15px;flex:1"></div>
+            <div class="timg inkk" style="height:15px;flex:1"></div>
+          </div>
+          <p style="text-align:center;font-family:var(--ff-d);font-style:italic;font-size:5.6px;color:#9A96BE;margin-top:4px">Fishing fleet at first light — Negombo lagoon, a series of twelve</p>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Photo Essay</h3><span class="cat special">Special</span></div>
+        <p class="card-desc">Photography-first layout with a large hero, gallery grid, and editorial captions.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for photographers</p>
+      </div>
+    </button>
+
+    <!-- 12. Listicle -->
+    <button class="card" type="button" data-cat="special" data-aud="creator startup nutrition food" data-name="Listicle" data-url="/editor?template=listicle">
+      <span class="badge-new fresh">New</span>
+      <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="sheen"></span>
+      <div class="prev">
+        <div class="tpl">
+          <h4 style="font-size:9.5px">7 Tiny Habits That Outlast Motivation</h4>
+          <p class="by">Habit science · 4 min read</p>
+          <div class="numli"><b style="color:#8E3FBE">1</b><p>Put the book on the pillow, not the shelf.</p></div>
+          <div class="numli"><b style="color:#4B43C4">2</b><p>Two-minute rule: start, don't finish.</p></div>
+          <div class="numli"><b style="color:#2E8EAC">3</b><p>Same time beats more time, every time.</p></div>
+        </div>
+        <div class="hover-act"><span class="mini-btn fill">Use this layout</span></div>
+      </div>
+      <div class="card-meta">
+        <div class="card-name"><h3>Listicle</h3><span class="cat special">Special</span></div>
+        <p class="card-desc">Numbered list article format. Scannable, engaging, perfect for "Top 10"-style posts.</p>
+        <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for viral list posts</p>
+      </div>
+    </button>
+
+  </div><!-- /grid -->
+  <p class="empty-state" id="emptyState">No layouts match those filters — try clearing a filter.</p>
+</div><!-- /wrap -->
+
+
+<script>
+const cards = Array.from(document.querySelectorAll('.card'));
+let activeCat = 'all';
+let activeAud = null;
+
+function goTo(url) {
+  window.location.href = url;
+}
+
+cards.forEach(card => {
+  card.addEventListener('click', () => goTo(card.dataset.url));
+
+  const fillBtn = card.querySelector('.mini-btn.fill');
+  if (fillBtn) fillBtn.addEventListener('click', e => { e.stopPropagation(); goTo(card.dataset.url); });
+});
+
+/* ── CATEGORY TABS ── */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    tab.classList.add('on');
+    activeCat = tab.dataset.cat;
+    applyFilters();
+  });
+});
+
+/* ── AUDIENCE CHIPS ── */
+document.querySelectorAll('.chip[data-aud]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    if (chip.classList.contains('on')) {
+      chip.classList.remove('on');
+      activeAud = null;
+    } else {
+      document.querySelectorAll('.chip[data-aud]').forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+      activeAud = chip.dataset.aud;
+    }
+    applyFilters();
+  });
+});
+
+/* ── SEARCH ── */
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  let visible = 0;
+  cards.forEach(card => {
+    const matchCat = activeCat === 'all' || card.dataset.cat === activeCat;
+    const matchAud = !activeAud || (card.dataset.aud || '').split(' ').includes(activeAud);
+    const haystack = (card.dataset.name + ' ' + card.querySelector('.card-desc').textContent).toLowerCase();
+    const matchQ  = !q || haystack.includes(q);
+    const show = matchCat && matchAud && matchQ;
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  document.getElementById('emptyState').style.display = visible ? 'none' : 'block';
+}
+
+</script>
+
+</body>
+</html>

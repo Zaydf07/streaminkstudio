@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Connecting account…</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Hanken Grotesk',system-ui,sans-serif;background:#F1ECE1;display:flex;align-items:center;justify-content:center;height:100vh;color:#211C14}
+    .box{text-align:center;padding:40px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(33,28,20,.15);max-width:360px;width:90%}
+    .icon{font-size:48px;margin-bottom:16px}
+    h2{font-size:20px;font-weight:700;margin-bottom:8px}
+    p{font-size:13.5px;color:#6E6557;line-height:1.55}
+    .spinner{width:36px;height:36px;border-radius:50%;border:3px solid #E3DACA;border-top-color:#4B43C4;animation:spin .8s linear infinite;margin:0 auto 16px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="box" id="box">
+  <div class="spinner" id="spinner"></div>
+  <h2 id="heading">Connecting account…</h2>
+  <p id="subtext">Please wait while we complete the connection.</p>
+</div>
+
+<script>
+// Parse URL params sent by the server after OAuth exchange
+const params = new URLSearchParams(location.search);
+const platform   = params.get('platform');
+const token      = params.get('token');
+const acctName   = params.get('account');
+const error      = params.get('error');
+
+function done(type, heading, subtext) {
+  document.getElementById('spinner').style.display = 'none';
+  document.getElementById('box').innerHTML = `
+    <div class="icon">${type === 'success' ? '✅' : '❌'}</div>
+    <h2>${heading}</h2>
+    <p>${subtext}</p>`;
+}
+
+if (error) {
+  // Notify opener and close
+  if (window.opener) {
+    window.opener.postMessage({
+      type: 'STREAMINK_OAUTH',
+      platform,
+      error: decodeURIComponent(error)
+    }, location.origin);
+    window.close();
+  } else {
+    // Fallback: redirect back to social editor with error
+    done('error', 'Connection failed', decodeURIComponent(error));
+    setTimeout(() => window.location.href = '/social-editor?oauth_error=' + encodeURIComponent(error), 2000);
+  }
+} else if (token && platform) {
+  if (window.opener) {
+    // Popup mode: send token to opener then close
+    window.opener.postMessage({
+      type: 'STREAMINK_OAUTH',
+      platform,
+      accessToken: token,
+      accountName: acctName || 'Account'
+    }, location.origin);
+    done('success', 'Connected!', `Your ${platform} account has been linked. This window will close.`);
+    setTimeout(() => window.close(), 1200);
+  } else {
+    // Non-popup mode: redirect back to social editor with token in URL
+    const returnUrl = `/social-editor?oauth_ok=1&platform=${encodeURIComponent(platform)}&token=${encodeURIComponent(token)}&account=${encodeURIComponent(acctName||'')}`;
+    done('success', 'Connected!', 'Redirecting back to StreamInk…');
+    setTimeout(() => window.location.href = returnUrl, 900);
+  }
+} else {
+  done('error', 'Something went wrong', 'No token received. Please try connecting again.');
+}
+</script>
+</body>
+</html>

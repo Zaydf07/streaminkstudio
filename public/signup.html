@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — StreamInk Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+    --line:#E3DACA; --line-soft:#EDE6D8;
+    --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+    --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+    --ink:#4B43C4; --ink-d:#39329F;
+    --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+    --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+    --r-lg:16px; --r-md:11px; --r-sm:8px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button,input{font-family:inherit;font-size:inherit;color:inherit}
+  button{cursor:pointer}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+  .auth{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+  @media(max-width:880px){.auth{grid-template-columns:1fr}.auth-brand{display:none}}
+
+  .auth-brand{position:relative;overflow:hidden;background:
+    radial-gradient(640px 480px at 82% 6%,rgba(123,65,201,.30),transparent 62%),
+    radial-gradient(640px 480px at 6% 94%,rgba(46,142,172,.18),transparent 60%),
+    linear-gradient(162deg,#181428,#221D40);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px;color:#fff}
+  .auth-brand img.mark{width:160px;height:160px;object-fit:contain;margin-bottom:18px;display:block}
+  .auth-brand h2{font-family:var(--ff-d);font-weight:600;font-size:clamp(26px,2.6vw,34px);line-height:1.2;max-width:380px}
+  .auth-brand p{color:#B9B5E3;font-size:14.5px;margin-top:14px;max-width:360px;line-height:1.65}
+  .auth-brand .spec{width:160px;height:4px;border-radius:99px;background:var(--grad);margin-top:26px}
+  .auth-brand .engines{margin-top:30px;font-size:12px;color:#8C87C2;line-height:2;font-family:var(--ff-m)}
+
+  .auth-form{display:flex;align-items:center;justify-content:center;padding:46px 28px}
+  .auth-card{width:min(380px,100%)}
+  .auth-card h1{font-family:var(--ff-d);font-weight:500;font-size:28px;letter-spacing:-.015em}
+  .auth-card .sub{color:var(--muted);font-size:13.5px;margin:6px 0 26px}
+
+  .fgroup{margin-bottom:18px}
+  .flabel{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;font-family:var(--ff-m)}
+  input[type=email],input[type=password],input[type=text]{width:100%;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 13px;font-size:13.5px;color:var(--text);transition:border-color .15s}
+  input::placeholder{color:var(--faint)}
+  input:focus{outline:none;border-color:var(--blue)}
+  .pw-wrap{position:relative}
+  .pw-wrap input{padding-right:54px}
+  .pw-wrap .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--faint);font-family:var(--ff-m)}
+  .pw-wrap .pw-toggle:hover{color:var(--text)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:600;font-size:14px;border-radius:999px;padding:11px 17px;border:1px solid transparent;transition:.18s;width:100%}
+  .btn-primary{color:#fff;background:var(--grad);box-shadow:0 6px 16px -6px rgba(91,108,240,.55)}
+  .btn-primary:hover{transform:translateY(-1px)}
+  .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .btn-ghost{color:var(--muted);border-color:var(--line);background:var(--panel)}
+  .btn-ghost:hover{color:var(--text);border-color:var(--blue)}
+  .btn-ghost+.btn-ghost{margin-top:10px}
+
+  .or{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:11px;margin:16px 0;font-family:var(--ff-m);letter-spacing:.1em;text-transform:uppercase}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .hint{font-size:11px;color:var(--faint);margin-top:14px;line-height:1.5;text-align:center}
+  .auth-foot{text-align:center;font-size:12.5px;color:var(--faint);margin-top:20px}
+  .auth-foot a{color:var(--blue);font-weight:600}
+  .auth-foot a:hover{text-decoration:underline}
+
+  .err{font-size:12.5px;color:#B65334;background:rgba(182,83,52,.08);border:1px solid rgba(182,83,52,.3);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:14px;display:none;line-height:1.5}
+  .success{font-size:12.5px;color:#2E8E6A;background:rgba(46,142,106,.08);border:1px solid rgba(46,142,106,.3);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:14px;display:none;line-height:1.5}
+  .success a{color:var(--blue);font-weight:600}
+  </style>
+</head>
+<body>
+
+<div class="auth">
+  <div class="auth-brand">
+    <img class="mark" src="/images/streamink-mark.png" alt="StreamInk Studio">
+    <h2>Where ideas flow into words.</h2>
+    <p>One studio for everything you write — articles, blogs, social posts, newsletters, books, and scripts. Drafted by AI, finished by you.</p>
+    <div class="spec"></div>
+    <p class="engines">Article Engine &nbsp;·&nbsp; Blog Engine &nbsp;·&nbsp; Social Posts<br>Email Newsletter &nbsp;·&nbsp; Book Writer &nbsp;·&nbsp; Script Writer</p>
+  </div>
+
+  <div class="auth-form">
+    <div class="auth-card">
+      <h1>Create your account</h1>
+      <p class="sub">Free forever. No credit card required.</p>
+
+      <div id="err" class="err"></div>
+      <div id="success" class="success"></div>
+
+      <div class="fgroup">
+        <div class="flabel">Email address</div>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="fgroup">
+        <div class="flabel">Password</div>
+        <div class="pw-wrap">
+          <input type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password">
+          <button class="pw-toggle" id="pwToggle" type="button">SHOW</button>
+        </div>
+      </div>
+      <div class="fgroup">
+        <div class="flabel">Confirm password</div>
+        <input type="password" id="confirm" placeholder="Re-enter password" autocomplete="new-password">
+      </div>
+
+      <button id="signupBtn" class="btn btn-primary">Create account</button>
+
+      <div class="or">or</div>
+
+      <button id="googleBtn" class="btn btn-ghost" type="button">
+        <svg width="16" height="16" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+          <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+          <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <p class="hint">By signing up you agree to our Terms of Service and Privacy Policy.</p>
+
+      <p class="auth-foot">Already have an account? <a href="/login">Sign in →</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-client.js"></script>
+<script>
+  if (_supabase) {
+    _supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) window.location.href = '/dashboard';
+    });
+  }
+
+  document.getElementById('pwToggle').addEventListener('click', () => {
+    const pw = document.getElementById('password');
+    const toggle = document.getElementById('pwToggle');
+    if (pw.type === 'password') { pw.type = 'text'; toggle.textContent = 'HIDE'; }
+    else { pw.type = 'password'; toggle.textContent = 'SHOW'; }
+  });
+
+  document.getElementById('signupBtn').addEventListener('click', async () => {
+    if (!_supabase) { window.location.href = '/dashboard'; return; }
+
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm  = document.getElementById('confirm').value;
+    const errEl    = document.getElementById('err');
+    const succEl   = document.getElementById('success');
+    const btn      = document.getElementById('signupBtn');
+
+    errEl.style.display  = 'none';
+    succEl.style.display = 'none';
+
+    if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display='block'; return; }
+    if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display='block'; return; }
+    if (password !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.style.display='block'; return; }
+
+    btn.textContent = 'Creating account…';
+    btn.disabled    = true;
+
+    const { error } = await _supabase.auth.signUp({ email, password });
+    if (error) {
+      errEl.textContent   = error.message;
+      errEl.style.display = 'block';
+      btn.textContent     = 'Create account';
+      btn.disabled        = false;
+    } else {
+      succEl.innerHTML    = 'Account created. Check your email to confirm your address, then <a href="/login">sign in</a>.';
+      succEl.style.display = 'block';
+      btn.textContent     = 'Account created';
+    }
+  });
+
+  document.getElementById('confirm').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('signupBtn').click();
+  });
+
+  document.getElementById('googleBtn').addEventListener('click', async () => {
+    if (!_supabase) { window.location.href = '/dashboard'; return; }
+
+    const errEl = document.getElementById('err');
+    errEl.style.display = 'none';
+
+    const { error } = await _supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/dashboard` }
+    });
+    if (error) {
+      errEl.textContent   = error.message;
+      errEl.style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Calendar — StreamInk Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+    --line:#E3DACA; --line-soft:#EDE6D8;
+    --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+    --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334; --gold:#B68A1E; --green:#2E8E6A;
+    --ink:#4B43C4; --ink-d:#39329F;
+    --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+    --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+    --r-lg:16px; --r-md:11px; --r-sm:8px;
+  }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--ff-b);background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:13.5px}
+    a{color:inherit;text-decoration:none}
+    button,input,select{font-family:inherit;color:inherit;font-size:inherit}
+    button{cursor:pointer}
+
+    /* ── SIDEBAR NAV ── */
+    .si-nav{width:240px;min-width:240px;background:var(--panel);border-right:1px solid var(--line-soft);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+    .si-nav-logo{padding:22px 20px 18px;border-bottom:1px solid var(--line-soft)}
+    .si-nav-logo img{height:24px;width:auto;display:block;margin-bottom:9px}
+    .si-nav-logo-tag{font-size:11px;color:var(--faint);font-family:var(--ff-m);letter-spacing:.1em;text-transform:uppercase}
+    .si-nav-section{padding:20px 16px 8px;font-size:10.5px;font-weight:700;color:var(--faint);letter-spacing:.18em;text-transform:uppercase;font-family:var(--ff-m)}
+    .si-nav-link{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:var(--r-sm);margin:2px 8px;font-size:13.5px;font-weight:500;color:var(--muted);transition:.15s}
+    .si-nav-link:hover{background:var(--field);color:var(--text)}
+    .si-nav-link.active{background:rgba(75,67,196,.08);color:var(--ink);font-weight:600}
+    .si-nav-link .ic{width:16px;height:16px;flex:none;opacity:.75}
+    .si-nav-bottom{margin-top:auto;padding:16px;border-top:1px solid var(--line-soft)}
+    .si-nav-bottom a{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-sm);font-size:12.5px;color:var(--muted)}
+    .si-nav-bottom a:hover{background:var(--field);color:var(--text)}
+
+    /* ── LAYOUT ── */
+    .cal-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+    /* ── TOP BAR ── */
+    .cal-topbar{
+      background:var(--panel);border-bottom:1px solid var(--line-soft);
+      padding:18px 30px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0
+    }
+    .cal-month-nav{display:flex;align-items:center;gap:14px}
+    .cal-nav-btn{border:1px solid var(--line);background:var(--field);width:34px;height:34px;border-radius:var(--r-sm);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--text)}
+    .cal-nav-btn:hover{border-color:var(--blue);color:var(--ink)}
+    .cal-month-label{font-family:var(--ff-d);font-size:19px;font-weight:600;color:var(--text);min-width:190px;text-align:center}
+    .cal-today-btn{padding:8px 18px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);transition:.15s}
+    .cal-today-btn:hover{border-color:var(--blue);color:var(--ink)}
+
+    .cal-legend{display:flex;gap:14px;align-items:center}
+    .leg-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted)}
+    .leg-dot{width:9px;height:9px;border-radius:50%}
+
+    /* ── BODY ── */
+    .cal-body{flex:1;display:flex;overflow:hidden}
+
+    /* ── GRID ── */
+    .cal-grid-wrap{flex:1;overflow-y:auto;padding:22px 28px}
+
+    .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:8px}
+    .cal-weekday{text-align:center;font-size:10.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.14em;padding:4px 0;font-family:var(--ff-m)}
+
+    .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+
+    .cal-day{
+      min-height:108px;background:var(--panel);border-radius:var(--r-md);border:1px solid var(--line);
+      padding:9px;cursor:pointer;transition:.15s;position:relative
+    }
+    .cal-day:hover{border-color:var(--blue);box-shadow:0 4px 14px -6px rgba(75,67,196,.18)}
+    .cal-day.today{border-color:var(--ink);border-width:2px;background:var(--panel-2)}
+    .cal-day.other-month{background:var(--panel-2);opacity:.5}
+    .cal-day.selected{border-color:var(--ink);background:rgba(75,67,196,.06)}
+    .cal-day.has-docs{border-color:#D6CBB4}
+
+    .day-num{font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+    .day-num .today-badge{background:var(--ink);color:#fff;border-radius:50%;width:21px;height:21px;display:flex;align-items:center;justify-content:center;font-size:11.5px}
+
+    .day-chips{display:flex;flex-direction:column;gap:3px}
+    .day-chip{padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+    .day-chip:hover{opacity:.85}
+    .chip-article {background:rgba(75,67,196,.1); color:var(--ink)}
+    .chip-blog    {background:rgba(46,142,172,.1); color:var(--cyan)}
+    .chip-magazine{background:rgba(123,65,201,.1); color:var(--violet)}
+    .chip-social  {background:rgba(182,138,30,.12); color:var(--gold)}
+    .chip-email   {background:rgba(46,142,106,.1); color:var(--green)}
+    .chip-default {background:var(--field);color:var(--muted)}
+
+    .day-more{font-size:10.5px;color:var(--faint);margin-top:2px;padding-left:2px}
+
+    /* ── SIDE PANEL ── */
+    .cal-panel{
+      width:312px;min-width:312px;background:var(--panel);border-left:1px solid var(--line-soft);
+      display:flex;flex-direction:column;overflow:hidden
+    }
+    .cal-panel-hdr{padding:20px 22px 16px;border-bottom:1px solid var(--line-soft);flex-shrink:0}
+    .cal-panel-date{font-family:var(--ff-d);font-size:18px;font-weight:600;color:var(--text);margin-bottom:2px}
+    .cal-panel-sub{font-size:12.5px;color:var(--faint)}
+    .cal-panel-scroll{overflow-y:auto;flex:1;padding:16px 22px}
+
+    .panel-doc-card{
+      background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-md);
+      padding:14px;margin-bottom:10px;transition:.15s
+    }
+    .panel-doc-card:hover{border-color:var(--blue)}
+    .panel-doc-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:4px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--ff-d)}
+    .panel-doc-meta{font-size:11.5px;color:var(--faint);display:flex;align-items:center;gap:6px;margin-bottom:10px}
+    .panel-doc-badge{padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;font-family:var(--ff-m);text-transform:uppercase;letter-spacing:.06em}
+    .panel-doc-open{
+      display:block;text-align:center;padding:8px;border-radius:999px;
+      background:var(--grad);color:#fff;font-size:12.5px;font-weight:600;
+      transition:.15s
+    }
+    .panel-doc-open:hover{transform:translateY(-1px)}
+
+    .panel-empty{padding:36px 0;text-align:center;color:var(--faint)}
+    .panel-empty svg{width:32px;height:32px;display:block;margin:0 auto 10px;stroke:var(--faint)}
+    .panel-empty p{font-size:12.5px;line-height:1.6}
+
+    .panel-create-btn{
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;padding:11px;border-radius:var(--r-md);border:1.5px dashed var(--line);
+      background:transparent;font-size:13px;font-weight:600;color:var(--faint);
+      cursor:pointer;transition:.15s;margin-top:4px
+    }
+    .panel-create-btn:hover{border-color:var(--blue);color:var(--ink);background:rgba(75,67,196,.04)}
+
+    /* ── STATS BAR ── */
+    .cal-stats{
+      display:flex;gap:24px;padding:12px 30px;background:var(--panel);border-top:1px solid var(--line-soft);flex-shrink:0
+    }
+    .cal-stat{text-align:center}
+    .cal-stat .val{font-family:var(--ff-d);font-size:19px;font-weight:600;color:var(--text)}
+    .cal-stat .lbl{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.14em;font-family:var(--ff-m);margin-top:1px}
+
+    /* ── SCHEDULE MODAL ── */
+    .s-modal{position:fixed;inset:0;background:rgba(33,28,20,.45);display:none;justify-content:center;align-items:center;z-index:1000}
+    .s-modal.open{display:flex}
+    .s-box{background:var(--panel);padding:26px;border-radius:var(--r-lg);width:400px;border:1px solid var(--line)}
+    .s-box h3{font-family:var(--ff-d);font-size:17px;font-weight:600;color:var(--text);margin-bottom:16px}
+    .s-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:7px;font-family:var(--ff-m)}
+    .s-label span{font-weight:400;color:var(--faint);text-transform:none;letter-spacing:0;font-family:var(--ff-b)}
+    .s-input,.s-select{width:100%;padding:10px 12px;border:1px solid var(--line);background:var(--field);border-radius:var(--r-sm);font-size:13.5px;font-family:inherit;margin-bottom:14px;color:var(--text)}
+    .s-input:focus,.s-select:focus{outline:none;border-color:var(--blue)}
+    .s-select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),linear-gradient(135deg,var(--faint) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+    .s-btns{display:flex;gap:10px;margin-top:6px}
+    .s-cancel{flex:1;padding:10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:13.5px;font-family:inherit;color:var(--text)}
+    .s-confirm{flex:2;padding:10px;border-radius:999px;border:none;background:var(--grad);color:#fff;cursor:pointer;font-weight:600;font-size:13.5px;font-family:inherit}
+  </style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="si-nav">
+  <div class="si-nav-logo">
+    <img src="/images/streamink-mark.png" alt="StreamInk Studio">
+    <div class="si-nav-logo-tag">Where ideas flow into words</div>
+  </div>
+
+  <div class="si-nav-section">Workspace</div>
+  <a href="/dashboard" class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg> Dashboard</a>
+  <a href="/templates"  class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Templates</a>
+  <a href="/brand-kit"  class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg> Brand kit</a>
+
+  <div class="si-nav-section">Create</div>
+  <a href="/article-templates" class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg> Article Engine</a>
+  <a href="/blog-templates"    class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg> Blog Engine</a>
+  <a href="/social-editor"     class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Social Posts</a>
+  <a href="/email-editor"      class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg> Email Newsletter</a>
+
+  <div class="si-nav-section">Tools</div>
+  <a href="/seo-tools" class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> SEO Tools</a>
+  <a href="/calendar"  class="si-nav-link active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Calendar</a>
+
+  <div class="si-nav-section">Account</div>
+  <a href="/settings" class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> Settings</a>
+  <a href="/pricing"  class="si-nav-link"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg> Pricing</a>
+
+  <div class="si-nav-bottom">
+    <a href="/dashboard">← Back to dashboard</a>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<div class="cal-main">
+
+  <!-- TOP BAR -->
+  <div class="cal-topbar">
+    <div class="cal-month-nav">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+      <div class="cal-month-label" id="monthLabel"></div>
+      <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      <button class="cal-today-btn" onclick="goToday()">Today</button>
+    </div>
+    <div class="cal-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--ink)"></div>Article</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--cyan)"></div>Blog</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--violet)"></div>Magazine</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--gold)"></div>Social</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>Email</div>
+    </div>
+  </div>
+
+  <div class="cal-body">
+
+    <!-- CALENDAR GRID -->
+    <div class="cal-grid-wrap">
+      <div class="cal-weekdays">
+        <div class="cal-weekday">Sun</div>
+        <div class="cal-weekday">Mon</div>
+        <div class="cal-weekday">Tue</div>
+        <div class="cal-weekday">Wed</div>
+        <div class="cal-weekday">Thu</div>
+        <div class="cal-weekday">Fri</div>
+        <div class="cal-weekday">Sat</div>
+      </div>
+      <div class="cal-days" id="calDays"></div>
+    </div>
+
+    <!-- SIDE PANEL -->
+    <div class="cal-panel">
+      <div class="cal-panel-hdr">
+        <div class="cal-panel-date" id="panelDate">Select a day</div>
+        <div class="cal-panel-sub" id="panelSub">Click any date to see content</div>
+      </div>
+      <div class="cal-panel-scroll" id="panelScroll">
+        <div class="panel-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <p>Click a date to view or plan content for that day.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="cal-stats">
+    <div class="cal-stat"><div class="val" id="statThisMonth">0</div><div class="lbl">This month</div></div>
+    <div class="cal-stat"><div class="val" id="statTotal">0</div><div class="lbl">Total docs</div></div>
+    <div class="cal-stat"><div class="val" id="statStreak">0</div><div class="lbl">Day streak</div></div>
+    <div class="cal-stat"><div class="val" id="statBusiest">–</div><div class="lbl">Busiest day</div></div>
+  </div>
+
+</div>
+
+<!-- SCHEDULE MODAL -->
+<div class="s-modal" id="scheduleModal">
+  <div class="s-box">
+    <h3>Schedule content</h3>
+    <label class="s-label">Title</label>
+    <input id="schTitle" class="s-input" placeholder="e.g. Monthly Blog Post">
+    <label class="s-label">Type</label>
+    <select id="schType" class="s-select">
+      <option value="blog">Blog Post</option>
+      <option value="article">Article</option>
+      <option value="social">Social Post</option>
+      <option value="email">Email Newsletter</option>
+      <option value="magazine">Magazine</option>
+    </select>
+    <label class="s-label">Date</label>
+    <input id="schDate" type="date" class="s-input">
+    <label class="s-label">Notes <span>(optional)</span></label>
+    <input id="schNotes" class="s-input" placeholder="e.g. Focus on spring promotions">
+    <div class="s-btns">
+      <button class="s-cancel" onclick="closeScheduleModal()">Cancel</button>
+      <button class="s-confirm" onclick="confirmSchedule()">Save to calendar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/docstore.js"></script>
+<script>
+const SCHED_KEY = 'StreamInk_Scheduled';
+const today     = new Date();
+let   viewYear  = today.getFullYear();
+let   viewMonth = today.getMonth();
+let   allDocs   = [];
+let   scheduled = [];
+let   selectedDate = null;
+
+/* ── EDITOR URL MAP ── */
+const editorMap = {
+  'center-hero':   '/editor?template=center-hero',
+  'hero-article':  '/editor?template=hero-article',
+  'grid-magazine': '/magazine',
+  'editorial':     '/article-editor?template=editorial',
+  'feature':       '/article-editor?template=feature',
+  'authority':     '/article-editor?template=authority',
+  'instagram':     '/social-editor',
+  'twitter':       '/social-editor',
+  'linkedin':      '/social-editor',
+  'facebook':      '/social-editor',
+  'story':         '/social-editor',
+  'email':         '/email-editor',
+};
+
+const createLinks = {
+  blog:     '/blog-templates',
+  article:  '/article-templates',
+  social:   '/social-editor',
+  email:    '/email-editor',
+  magazine: '/magazine',
+};
+
+function editorUrl(doc) {
+  const base = editorMap[doc.template] || '/editor';
+  return base + (base.includes('?') ? '&' : '?') + 'doc=' + doc.id;
+}
+
+/* ── CHIP CLASS ── */
+function chipClass(cat) {
+  return 'day-chip chip-' + (cat || 'default');
+}
+
+/* ── DATE HELPERS ── */
+function dateKey(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function parseKey(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() };
+}
+
+function formatFull(y, m, d) {
+  return new Date(y, m, d).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+}
+
+/* ── LOAD SCHEDULES ── */
+function loadScheduled() {
+  try { scheduled = JSON.parse(localStorage.getItem(SCHED_KEY) || '[]'); }
+  catch { scheduled = []; }
+}
+
+function saveScheduled() {
+  localStorage.setItem(SCHED_KEY, JSON.stringify(scheduled));
+}
+
+/* ── BUILD DOC MAP ── */
+function buildDocMap(docs) {
+  const map = {};
+  docs.forEach(doc => {
+    const iso = (doc.createdAt || '').slice(0, 10);
+    if (!iso) return;
+    if (!map[iso]) map[iso] = [];
+    map[iso].push({ ...doc, _type: 'saved' });
+  });
+  scheduled.forEach(s => {
+    if (!map[s.date]) map[s.date] = [];
+    map[s.date].push({ ...s, _type: 'scheduled' });
+  });
+  return map;
+}
+
+/* ── RENDER CALENDAR ── */
+function renderCalendar() {
+  const label = new Date(viewYear, viewMonth, 1)
+    .toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  document.getElementById('monthLabel').textContent = label;
+
+  const docMap     = buildDocMap(allDocs);
+  const firstDay   = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const prevDays   = new Date(viewYear, viewMonth, 0).getDate();
+
+  const grid = document.getElementById('calDays');
+  grid.innerHTML = '';
+
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    let cellYear = viewYear, cellMonth = viewMonth, cellDay;
+    let isOtherMonth = false;
+
+    if (i < firstDay) {
+      cellMonth   = viewMonth - 1;
+      cellDay     = prevDays - firstDay + i + 1;
+      isOtherMonth = true;
+      if (cellMonth < 0) { cellMonth = 11; cellYear--; }
+    } else if (i >= firstDay + daysInMonth) {
+      cellMonth   = viewMonth + 1;
+      cellDay     = i - firstDay - daysInMonth + 1;
+      isOtherMonth = true;
+      if (cellMonth > 11) { cellMonth = 0; cellYear++; }
+    } else {
+      cellDay = i - firstDay + 1;
+    }
+
+    const isToday = cellYear === today.getFullYear() && cellMonth === today.getMonth() && cellDay === today.getDate() && !isOtherMonth;
+    const key     = dateKey(cellYear, cellMonth, cellDay);
+    const docsForDay = docMap[key] || [];
+    const isSelected = selectedDate === key;
+
+    const div = document.createElement('div');
+    div.className = 'cal-day' +
+      (isOtherMonth ? ' other-month' : '') +
+      (isToday      ? ' today'       : '') +
+      (isSelected   ? ' selected'    : '') +
+      (docsForDay.length ? ' has-docs' : '');
+
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num';
+    if (isToday) {
+      numEl.innerHTML = `<span class="today-badge">${cellDay}</span>`;
+    } else {
+      numEl.textContent = cellDay;
+    }
+
+    const chipsEl = document.createElement('div');
+    chipsEl.className = 'day-chips';
+
+    const maxShow = 3;
+    docsForDay.slice(0, maxShow).forEach(doc => {
+      const chip = document.createElement('div');
+      chip.className = chipClass(doc.category || doc.type);
+      chip.textContent = doc.title || doc.category || 'Untitled';
+      chip.title = doc.title || '';
+      chipsEl.appendChild(chip);
+    });
+
+    if (docsForDay.length > maxShow) {
+      const more = document.createElement('div');
+      more.className = 'day-more';
+      more.textContent = `+${docsForDay.length - maxShow} more`;
+      chipsEl.appendChild(more);
+    }
+
+    div.appendChild(numEl);
+    div.appendChild(chipsEl);
+    div.addEventListener('click', () => selectDay(cellYear, cellMonth, cellDay, docsForDay, key));
+
+    grid.appendChild(div);
+  }
+
+  renderStats(docMap);
+}
+
+/* ── SELECT DAY ── */
+function selectDay(y, m, d, docs, key) {
+  selectedDate = key;
+  renderCalendar();
+
+  document.getElementById('panelDate').textContent = formatFull(y, m, d);
+  document.getElementById('panelSub').textContent  = docs.length
+    ? `${docs.length} piece${docs.length !== 1 ? 's' : ''} of content`
+    : 'No content planned';
+
+  const scroll = document.getElementById('panelScroll');
+
+  if (!docs.length) {
+    scroll.innerHTML = `
+      <div class="panel-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+        <p>No content for this day.<br>Schedule something or create a new document.</p>
+      </div>
+      <a href="/templates" class="panel-create-btn">+ Create new document</a>
+      <button class="panel-create-btn" style="margin-top:8px" onclick="openScheduleModal('${key}')">Schedule content</button>`;
+    return;
+  }
+
+  scroll.innerHTML = docs.map(doc => {
+    const cat    = doc.category || doc.type || 'blog';
+    const colors = { article:'#4B43C4', blog:'#2E8EAC', magazine:'#7B41C9', social:'#B68A1E', email:'#2E8E6A' };
+    const color  = colors[cat] || '#6E6557';
+    const isSaved = doc._type === 'saved';
+    const time    = new Date(doc.createdAt || doc.date + 'T00:00:00').toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+
+    return `
+<div class="panel-doc-card">
+  <div class="panel-doc-title">${escHtml(doc.title || 'Untitled')}</div>
+  <div class="panel-doc-meta">
+    <span class="panel-doc-badge" style="background:${color}1a;color:${color}">${cat}</span>
+    ${isSaved ? time : '<span style="color:var(--faint)">Scheduled</span>'}
+  </div>
+  ${isSaved
+    ? `<a href="${editorUrl(doc)}" class="panel-doc-open">Open →</a>`
+    : `<div style="display:flex;gap:6px">
+         <a href="${createLinks[doc.type] || '/templates'}" class="panel-doc-open" style="flex:1">Create →</a>
+         <button onclick="deleteScheduled('${doc.id}')" style="padding:7px 10px;border-radius:var(--r-sm);border:1px solid rgba(182,83,52,.3);background:var(--panel);color:var(--clay);cursor:pointer;font-size:12px;font-weight:600">✕</button>
+       </div>`
+  }
+</div>`;
+  }).join('') +
+  `<button class="panel-create-btn" onclick="openScheduleModal('${key}')">Schedule more content</button>`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ── STATS ── */
+function renderStats(docMap) {
+  const monthKey = `${viewYear}-${String(viewMonth+1).padStart(2,'0')}`;
+  let thisMonth  = 0;
+  let busiestKey = '', busiestCount = 0;
+
+  Object.entries(docMap).forEach(([key, docs]) => {
+    if (key.startsWith(monthKey)) thisMonth += docs.length;
+    if (docs.length > busiestCount) { busiestCount = docs.length; busiestKey = key; }
+  });
+
+  const busiestLabel = busiestKey
+    ? new Date(busiestKey + 'T00:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' })
+    : '–';
+
+  /* streak: count consecutive days from today backwards */
+  let streak = 0;
+  const check = new Date(today);
+  while (true) {
+    const k = check.toISOString().slice(0,10);
+    if (docMap[k] && docMap[k].some(d => d._type === 'saved')) {
+      streak++;
+      check.setDate(check.getDate() - 1);
+    } else break;
+  }
+
+  document.getElementById('statThisMonth').textContent = thisMonth;
+  document.getElementById('statTotal').textContent     = allDocs.length;
+  document.getElementById('statStreak').textContent    = streak + ' day' + (streak !== 1 ? 's' : '');
+  document.getElementById('statBusiest').textContent   = busiestLabel;
+}
+
+/* ── NAVIGATION ── */
+function changeMonth(delta) {
+  viewMonth += delta;
+  if (viewMonth > 11) { viewMonth = 0;  viewYear++; }
+  if (viewMonth < 0)  { viewMonth = 11; viewYear--; }
+  renderCalendar();
+}
+
+function goToday() {
+  viewYear  = today.getFullYear();
+  viewMonth = today.getMonth();
+  renderCalendar();
+}
+
+/* ── SCHEDULE MODAL ── */
+let pendingScheduleDate = null;
+
+function openScheduleModal(dateKey) {
+  pendingScheduleDate = dateKey;
+  document.getElementById('schDate').value  = dateKey;
+  document.getElementById('schTitle').value = '';
+  document.getElementById('schNotes').value = '';
+  document.getElementById('scheduleModal').classList.add('open');
+  setTimeout(() => document.getElementById('schTitle').focus(), 50);
+}
+
+function closeScheduleModal() {
+  document.getElementById('scheduleModal').classList.remove('open');
+  pendingScheduleDate = null;
+}
+
+function confirmSchedule() {
+  const title = document.getElementById('schTitle').value.trim();
+  const type  = document.getElementById('schType').value;
+  const date  = document.getElementById('schDate').value;
+  const notes = document.getElementById('schNotes').value.trim();
+  if (!title || !date) { alert('Please fill in a title and date'); return; }
+
+  const entry = {
+    id:    Date.now().toString(36) + Math.random().toString(36).slice(2),
+    title, type, date, notes,
+    _type: 'scheduled',
+  };
+  scheduled.push(entry);
+  saveScheduled();
+  closeScheduleModal();
+
+  /* re-select the day to refresh panel */
+  const { y, m, d } = parseKey(date);
+  const key         = dateKey(y, m, d);
+  const docMap      = buildDocMap(allDocs);
+  selectDay(y, m, d, docMap[key] || [], key);
+
+  viewYear  = y;
+  viewMonth = m;
+  renderCalendar();
+  showToast('Scheduled to calendar');
+}
+
+function deleteScheduled(id) {
+  scheduled = scheduled.filter(s => s.id !== id);
+  saveScheduled();
+  if (selectedDate) {
+    const { y, m, d } = parseKey(selectedDate);
+    const docMap      = buildDocMap(allDocs);
+    selectDay(y, m, d, docMap[selectedDate] || [], selectedDate);
+  }
+  renderCalendar();
+  showToast('Removed from calendar');
+}
+
+/* ── TOAST ── */
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:28px;right:28px;background:#211C14;color:#FBF7EF;padding:12px 20px;border-radius:11px;font-size:13.5px;font-weight:600;z-index:2000;box-shadow:0 8px 24px rgba(33,28,20,.3);font-family:Hanken Grotesk,system-ui,sans-serif';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+/* ── CLOSE MODAL ON BACKDROP ── */
+document.getElementById('scheduleModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeScheduleModal();
+});
+
+/* ── INIT ── */
+(async () => {
+  loadScheduled();
+  allDocs = await DocStore.getAll();
+  renderCalendar();
+
+  /* auto-select today */
+  const key    = today.toISOString().slice(0,10);
+  const docMap = buildDocMap(allDocs);
+  selectDay(today.getFullYear(), today.getMonth(), today.getDate(), docMap[key] || [], key);
+})();
+</script>
+<script src="/js/config.js"></script>
+<script src="/js/auth-gate.js"></script>
+</body>
+</html>

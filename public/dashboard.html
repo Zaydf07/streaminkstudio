@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamInk Studio — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+  --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334; --teal:#2E8EAC;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+h1{font-family:var(--ff-d);font-weight:500;letter-spacing:-.015em;line-height:1.08}
+
+/* ── LAYOUT ── */
+.dash{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.side{width:232px;flex:none;background:var(--panel);border-right:1px solid var(--line-soft);padding:18px 13px 16px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.side::-webkit-scrollbar{width:4px}
+.side::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.side-brand{display:flex;align-items:center;gap:10px;padding:4px 9px 16px}
+.side-brand .mark{width:auto;height:30px;display:block;flex:none}
+.side-brand b{font-family:var(--ff-d);font-weight:600;font-size:15.5px;display:block;line-height:1.1}
+.side-brand span{font-family:var(--ff-m);letter-spacing:.2em;font-size:9px;color:var(--faint)}
+.side-grp{font-family:var(--ff-m);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);padding:14px 9px 6px}
+.side-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:none;border-radius:var(--r-sm);padding:8px 9px;width:100%;text-align:left;text-decoration:none;transition:.15s}
+.side-item:hover{background:var(--panel-2);color:var(--text)}
+.side-item.on{background:var(--grad);color:#fff}
+.side-item .sdot{width:8px;height:8px;border-radius:50%;flex:none}
+.side-item.disabled{opacity:.4;pointer-events:none}
+.side-foot{margin-top:auto;padding:10px 9px 0;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:2px}
+.side-email{font-family:var(--ff-m);font-size:10px;color:var(--faint);padding:4px 9px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-item.signout{color:var(--clay)}
+
+/* ── MAIN ── */
+.dash-main{flex:1;min-width:0;padding:26px 30px 60px}
+.dash-hello{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.dash-hello h1{font-size:clamp(24px,2.6vw,30px)}
+.dash-hello p{color:var(--muted);font-size:14px;margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:13px;border-radius:999px;padding:10px 19px;border:1px solid transparent;transition:.18s;text-decoration:none}
+.btn-primary{color:#fff;background:var(--grad);box-shadow:0 6px 16px -6px rgba(91,108,240,.55)}
+.btn-primary:hover{transform:translateY(-1px)}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px}
+@media(max-width:900px){.stats{grid-template-columns:1fr}}
+.stat{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px}
+.stat .sic{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line)}
+.stat .sic::after{content:"";width:13px;height:13px;border-radius:4px;background:var(--hue,var(--ink));opacity:.6}
+.stat b{font-family:var(--ff-d);font-weight:600;font-size:22px;display:block;line-height:1.1}
+.stat .slabel{font-size:12px;color:var(--muted)}
+.stat .ssub{font-size:11px;color:var(--faint)}
+
+/* ── SECTION TITLE ── */
+.dash-sec{font-family:var(--ff-m);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+
+/* ── QUICK ACTIONS ── */
+.qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:14px}
+@media(max-width:980px){.qgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.qgrid{grid-template-columns:1fr}}
+.qcard{--hue:var(--blue);position:relative;display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:15px 16px;text-align:left;transition:.18s;overflow:hidden;text-decoration:none}
+.qcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--hue);opacity:.85}
+.qcard:hover{transform:translateY(-3px);border-color:var(--hue);box-shadow:0 14px 32px -16px rgba(91,108,240,.45)}
+.qcard .qic{width:42px;height:42px;flex:none;border-radius:11px;display:grid;place-items:center;font-family:var(--ff-d);font-weight:600;font-size:18px;color:var(--hue);background:color-mix(in srgb,var(--hue) 14%,var(--panel-2));border:1px solid color-mix(in srgb,var(--hue) 30%,var(--line));transition:transform .35s cubic-bezier(.2,.8,.3,1.4)}
+.qcard:hover .qic{transform:scale(1.12) rotate(-4deg)}
+.qcard b{font-size:14px;display:block}
+.qcard span{font-size:11.5px;color:var(--faint)}
+.qcard .qarr{margin-left:auto;color:var(--hue);font-weight:700;transition:.18s}
+.qcard:hover .qarr{transform:translateX(4px)}
+.muse{font-size:12px;color:var(--faint);margin:4px 0 30px}
+.muse b{color:var(--muted);font-weight:600}
+
+/* ── DOCUMENTS ── */
+.doc-tools{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.search{flex:1;min-width:190px;max-width:290px;position:relative}
+.search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:9px 16px 9px 36px;font-size:13px}
+.search input::placeholder{color:var(--faint)}
+.search input:focus{outline:none;border-color:var(--blue)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--faint)}
+select{appearance:none;background-color:var(--panel);background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),linear-gradient(135deg,var(--faint) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;border:1px solid var(--line);border-radius:999px;padding:9px 30px 9px 16px;font-size:13px;color:var(--muted);width:auto;min-width:130px}
+select:focus{outline:none;border-color:var(--blue)}
+
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.doc-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+.doc-card:hover{transform:translateY(-3px);border-color:var(--hue,var(--ink));box-shadow:0 14px 32px -16px rgba(75,67,196,.35)}
+.doc-thumb{--hue:var(--ink);height:104px;display:flex;align-items:center;justify-content:center;position:relative;background:color-mix(in srgb,var(--hue) 12%,var(--panel-2));border-bottom:1px solid var(--line)}
+.doc-thumb .dic{font-family:var(--ff-d);font-weight:600;font-size:28px;color:var(--hue)}
+.doc-cat-badge{position:absolute;top:10px;left:10px;font-family:var(--ff-m);font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--hue)}
+.doc-body{padding:13px 15px 15px}
+.doc-title{font-family:var(--ff-d);font-weight:600;font-size:15px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-meta{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:8px}
+.doc-tpl{font-family:var(--ff-m);background:var(--field);border:1px solid var(--line);padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;color:var(--muted)}
+.doc-actions{display:flex;gap:8px;margin-top:12px}
+.doc-open-btn{flex:1;padding:9px;border-radius:999px;border:none;background:var(--grad);color:#fff;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;text-align:center;transition:.18s}
+.doc-open-btn:hover{transform:translateY(-1px)}
+.doc-del-btn{padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--clay);font-size:12px;cursor:pointer;transition:.18s}
+.doc-del-btn:hover{border-color:var(--clay);background:color-mix(in srgb,var(--clay) 8%,var(--panel))}
+
+/* ── EMPTY ── */
+.doc-empty{grid-column:1/-1;border:1px dashed var(--line);border-radius:var(--r-lg);padding:44px 24px;text-align:center}
+.doc-empty .dei{font-family:var(--ff-d);font-weight:600;font-size:30px;color:var(--ink)}
+.doc-empty h3{font-family:var(--ff-d);font-weight:600;font-size:18px;margin-top:10px}
+.doc-empty p{color:var(--faint);font-size:13px;margin:6px 0 16px}
+.doc-sugs{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.chip{flex:none;font-size:12px;font-weight:500;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 13px;transition:.15s;cursor:pointer;text-decoration:none}
+.chip:hover{color:var(--text);border-color:var(--blue)}
+
+/* ── CARD ENTER ANIMATION ── */
+@keyframes cardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.doc-card.visible,.qcard.visible,.stat.visible{animation:cardIn .35s ease both}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--text);color:var(--bg);border-radius:999px;padding:12px 22px;font-size:13px;font-weight:600;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 14px 40px -12px rgba(33,28,20,.4);z-index:1000}
+.toast.show{opacity:1}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(33,28,20,.45);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:999}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;width:340px;text-align:center;box-shadow:0 24px 60px -12px rgba(33,28,20,.35)}
+
+/* ── MOBILE ── */
+.mob-bar{display:none;align-items:center;justify-content:space-between;background:var(--panel);border-bottom:1px solid var(--line-soft);padding:12px 16px;position:sticky;top:0;z-index:30}
+.mob-logo{font-family:var(--ff-d);font-size:17px;font-weight:600}
+.mob-menu-btn{background:none;border:none;font-size:22px;padding:4px;cursor:pointer}
+.mob-drawer{position:fixed;inset:0;z-index:40;display:none}
+.mob-drawer.open{display:block}
+.mob-backdrop{position:absolute;inset:0;background:rgba(33,28,20,.45)}
+.mob-panel{position:absolute;top:0;left:0;bottom:0;width:260px;background:var(--panel);padding:18px 13px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+@media(max-width:760px){.side{display:none}.mob-bar{display:flex}.dash-main{padding:20px 16px 60px}}
+.modal-box h3{font-family:var(--ff-d);font-weight:600;font-size:18px;margin-bottom:8px}
+.modal-box p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.modal-btns{display:flex;gap:10px}
+.modal-cancel{flex:1;padding:10px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;font-weight:600;font-family:inherit;transition:.15s}
+.modal-cancel:hover{border-color:var(--blue);color:var(--text)}
+.modal-confirm{flex:1;padding:10px;border:none;border-radius:999px;background:var(--clay);color:#fff;cursor:pointer;font-weight:700;font-family:inherit;transition:.15s}
+.modal-confirm:hover{transform:translateY(-1px)}
+</style>
+</head>
+<body>
+
+<!-- MOBILE BAR -->
+<div class="mob-bar">
+  <span class="mob-logo">StreamInk</span>
+  <button class="mob-menu-btn" onclick="document.getElementById('mobDrawer').classList.add('open')">☰</button>
+</div>
+<div class="mob-drawer" id="mobDrawer">
+  <div class="mob-backdrop" onclick="document.getElementById('mobDrawer').classList.remove('open')"></div>
+  <div class="mob-panel" id="mobPanel"></div>
+</div>
+
+<div class="dash">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="side" id="dashSide">
+    <a class="side-brand" href="/"><img class="mark" src="/images/streamink-mark.png" alt="StreamInk"><span><b>StreamInk</b><span>STUDIO</span></span></a>
+
+    <p class="side-grp">Workspace</p>
+    <a href="/dashboard" class="side-item on">Dashboard</a>
+    <a href="/blog-templates" class="side-item">＋ New document</a>
+    <a href="/brand-kit" class="side-item">Brand kit</a>
+
+    <p class="side-grp">Create</p>
+    <a href="/article-templates" class="side-item"><span class="sdot" style="background:#2E8EAC"></span> Article Engine</a>
+    <a href="/blog-templates" class="side-item"><span class="sdot" style="background:#3A60C2"></span> Blog Engine</a>
+    <a href="/social-editor" class="side-item"><span class="sdot" style="background:#4B43C4"></span> Social Posts</a>
+    <a href="/email-editor" class="side-item"><span class="sdot" style="background:#5A40BE"></span> Email Newsletter</a>
+    <a href="/book-writer?view=editor" class="side-item"><span class="sdot" style="background:#6E3BC8"></span> Book Writer</a>
+    <a href="/script-writer?view=editor" class="side-item"><span class="sdot" style="background:#8E3FBE"></span> Script Writer</a>
+
+    <p class="side-grp">Workspace</p>
+    <a href="/documents.html" class="side-item">📄 My Documents</a>
+    <a href="/brand-kit" class="side-item">🎨 Brand Kit</a>
+
+    <p class="side-grp">Account</p>
+    <a href="/settings" class="side-item">⚙️ Settings</a>
+    <a href="/pricing" class="side-item">💳 Pricing</a>
+
+    <p class="side-grp">Coming Soon</p>
+    <span class="side-item disabled">Poster Studio</span>
+
+    <div class="side-foot">
+      <div class="side-email" id="userEmail"></div>
+      <a href="/" class="side-item">← Back to home</a>
+      <a href="#" id="logoutBtn" class="side-item signout" style="display:none" onclick="handleLogout(event)">Sign out</a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="dash-main">
+
+    <div class="dash-hello">
+      <div>
+        <h1 id="dashGreeting">Good morning</h1>
+        <p>Here's your content workspace. Pick up where you left off.</p>
+      </div>
+      <a href="/blog-templates" class="btn btn-primary">＋ New document</a>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat"><span class="sic" style="--hue:var(--ink)"></span><div><b id="statTotal">0</b><span class="slabel">Documents</span><br><span class="ssub">All saved content</span></div></div>
+      <div class="stat"><span class="sic" style="--hue:var(--cyan)"></span><div><b id="statWeek">0</b><span class="slabel">Created this week</span><br><span class="ssub">In the last 7 days</span></div></div>
+      <div class="stat"><span class="sic" style="--hue:var(--violet)"></span><div><b id="statCats">0</b><span class="slabel">Content types</span><br><span class="ssub">Different categories used</span></div></div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <p class="dash-sec">Quick start</p>
+    <div class="qgrid">
+      <a href="/article-templates" class="qcard" style="--hue:#2E8EAC"><span class="qic">Ar</span><span><b>Article Engine</b><span>Editorial · Feature · Authority</span></span><span class="qarr">→</span></a>
+      <a href="/blog-templates" class="qcard" style="--hue:#3A60C2"><span class="qic">Bl</span><span><b>Blog Engine</b><span>Center Hero · Magazine · Minimal</span></span><span class="qarr">→</span></a>
+      <a href="/social-editor" class="qcard" style="--hue:#4B43C4"><span class="qic">So</span><span><b>Social Posts</b><span>Instagram · X · LinkedIn</span></span><span class="qarr">→</span></a>
+      <a href="/email-editor" class="qcard" style="--hue:#5A40BE"><span class="qic">Em</span><span><b>Email Newsletter</b><span>AI-crafted, ready to send</span></span><span class="qarr">→</span></a>
+      <a href="/book-writer?view=editor" class="qcard" style="--hue:#6E3BC8"><span class="qic">Bk</span><span><b>AI Book Writer</b><span>Novels · Light novels · Memoirs</span></span><span class="qarr">→</span></a>
+      <a href="/script-writer?view=editor" class="qcard" style="--hue:#8E3FBE"><span class="qic">Sc</span><span><b>AI Script Writer</b><span>Film · TV · Ads · YouTube</span></span><span class="qarr">→</span></a>
+    </div>
+    <p class="muse">Today's spark: <b>nutritionists sharing healthy tips · directors writing film scripts · founders launching with great copy</b></p>
+
+    <!-- DOCUMENTS -->
+    <p class="dash-sec">My documents</p>
+    <div class="doc-tools">
+      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="searchInput" placeholder="Search documents…"></label>
+      <select id="filterCat">
+        <option value="">All types</option>
+        <option value="article">Article</option>
+        <option value="blog">Blog</option>
+        <option value="magazine">Magazine</option>
+        <option value="social">Social</option>
+        <option value="email">Email</option>
+        <option value="book">Book</option>
+        <option value="script">Script</option>
+      </select>
+    </div>
+
+    <div class="doc-grid" id="docGrid"></div>
+
+  </main>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <h3>Delete document?</h3>
+    <p>This can't be undone. The document will be permanently removed from your library.</p>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="modal-confirm" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-client.js"></script>
+<script>if(_supabase){_supabase.auth.getUser().then(({data:{user}})=>{if(!user)window.location.href='/login';});}</script>
+<script src="/js/docstore.js"></script>
+<script>
+
+/* ── GREETING ── */
+(function(){
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dashGreeting').textContent = greet;
+})();
+
+/* ── SCROLL REVEAL ── */
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const d = e.target.dataset.delay || 0;
+      setTimeout(() => e.target.classList.add('visible'), +d);
+      revealObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+function observeCards() {
+  document.querySelectorAll('.stat,.qcard,.doc-card').forEach((el, i) => {
+    el.dataset.delay = i * 60;
+    revealObserver.observe(el);
+  });
+}
+
+/* ── STATS ── */
+async function loadStats() {
+  const docs     = await DocStore.getAll();
+  const week     = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const thisWeek = docs.filter(d => new Date(d.createdAt).getTime() > week).length;
+  const cats     = [...new Set(docs.map(d => d.category))].length;
+  document.getElementById('statTotal').textContent = docs.length;
+  document.getElementById('statWeek').textContent  = thisWeek;
+  document.getElementById('statCats').textContent  = cats;
+}
+
+/* ── EDITOR URL MAP ── */
+const editorMap = {
+  'center-hero':   '/editor?template=center-hero',
+  'hero-article':  '/editor?template=hero-article',
+  'grid-magazine': '/magazine',
+  'editorial':     '/article-editor?template=editorial',
+  'feature':       '/article-editor?template=feature',
+  'authority':     '/article-editor?template=authority',
+  'instagram':     '/social-editor',
+  'twitter':       '/social-editor',
+  'linkedin':      '/social-editor',
+  'facebook':      '/social-editor',
+  'story':         '/social-editor',
+  'email':         '/email-editor',
+  'book':          '/book-writer',
+  'script':        '/script-writer',
+};
+
+function editorUrl(doc) {
+  if ((doc.category || '').toLowerCase() === 'book')   return `/book-writer?id=${doc.id}`;
+  if ((doc.category || '').toLowerCase() === 'script') return `/script-writer?id=${doc.id}`;
+  const base = editorMap[doc.template] || '/editor';
+  const sep  = base.includes('?') ? '&' : '?';
+  return `${base}${sep}doc=${doc.id}`;
+}
+
+/* ── CATEGORY CONFIG ── */
+const catConfig = {
+  article:  { mono: 'Ar', hue: '#2E8EAC', class: 'Article'  },
+  blog:     { mono: 'Bl', hue: '#3A60C2', class: 'Blog'     },
+  magazine: { mono: 'Ma', hue: '#7B41C9', class: 'Magazine' },
+  poster:   { mono: 'Po', hue: '#B65334', class: 'Poster'   },
+  social:   { mono: 'So', hue: '#4B43C4', class: 'Social'   },
+  email:    { mono: 'Em', hue: '#5A40BE', class: 'Email'    },
+  book:     { mono: 'Bk', hue: '#6E3BC8', class: 'Book'     },
+  script:   { mono: 'Sc', hue: '#8E3FBE', class: 'Script'   },
+};
+
+function catOf(doc) {
+  return catConfig[(doc.category || '').toLowerCase()] || { mono: 'Ar', hue: '#2E8EAC', class: 'Article' };
+}
+
+/* ── RENDER ── */
+function renderDocs(docs) {
+  const grid = document.getElementById('docGrid');
+
+  if (!docs.length) {
+    grid.innerHTML = `
+      <div class="doc-empty">
+        <p class="dei">Bl</p>
+        <h3>No documents yet</h3>
+        <p>Generate your first piece of content and it will be saved here.</p>
+        <a href="/blog-templates" class="btn btn-primary">＋ Create your first document</a>
+        <div class="doc-sugs">
+          <a href="/blog-templates" class="chip">Try a blog post</a>
+          <a href="/social-editor" class="chip">Make a social post</a>
+          <a href="/book-writer?view=editor" class="chip">Start a book</a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = docs.map(doc => {
+    const cat  = catOf(doc);
+    const date = formatDate(doc.updatedAt || doc.createdAt);
+    return `
+<div class="doc-card" data-id="${doc.id}" style="--hue:${cat.hue}">
+  <div class="doc-thumb" style="--hue:${cat.hue}">
+    <span class="dic">${cat.mono}</span>
+    <span class="doc-cat-badge" style="--hue:${cat.hue}">${doc.category || 'Content'}</span>
+  </div>
+  <div class="doc-body">
+    <div class="doc-title">${escHtml(doc.title || 'Untitled')}</div>
+    <div class="doc-meta">
+      <span class="doc-tpl">${doc.template || ''}</span>
+      ${date}
+    </div>
+    <div class="doc-actions">
+      <a href="${editorUrl(doc)}" class="doc-open-btn">Open →</a>
+      <button class="doc-del-btn" onclick="promptDelete('${doc.id}')">Delete</button>
+    </div>
+  </div>
+</div>`;
+  }).join('');
+
+  observeCards();
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── FILTER + SEARCH ── */
+async function filterAndRender() {
+  const q   = document.getElementById('searchInput').value.toLowerCase();
+  const cat = document.getElementById('filterCat').value;
+  let docs  = await DocStore.getAll();
+
+  if (cat) docs = docs.filter(d => d.category === cat);
+  if (q)   docs = docs.filter(d => (d.title || '').toLowerCase().includes(q));
+
+  renderDocs(docs);
+}
+
+document.getElementById('searchInput').addEventListener('input',  filterAndRender);
+document.getElementById('filterCat').addEventListener('change', filterAndRender);
+
+/* ── DELETE ── */
+let pendingDeleteId = null;
+
+window.promptDelete = id => {
+  pendingDeleteId = id;
+  document.getElementById('deleteModal').classList.add('open');
+};
+
+window.closeDeleteModal = () => {
+  pendingDeleteId = null;
+  document.getElementById('deleteModal').classList.remove('open');
+};
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+  if (!pendingDeleteId) return;
+  await DocStore.delete(pendingDeleteId);
+  closeDeleteModal();
+  loadStats();
+  filterAndRender();
+  showToast('Document deleted');
+});
+
+/* ── TOAST ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ── LOGOUT ── */
+window.handleLogout = async e => {
+  e.preventDefault();
+  if (_supabase) await _supabase.auth.signOut();
+  window.location.href = '/login';
+};
+
+/* ── INIT ── */
+(async () => {
+  if (_supabase) {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (user) {
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('logoutBtn').style.display = 'flex';
+    }
+  }
+  observeCards();
+  await loadStats();
+  await filterAndRender();
+  // sync sidebar to mobile drawer
+  const mob = document.getElementById('mobPanel');
+  const side = document.getElementById('dashSide');
+  if (mob && side) mob.innerHTML = side.innerHTML;
+})();
+</script>
+<script src="/js/config.js"></script>
+<script src="/js/auth-gate.js"></script>
+</body>
+</html>

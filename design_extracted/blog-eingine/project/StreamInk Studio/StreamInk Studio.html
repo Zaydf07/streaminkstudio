@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamInk Studio — All screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   StreamInk Studio — unified dark design system
+   ============================================================ */
+:root{
+  --bg:#F1ECE1; --stage:#E7E0D1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+  --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+/* ----- screens ----- */
+.screen{display:none}
+.screen.on{display:block}
+.screen.editor.on{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* ----- screen switcher ----- */
+.snav{position:fixed;right:18px;bottom:18px;z-index:200}
+.snav-btn{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#fff;background:var(--grad);border:none;border-radius:999px;padding:11px 18px;box-shadow:0 10px 30px -8px rgba(91,108,240,.7)}
+.snav-menu{position:absolute;right:0;bottom:48px;width:230px;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-md);padding:8px;display:none;box-shadow:0 24px 60px -12px rgba(0,0,0,.7)}
+.snav.open .snav-menu{display:block}
+.snav-menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font-size:13px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:var(--r-sm);padding:9px 11px}
+.snav-menu button:hover{background:var(--panel);color:var(--text)}
+.snav-menu .grp{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding:8px 11px 4px}
+.snav-home{display:block;font-size:12px;font-weight:600;color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:var(--r-sm);padding:9px 11px;margin:2px 0}
+.snav-home:hover{background:color-mix(in srgb,var(--ink) 15%,transparent)}
+
+/* ----- app/top bars ----- */
+.appbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:16px;height:58px;padding:0 18px;background:rgba(250,247,240,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+.screen.editor .appbar{position:relative;flex:none}
+.ab-left{display:flex;align-items:center;gap:12px;min-width:0}
+.icon-btn{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;transition:.18s}
+.icon-btn:hover{color:var(--text);border-color:var(--blue)}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--faint);white-space:nowrap}
+.crumb b{color:var(--text);font-weight:600}
+.steps{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--faint)}
+.step{display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px}
+.step .n{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;background:var(--panel-2);border:1px solid var(--line)}
+.step.on{color:var(--text);background:var(--panel-2);border:1px solid var(--line)}
+.step.on .n{background:var(--grad);border:none;color:#fff}
+.step.done .n{background:var(--panel-2);color:#5CE8B5}
+.step-sep{width:16px;height:1px;background:var(--line)}
+.ab-right{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:13px;border-radius:999px;padding:9px 17px;border:1px solid transparent;transition:.18s}
+.btn-primary{color:#fff;background:var(--grad);box-shadow:0 6px 16px -6px rgba(91,108,240,.55)}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-ghost{color:var(--muted);border-color:var(--line);background:transparent}
+.btn-ghost:hover{color:var(--text);border-color:var(--blue)}
+.skip{font-size:13px;color:var(--faint)}
+.skip:hover{color:var(--muted)}
+.save-state{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:6px}
+.save-state .dot{width:7px;height:7px;border-radius:50%;background:#5CE8B5}
+.hist-btn{width:30px;height:30px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--muted)}
+.hist-btn:hover{color:var(--text);border-color:var(--blue)}
+@media(max-width:980px){.steps{display:none}}
+
+/* ----- gallery pages ----- */
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.page-head{text-align:center;padding:40px 0 6px}
+.eyebrow{display:inline-flex;align-items:center;gap:11px;font-family:var(--ff-m);font-size:11px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;padding:0;margin-bottom:18px;color:var(--clay)}
+.eyebrow::before{content:"";width:26px;height:1px;background:currentColor;opacity:.55}
+.eyebrow.cy{color:var(--clay)}
+.eyebrow.vi{color:var(--ink)}
+h1{font-family:var(--ff-d);font-weight:500;font-size:clamp(28px,3.6vw,42px);letter-spacing:-.015em;line-height:1.08}
+h1 .g{color:var(--ink);font-style:italic;font-weight:500}
+.page-sub{color:var(--muted);font-size:14.5px;max-width:540px;margin:11px auto 0}
+.toolbar{position:sticky;top:58px;z-index:50;background:rgba(243,238,228,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft);padding:15px 0 13px;margin-top:24px}
+.toolbar-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.search{flex:1;min-width:190px;max-width:290px;position:relative}
+.search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:9px 16px 9px 36px;font-size:13px}
+.search input::placeholder{color:var(--faint)}
+.search input:focus{outline:none;border-color:var(--blue)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--faint)}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tab{font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:999px;padding:7px 14px;display:flex;gap:7px;align-items:center;transition:.15s}
+.tab .ct{font-size:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:99px;padding:1px 7px;color:var(--faint)}
+.tab:hover{color:var(--text)}
+.tab.on{color:#fff;background:var(--grad)}
+.tab.on .ct{background:rgba(255,255,255,.18);border-color:transparent;color:#fff}
+.aud-row{display:flex;align-items:center;gap:10px;margin-top:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.aud-label{flex:none;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.chip{flex:none;font-size:12px;font-weight:500;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 13px;transition:.15s}
+.chip:hover{color:var(--text);border-color:var(--blue)}
+.chip.on{color:#fff;border-color:transparent;background:var(--grad)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:26px 0 120px}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.grid{grid-template-columns:1fr}}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;text-align:left;padding:0;transition:transform .2s,border-color .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--blue);box-shadow:0 18px 40px -18px rgba(91,108,240,.4)}
+.card.sel{background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;border:2px solid transparent}
+.card .check{position:absolute;top:12px;right:12px;width:25px;height:25px;border-radius:50%;background:var(--grad);display:none;place-items:center;z-index:3;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.card.sel .check{display:grid}
+.badge-new{position:absolute;top:12px;left:12px;z-index:3;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:99px;color:#0D0B1E}
+.badge-new.popular{background:#FFC65C}.badge-new.fresh{background:#5CE8B5}.badge-new.pro{background:#C7B6FF}
+.prev{position:relative;aspect-ratio:16/10.5;background:#F4F4F9;border-bottom:1px solid var(--line);overflow:hidden;padding:13px 15px;display:flex;flex-direction:column;gap:6px}
+.prev.dark{background:#1B1C28}
+.prev.cream{background:#F8F2E4}
+.prev .img{background:#D2D8EE;border-radius:4px;display:grid;place-items:center;color:#A5A2C8;font-size:10px}
+.prev .bar{height:5px;border-radius:3px;background:#A9A7C6;opacity:.55}
+.prev .bar.bold{height:8px;background:#3A3860;opacity:.9}
+.prev .bar.accent{background:var(--blue);opacity:.9}
+.prev .bar.red{background:#E04848;opacity:1}
+.prev.dark .bar{background:#54566E}.prev.dark .bar.bold{background:#D8D7EE}.prev.dark .bar.accent{background:#8E7BFF;opacity:1}
+.prev.cream .bar{background:#C9BC9C}.prev.cream .bar.bold{background:#4F4630}
+.prev .row{display:flex;gap:6px}
+.prev .col{display:flex;flex-direction:column;gap:5px;flex:1}
+.hover-act{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(13,11,30,.62);opacity:0;transition:.2s;z-index:2}
+.card:hover .hover-act{opacity:1}
+.mini-btn{font-size:12px;font-weight:600;border-radius:999px;padding:8px 15px;border:1px solid rgba(255,255,255,.35);color:#fff;background:rgba(255,255,255,.08)}
+.mini-btn.fill{background:var(--grad);border-color:transparent}
+.card-meta{padding:14px 16px 16px}
+.card-name{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.card-name h3{font-family:var(--ff-d);font-weight:600;font-size:16px}
+.cat{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:99px;border:1px solid}
+.cat.feature,.cat.editorial{color:#2E8EAC;border-color:rgba(61,195,242,.4);background:rgba(61,195,242,.08)}
+.cat.report{color:#4B43C4;border-color:rgba(91,108,240,.4);background:rgba(91,108,240,.1)}
+.cat.opinion{color:#8E3FBE;border-color:rgba(157,77,232,.4);background:rgba(157,77,232,.1)}
+.cat.news,.cat.magazine{color:#F26BAA;border-color:rgba(242,107,170,.4);background:rgba(242,107,170,.1)}
+.cat.minimal{color:#5CE8B5;border-color:rgba(92,232,181,.35);background:rgba(92,232,181,.08)}
+.cat.special{color:#FFC65C;border-color:rgba(255,198,92,.4);background:rgba(255,198,92,.1)}
+.card-desc{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.55}
+.card-fit{font-size:11px;color:var(--faint);margin-top:8px;display:flex;gap:6px;align-items:center}
+.card-fit svg{width:11px;height:11px;stroke:var(--faint)}
+.selbar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:16px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:9px 11px 9px 20px;box-shadow:0 20px 50px -12px rgba(0,0,0,.65);max-width:calc(100% - 40px)}
+.selbar .sel-info{font-size:13px;color:var(--muted);white-space:nowrap}
+.selbar .sel-info b{color:var(--text)}
+.empty-state{text-align:center;color:var(--faint);font-size:14px;padding:60px 0 120px;display:none}
+
+/* ----- editor shell ----- */
+.edt{flex:1;display:grid;grid-template-columns:300px 1fr 290px;min-height:0}
+@media(max-width:1100px){.edt{grid-template-columns:280px 1fr}.inspector{display:none}}
+.create{background:var(--panel);border-right:1px solid var(--line-soft);display:flex;flex-direction:column;min-height:0}
+.mode-tabs{flex:none;display:flex;gap:5px;margin:14px 16px 0;background:var(--field);border:1px solid var(--line);border-radius:999px;padding:4px}
+.mode-tab{flex:1;font-size:12px;font-weight:700;color:var(--muted);background:none;border:none;border-radius:999px;padding:7px 0}
+.mode-tab.on{color:#fff;background:var(--grad)}
+.create-scroll{flex:1;overflow-y:auto;padding:16px 16px 8px;scrollbar-width:thin}
+.fgroup{margin-bottom:18px}
+.flabel{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.flabel .opt{font-weight:500;letter-spacing:0;text-transform:none;font-size:11px;color:var(--faint)}
+textarea,input[type=text],input[type=url],input[type=number],select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px;font-size:13px;color:var(--text);transition:border-color .15s}
+textarea{resize:vertical;min-height:60px}
+textarea::placeholder,input::placeholder{color:var(--faint)}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--blue)}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--faint) 50%),linear-gradient(135deg,var(--faint) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+.hint{font-size:11px;color:var(--faint);margin-top:6px}
+.len-row{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+.upload{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:1px dashed var(--line);background:var(--field);color:var(--muted);border-radius:var(--r-sm);padding:11px;font-size:12.5px;font-weight:600}
+.upload:hover{color:var(--text);border-color:var(--blue)}
+.create-foot{flex:none;padding:13px 16px 15px;border-top:1px solid var(--line-soft);background:var(--panel)}
+.gen-btn{width:100%;justify-content:center;padding:13px;font-size:14px;border-radius:var(--r-md)}
+.gen-hint{text-align:center;font-size:11px;color:var(--faint);margin-top:7px}
+.sec-input{margin-bottom:9px}
+.sec-input .flabel{margin-bottom:5px}
+.add-sec{width:100%;border:1px dashed var(--line);background:none;color:var(--muted);border-radius:var(--r-sm);padding:8px;font-size:12px;font-weight:600}
+.add-sec:hover{color:var(--text);border-color:var(--blue)}
+
+/* stage + paper canvas */
+.stage{position:relative;background:var(--stage);display:flex;flex-direction:column;min-width:0}
+.canvas-toolbar{flex:none;display:flex;align-items:center;justify-content:center;gap:4px;padding:9px;border-bottom:1px solid var(--line-soft);background:rgba(248,244,237,.72);flex-wrap:wrap}
+.ct-group{display:flex;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px}
+.ct-btn{min-width:29px;height:29px;display:grid;place-items:center;border:none;background:none;border-radius:6px;color:var(--muted);font-size:12.5px;font-weight:700;padding:0 6px}
+.ct-btn:hover{background:var(--panel-2);color:var(--text)}
+.ct-btn.on{background:var(--grad);color:#fff}
+.ct-sel{background:var(--field);border:1px solid var(--line);border-radius:6px;font-size:12px;padding:5px 24px 5px 9px;width:auto}
+.ct-sep{width:1px;height:22px;background:var(--line);margin:0 5px}
+.stage-body{flex:1;overflow:auto;padding:34px;display:flex;justify-content:center;align-items:flex-start}
+.paper{width:min(720px,100%);min-height:880px;background:#fff;color:#2A2740;border-radius:6px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7),0 0 0 1px var(--line);padding:64px 70px}
+.paper-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:0;padding-top:110px}
+.pe-ic{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:#F1F0FA;margin-bottom:18px}
+.pe-title{font-family:var(--ff-d);font-weight:600;font-size:21px;color:#221C5E}
+.pe-sub{font-size:13.5px;color:#8B87B0;max-width:340px;margin-top:8px;line-height:1.6}
+.pe-steps{display:flex;flex-direction:column;gap:10px;margin-top:26px;text-align:left}
+.pe-step{display:flex;align-items:center;gap:11px;font-size:13px;color:#5A5680}
+.pe-step .n{width:22px;height:22px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(110deg,#2E8EAC,#4B43C4,#8E3FBE)}
+.stage-foot{flex:none;display:flex;align-items:center;justify-content:center;gap:14px;padding:9px;border-top:1px solid var(--line-soft);font-size:12px;color:var(--faint)}
+.zoom{display:flex;align-items:center;gap:8px}
+.zoom button{width:23px;height:23px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--muted)}
+
+/* inspector */
+.inspector{background:var(--panel);border-left:1px solid var(--line-soft);display:flex;flex-direction:column;min-height:0}
+.insp-tabs{flex:none;display:flex;padding:8px 12px 0;gap:4px;border-bottom:1px solid var(--line-soft)}
+.insp-tab{flex:1;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;padding:9px 2px 11px;position:relative}
+.insp-tab::after{content:"";position:absolute;left:12%;right:12%;bottom:-1px;height:2px;background:var(--grad);transform:scaleX(0);transition:.2s}
+.insp-tab.on{color:var(--text)}
+.insp-tab.on::after{transform:scaleX(1)}
+.insp-body{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin}
+.insp-pane{display:none}
+.insp-pane.on{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.slider-row label{flex:0 0 62px;font-size:12px;color:var(--muted)}
+.slider-row input[type=range]{flex:1;accent-color:var(--blue);height:4px}
+.slider-row output{flex:0 0 34px;text-align:right;font-size:11px;color:var(--faint)}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tool-btn{font-size:12px;font-weight:600;color:var(--muted);background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 6px;display:flex;align-items:center;justify-content:center;gap:6px}
+.tool-btn:hover{color:var(--text);border-color:var(--blue)}
+.tool-btn.danger:hover{color:#F2725B;border-color:#F2725B}
+.tool-btn.full{width:100%;margin-top:7px}
+.align-row{display:flex;gap:6px}
+.align-row .ct-btn{flex:1;background:var(--field);border:1px solid var(--line);height:31px}
+.swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.sw{aspect-ratio:1;border-radius:7px;border:1px solid var(--line);cursor:pointer;padding:0}
+.sw.on{outline:2px solid var(--blue);outline-offset:2px}
+.exp-note{font-size:11px;color:var(--faint);line-height:1.55;margin-top:9px}
+.ai-quick{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.layers .layer{display:flex;align-items:center;gap:9px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:7px;font-size:12px}
+.layers .layer .lyr-ic{width:21px;height:21px;border-radius:5px;background:var(--panel-2);display:grid;place-items:center;font-size:10px;flex:none}
+.layers .layer.on{border-color:var(--blue)}
+.layers .layer .vis{margin-left:auto;color:var(--faint);background:none;border:none}
+
+/* email canvas */
+.email-doc{width:min(620px,100%);background:#fff;color:#2A2740;border-radius:6px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7),0 0 0 1px var(--line);overflow:hidden}
+.em-head{background:linear-gradient(110deg,#2E8EAC,#4B43C4,#8E3FBE);color:#fff;padding:30px 36px;text-align:center}
+.em-head .em-brand{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;opacity:.85}
+.em-head h2{font-family:var(--ff-d);font-weight:600;font-size:24px;margin-top:8px}
+.esec{position:relative;border:1.5px dashed transparent;padding:24px 36px;cursor:pointer;transition:.15s}
+.esec+.esec{border-top:1px solid #EEEDF6}
+.esec:hover{border-color:#C9C5EE}
+.esec.on{border-color:#4B43C4;background:#FAFAFE}
+.esec .etag{position:absolute;top:10px;right:12px;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4B43C4;background:#EEF0FD;border-radius:99px;padding:3px 9px;opacity:0;transition:.15s}
+.esec:hover .etag,.esec.on .etag{opacity:1}
+.esec h3{font-family:var(--ff-d);font-weight:600;font-size:17px;color:#221C5E;margin-bottom:7px}
+.esec .ebar{height:7px;border-radius:4px;background:#E4E2F2;margin-top:7px}
+.esec .ecta{display:inline-block;margin-top:13px;font-size:12.5px;font-weight:700;color:#fff;background:linear-gradient(110deg,#4B43C4,#8E3FBE);border-radius:999px;padding:9px 20px}
+.em-foot{padding:18px 36px;background:#F6F6FB;text-align:center;font-size:11px;color:#8B87B0}
+
+/* social canvas */
+.sq-canvas{position:relative;width:min(460px,90%);aspect-ratio:1/1;border-radius:6px;background:linear-gradient(135deg,#B85B7A 0%,#A24E6E 45%,#3D5C8C 100%);box-shadow:0 30px 80px -20px rgba(0,0,0,.7),0 0 0 1px var(--line);display:flex;flex-direction:column;justify-content:flex-end;padding:34px;overflow:hidden}
+.sq-canvas::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(10,8,23,.55));pointer-events:none}
+.cv-text{position:relative;z-index:2}
+.cv-brand{font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:9px}
+.cv-headline{font-family:var(--ff-d);font-weight:600;font-size:clamp(20px,3.6vw,29px);line-height:1.15;color:#fff;border:1.5px dashed rgba(255,255,255,.55);border-radius:6px;padding:6px 10px;margin-left:-10px;cursor:text}
+.cv-cta{display:inline-block;margin-top:15px;font-size:12.5px;font-weight:700;background:#fff;color:#1E1B3C;border-radius:999px;padding:8px 19px}
+.variants{display:flex;gap:8px;align-items:center}
+.var-dot{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);opacity:.55;cursor:pointer;padding:0}
+.var-dot.on{opacity:1;outline:2px solid var(--blue);outline-offset:1px}
+.var-add{width:32px;height:32px;border-radius:8px;border:1px dashed var(--line);background:none;color:var(--faint);font-size:15px}
+.platforms{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.plat{display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 2px 7px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);font-size:9.5px;font-weight:600;color:var(--muted);transition:.15s}
+.plat .ic{font-size:15px}
+.plat:hover{border-color:var(--blue);color:var(--text)}
+.plat.on{border-color:var(--blue);background:var(--panel-2);color:var(--text)}
+.plat-size{font-size:11px;color:var(--faint);margin-top:7px;display:flex;justify-content:space-between}
+.plat-size b{color:var(--muted);font-weight:600}
+.bg-tabs{display:flex;gap:6px;margin-bottom:9px}
+.bg-tab{flex:1;font-size:12px;font-weight:600;padding:7px 0;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--field);color:var(--muted)}
+.bg-tab.on{background:var(--panel-2);border-color:var(--blue);color:var(--text)}
+
+/* ===== realistic template minis ===== */
+.prev.mini{padding:0;background:#fff}
+.doc{position:absolute;inset:0;background:#FCFCFE;color:#2A2740;padding:12px 14px;display:flex;flex-direction:column;gap:5px;overflow:hidden;text-align:left}
+.doc.night{background:#16151F}
+.doc.cream{background:#FAF4E7}
+.doc .hl{font-family:var(--ff-d);font-weight:600;color:#221C3E;font-size:11px;line-height:1.18;letter-spacing:-.01em}
+.doc.night .hl{color:#F0EFFA}
+.doc.cream .hl{color:#3E3522}
+.doc .kick{font-size:6px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#4B43C4}
+.doc .meta{font-size:6px;color:#9A97B8}
+.doc .tx{font-size:6.4px;line-height:1.6;color:#7D7A9C;text-align:justify}
+.doc.night .tx{color:#8E8CA8}
+.doc.cream .tx{color:#8A7C5E}
+.doc .cols{display:flex;gap:7px}.doc .cols>*{min-width:0}
+.doc .ph{border-radius:3px;flex:none}
+.ph.sea{background:linear-gradient(135deg,#8FBCE8,#5377C5 55%,#3D5CA8)}
+.ph.dawn{background:linear-gradient(135deg,#F2C9A8,#E08FA0 55%,#9A6FBE)}
+.ph.moss{background:linear-gradient(135deg,#A6D4BC,#5FA88B)}
+.ph.dusk{background:linear-gradient(135deg,#9A86E0,#4B43C4)}
+.ph.slate{background:linear-gradient(135deg,#B3BDD2,#7C88A6)}
+.ph.noir{background:linear-gradient(165deg,#46485F,#23242F 55%,#15161E)}
+.doc .rule{height:1.5px;background:#221C3E;border-radius:1px}
+.doc .rule.thin{height:.5px;opacity:.5}
+.doc .quote{font-family:var(--ff-d);font-style:italic;font-size:7.5px;color:#6E7BEA;line-height:1.45}
+.doc .chipline{display:flex;gap:4px;flex-wrap:wrap}
+.doc .kpi{font-size:6px;font-weight:700;border-radius:3px;padding:3px 6px}
+.doc .qa{display:flex;gap:5px;align-items:stretch}
+.doc .qa .qbar{width:2.5px;border-radius:2px;flex:none}
+.doc .code{background:#22233A;border-radius:4px;padding:6px 8px;font-family:'Courier New',monospace;font-size:6.2px;line-height:1.7;color:#9FA8E8}
+.doc .code i{color:#5CE8B5;font-style:normal}.doc .code b{color:#F2A7C3;font-weight:400}
+.doc .numli{display:flex;gap:5px;align-items:center;font-size:6.6px;color:#4A4768;font-weight:600}
+.doc .numli .nb{width:9px;height:9px;flex:none;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:5.5px;font-weight:700}
+.doc .av{border-radius:50%;flex:none}
+.doc .redbar{background:#D8372F;color:#fff;font-size:6px;font-weight:800;letter-spacing:.14em;padding:3px 6px;border-radius:2px;align-self:flex-start}
+.doc .factbox{background:#F1F0FA;border-radius:4px;padding:6px 8px;font-size:6px;color:#5A5680;line-height:1.65}
+.doc .factbox b{display:block;color:#221C3E;letter-spacing:.12em;font-size:5.5px;margin-bottom:2px}
+.doc .bluebar{background:#4B43C4;color:#fff;font-size:6px;font-weight:800;letter-spacing:.12em;padding:3px 7px;border-radius:2px}
+.prev.mini .doc{transition:transform .35s ease}
+.card:hover .prev.mini .doc{transform:scale(1.03)}
+
+/* ===== global wow touches ===== */
+.appbar{border-bottom:1px solid var(--line-soft)}
+h1 .g{position:relative;display:inline-block}
+.card{border-radius:14px}
+.selbar{background:var(--panel-2);border:1px solid var(--line)}
+@media(prefers-reduced-motion:reduce){.prev.mini .doc{transition:none}}
+/* ===== miniature template sheets (rich previews) ===== */
+.prev{padding:0;background:linear-gradient(180deg,#EEE9DD,#E1DBC9)}
+.prev.dark-stage{background:linear-gradient(180deg,#262344,#191731)}
+.tpl{position:absolute;left:16px;right:16px;top:12px;bottom:-8px;background:#fff;border-radius:5px 5px 0 0;box-shadow:0 10px 24px -6px rgba(28,22,80,.32);padding:13px 15px;color:#6A669A;transition:transform .28s ease,box-shadow .28s ease;overflow:hidden}
+.card:hover .tpl{transform:translateY(-5px) rotate(-.4deg);box-shadow:0 20px 36px -8px rgba(28,22,80,.45)}
+.tpl.dark{background:#191A28;color:#A9A8C4}
+.tpl.cream{background:#FAF4E4}
+.tpl.photo{display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(180deg,rgba(20,18,46,.15),rgba(20,18,46,.78)),url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=500&q=70&auto=format&fit=crop');background-size:cover;background-position:center}
+.tpl .kick{font-size:5.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#4B43C4}
+.tpl h4{font-family:var(--ff-d);font-weight:600;font-size:11px;line-height:1.18;color:#221C5E;margin:3px 0 2px}
+.tpl.dark h4{color:#EFEDFB}
+.tpl .by{font-size:5.2px;color:#9A96BE;letter-spacing:.03em}
+.tpl p{font-size:5.4px;line-height:1.62;color:#8783AE}
+.tpl .cols{display:flex;gap:7px}
+.tpl .cols>*{flex:1;min-width:0}
+.tpl .timg{border-radius:3px;flex:none}
+.timg.sky{background:linear-gradient(135deg,#BFD9F2,#8FA9E4)}
+.timg.dawn{background:linear-gradient(135deg,#F2CDC2,#C9A6E8)}
+.timg.leaf{background:linear-gradient(135deg,#CBE8D8,#93C9B2)}
+.timg.inkk{background:linear-gradient(135deg,#3A3768,#4B43C4)}
+.tpl .qrow{display:flex;gap:5px;margin-top:4px;align-items:flex-start}
+.tpl .qb{flex:none;width:8px;font-size:6px;font-weight:800;font-family:var(--ff-d)}
+.tpl .kpis{display:flex;gap:5px;margin:5px 0 4px}
+.tpl .kpi{flex:1;border-radius:3px;padding:4px 5px;font-size:6.8px;font-weight:800;color:#221C5E;line-height:1.2}
+.tpl .kpi span{display:block;font-size:4.6px;font-weight:600;color:#8B87B0;letter-spacing:.06em;text-transform:uppercase}
+.tpl .numli{display:flex;gap:6px;align-items:baseline;margin-top:4px}
+.tpl .numli b{font-family:var(--ff-d);font-weight:600;font-size:9.5px;color:#8E3FBE;flex:none}
+.tpl .code{background:#23243C;border-radius:3px;padding:5px 7px;font-family:'Courier New',monospace;font-size:5px;line-height:1.75;color:#8E8DC0;margin-top:4px}
+.tpl .code i{color:#2E8EAC;font-style:normal}
+.tpl .code b{color:#C792EA;font-weight:600}
+.tpl .pull{border-left:2px solid #4B43C4;padding-left:5px;color:#C9C8E8;font-family:var(--ff-d);font-size:6.6px;font-style:italic;line-height:1.45;margin-top:5px}
+.page-head h1::after{content:"";display:block;width:50px;height:2px;border-radius:99px;background:var(--clay);margin:18px auto 0}
+
+/* ===== StreamInk redesign — editorial writing-desk system ===== */
+.brandtab{display:inline-flex;align-items:center;flex:none;margin-right:5px;padding-right:13px;border-right:1px solid var(--line)}
+.brandtab img{height:23px;width:auto;display:block}
+.brandtab:hover img{opacity:.76}
+.ct-swatch{display:block;width:13px;height:13px;border-radius:4px;background:conic-gradient(from 210deg,#4B43C4,#2E8EAC,#7B41C9,#4B43C4)}
+.pe-ic{background:none!important;width:auto!important;height:auto!important}
+.pe-ic img{height:58px;width:auto;display:block;opacity:.95;margin:0 auto}
+.book-spread .quill img{height:46px;width:auto;display:block;margin:0 auto}
+.ppic{background:none!important}
+.ppic img{height:30px;width:auto;display:block}
+.stat .sic{font-size:0;background:linear-gradient(165deg,color-mix(in srgb,var(--ink) 14%,var(--panel-2)),var(--panel-2))}
+.stat .sic::after{content:"";width:13px;height:13px;border-radius:4px;background:var(--ink);opacity:.5}
+.qcard .qic{font-family:var(--ff-d);font-weight:600;font-size:18px;color:var(--hue);background:color-mix(in srgb,var(--hue) 12%,var(--panel-2))}
+.eyebrow,.cat,.flabel,.pname,.dash-sec,.side-grp,.aud-label,.snav-menu .grp,.em-brand,.cv-brand,.plat-size,.steps{font-family:var(--ff-m)}
+.side-brand span{font-family:var(--ff-m);letter-spacing:.2em;font-size:9px;color:var(--faint)}
+.side-brand b{font-family:var(--ff-d);font-weight:600}
+a.skip:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<!-- ================= SCREEN SWITCHER ================= -->
+<nav class="snav" id="snav">
+  <div class="snav-menu">
+    <p class="grp">Article Engine</p>
+    <button data-go="s-article-gallery">Template gallery</button>
+    <button data-go="s-article-editor">Article editor</button>
+    <p class="grp">Blog Engine</p>
+    <button data-go="s-blog-gallery">Template gallery</button>
+    <button data-go="s-blog-editor">Blog editor</button>
+    <p class="grp">Other engines</p>
+    <button data-go="s-email-editor">Email Newsletter</button>
+    <button data-go="s-social-editor">Social Post Creator</button>
+    <p class="grp">Writing studios</p>
+    <button data-go="s-book-editor">AI Book Writer</button>
+    <button data-go="s-script-editor">AI Script Writer</button>
+    <p class="grp">Account &amp; site</p>
+    <a class="snav-home" href="Home.html">← Marketing home</a>
+    <button data-go="s-dashboard">Dashboard</button>
+    <button data-go="s-signin">Sign in</button>
+    <button data-go="s-pricing">Pricing</button>
+    <button data-go="s-checkout">Checkout</button>
+  </div>
+  <button class="snav-btn" id="snavToggle">Screens</button>
+</nav>
+
+<!-- ============================================================
+     SCREEN 1 · ARTICLE TEMPLATE GALLERY
+     ============================================================ -->
+<section class="screen on gallery" id="s-article-gallery" data-editor="s-article-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#">← Dashboard</a>
+      <span class="crumb">Article Engine <span>/</span> <b>Choose layout</b></span>
+    </div>
+    <nav class="steps"><span class="step on"><span class="n">1</span> Layout</span><span class="step-sep"></span><span class="step"><span class="n">2</span> Content</span><span class="step-sep"></span><span class="step"><span class="n">3</span> Export</span></nav>
+    <div class="ab-right">
+      <a class="skip" href="#" data-go="s-article-editor">Skip for now</a>
+      <button class="btn btn-ghost" data-go="s-article-editor">Blank canvas</button>
+      <button class="btn btn-primary" data-go="s-article-editor">Continue →</button>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="glowfield"><span class="glowblob a"></span><span class="glowblob b"></span><span class="glowblob c"></span></div>
+    <div class="page-head">
+      <span class="eyebrow cy">Article template gallery</span>
+      <h1>Choose the <span class="g">shape</span> of your story</h1>
+      <p class="page-sub">12 professionally crafted layouts for every kind of article. Pick one to start — every layout stays fully editable.</p>
+    </div>
+    <div class="toolbar">
+      <div class="toolbar-row">
+        <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" placeholder="Search layouts…" aria-label="Search layouts"></label>
+        <div class="tabs" role="tablist">
+          <button class="tab on" data-cat="all">All <span class="ct">12</span></button>
+          <button class="tab" data-cat="feature">Feature <span class="ct">3</span></button>
+          <button class="tab" data-cat="report">Report <span class="ct">3</span></button>
+          <button class="tab" data-cat="opinion">Opinion <span class="ct">2</span></button>
+          <button class="tab" data-cat="news">News <span class="ct">2</span></button>
+          <button class="tab" data-cat="special">Special <span class="ct">2</span></button>
+        </div>
+      </div>
+      <div class="aud-row">
+        <span class="aud-label">I write for →</span>
+        <button class="chip" data-aud="health">Medical &amp; Healthcare</button>
+        <button class="chip" data-aud="journalist">Journalists &amp; Writers</button>
+        <button class="chip" data-aud="research">Researchers &amp; Scientists</button>
+        <button class="chip" data-aud="business">Business Analysts</button>
+        <button class="chip" data-aud="legal">Legal Professionals</button>
+        <button class="chip" data-aud="academic">Academics &amp; Educators</button>
+        <button class="chip" data-aud="pr">PR &amp; Communications</button>
+        <button class="chip" data-aud="startup">Startups &amp; Founders</button>
+        <button class="chip" data-aud="nutrition">🥗 Nutritionists</button>
+      </div>
+    </div>
+    <div class="grid">
+      <button class="card sel" data-cat="feature" data-aud="journalist health nutrition" data-name="Editorial Spread">
+        <span class="badge-new popular">Popular</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div class="timg sky" style="height:38%"></div>
+            <p class="kick" style="text-align:center;margin-top:5px">Feature</p>
+            <h4 style="text-align:center">The Quiet Return of the City Garden</h4>
+            <p class="by" style="text-align:center">By Amara Chen · 8 min read</p>
+            <p style="margin-top:3px;text-align:justify">Across rooftops and vacant lots, a new generation of growers is reshaping how cities feed themselves — one raised bed at a time.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Editorial Spread</h3><span class="cat feature">Feature</span></div>
+          <p class="card-desc">Full-width hero image, bold centered headline, and clean flowing body. The gold standard for features and long reads.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for journalists &amp; feature writers</p>
+        </div>
+      </button>
+      <button class="card" data-cat="feature" data-aud="journalist pr startup" data-name="Split Story">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div class="cols" style="height:100%">
+              <div class="timg dawn" style="flex:0 0 42%;height:96%"></div>
+              <div>
+                <p class="kick">Profile</p>
+                <h4 style="font-size:10px">Building a Clinic in the Cloud</h4>
+                <p class="by">By Daniel Reyes</p>
+                <p style="margin-top:3px">When Dr. Ibarra's patients stopped coming, she moved the whole practice online — and tripled its reach in a year.</p>
+              </div>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Split Story</h3><span class="cat feature">Feature</span></div>
+          <p class="card-desc">50/50 image-left, story-right layout with byline. Excellent for profile features and case studies.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for profiles &amp; case studies</p>
+        </div>
+      </button>
+      <button class="card" data-cat="feature" data-aud="journalist research" data-name="Long-form Deep Dive">
+        <span class="badge-new fresh">New</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev dark-stage">
+          <div class="tpl dark">
+            <p class="kick" style="color:#8E8DF5">Investigation</p>
+            <h4 style="font-size:12.5px">Where the River Money Went</h4>
+            <p class="by" style="color:#7C7AA8">A six-month investigation · Part 1 of 3</p>
+            <p style="color:#A9A8C4;margin-top:3px">The restoration fund promised a cleaner delta. The ledgers tell another story.</p>
+            <p class="pull">"Nobody ever asked where the dredging barges went at night."</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Long-form Deep Dive</h3><span class="cat feature">Feature</span></div>
+          <p class="card-desc">Dark dramatic header, large serif body, and inline pull-quote blocks. Built for investigative long reads.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for investigative writers</p>
+        </div>
+      </button>
+      <button class="card" data-cat="report" data-aud="business startup legal" data-name="Executive Brief">
+        <span class="badge-new popular">Popular</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div style="height:8px;border-radius:2px;background:linear-gradient(90deg,#4B43C4,#2E8EAC)"></div>
+            <div class="cols" style="margin-top:5px">
+              <div style="flex:0 0 35%;background:#F1F0FA;border-radius:3px;padding:5px">
+                <p class="kick" style="font-size:4.6px">Key findings</p>
+                <p style="font-size:5px;margin-top:2px">· Churn down 12%</p>
+                <p style="font-size:5px">· APAC up 2.4×</p>
+                <p style="font-size:5px">· CAC held flat</p>
+              </div>
+              <div>
+                <h4 style="font-size:9px">Q2 Market Brief</h4>
+                <p class="by">Prepared for the board · June 2026</p>
+                <p style="margin-top:3px">Demand held through the quarter despite pricing pressure; expansion accounts now drive 41% of new revenue.</p>
+              </div>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Executive Brief</h3><span class="cat report">Report</span></div>
+          <p class="card-desc">Structured corporate layout with key-findings sidebar, blue header bar, and sectioned body.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for analysts &amp; executives</p>
+        </div>
+      </button>
+      <button class="card" data-cat="report" data-aud="research academic" data-name="Research Paper">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <h4 style="text-align:center;font-size:8.6px">Sleep Timing and Recall in Adolescents</h4>
+            <p class="by" style="text-align:center">M. Okafor¹ · L. Tan² — University of Leiden</p>
+            <div style="background:#F1F0FA;border-radius:3px;padding:4px 6px;margin:4px 0">
+              <p style="font-size:5px"><b style="color:#4B43C4">Abstract —</b> We examine the effect of sleep onset on next-day recall in a cohort of 214 students…</p>
+            </div>
+            <div class="cols">
+              <p><b style="color:#221C5E">1. Introduction.</b> Memory consolidation has long been linked to sleep architecture…</p>
+              <p>…delayed sleep phases common in adolescence (Fig. 1) suggest schedule effects dominate…</p>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Research Paper</h3><span class="cat report">Report</span></div>
+          <p class="card-desc">Academic layout with centered title, authors, abstract box, and numbered section headings.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for researchers &amp; academics</p>
+        </div>
+      </button>
+      <button class="card" data-cat="report" data-aud="business startup" data-name="Business Report">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div style="height:9px;border-radius:2px;background:#4B43C4;display:flex;align-items:center;padding:0 5px"><span style="font-size:4.6px;font-weight:800;color:#fff;letter-spacing:.16em">ANNUAL REPORT 2026</span></div>
+            <div class="kpis">
+              <div class="kpi" style="background:#FBEFDF">+24%<span>Revenue</span></div>
+              <div class="kpi" style="background:#E4F4EC">$1.2M<span>ARR</span></div>
+              <div class="kpi" style="background:#EBEEFB">98%<span>Retention</span></div>
+            </div>
+            <p>Growth was led by the self-serve tier, which doubled in the second half while support costs fell 9%.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Business Report</h3><span class="cat report">Report</span></div>
+          <p class="card-desc">Corporate header, KPI highlight boxes, and structured sections for white papers and analyses.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for business analysts</p>
+        </div>
+      </button>
+      <button class="card" data-cat="opinion" data-aud="journalist academic legal" data-name="Op-Ed Column">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div style="border-top:2px solid #221C5E;border-bottom:1px solid #221C5E;padding:2px 0;text-align:center"><span class="kick" style="color:#221C5E">Opinion</span></div>
+            <h4 style="margin-top:4px;text-align:center">We Are Measuring Schools Backwards</h4>
+            <p class="by" style="text-align:center">Prof. Elena Marsh</p>
+            <div class="cols" style="margin-top:3px">
+              <p>Test scores tell us what students can repeat — not what they can build, question, or repair…</p>
+              <p>…until funding follows curiosity rather than compliance, the gap will keep widening.</p>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Op-Ed Column</h3><span class="cat opinion">Opinion</span></div>
+          <p class="card-desc">Classic newspaper column styling with double-rule header, byline, and authoritative body.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for columnists &amp; commentators</p>
+        </div>
+      </button>
+      <button class="card" data-cat="opinion" data-aud="startup business pr" data-name="Thought Leadership">
+        <span class="badge-new popular">Popular</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div style="display:flex;gap:5px;align-items:center">
+              <div style="width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#93C9B2,#5B9CC9);flex:none"></div>
+              <div><p style="font-size:5.6px;font-weight:700;color:#221C5E;line-height:1.2">Priya Nair</p><p style="font-size:4.7px;color:#9A96BE">CEO, Loomwork · 12k followers</p></div>
+            </div>
+            <h4 style="margin-top:5px">Hire for Slope, Not Intercept</h4>
+            <p style="margin-top:2px">The best person on paper is rarely the best person in eighteen months. Here's the interview question that finds the difference.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Thought Leadership</h3><span class="cat opinion">Opinion</span></div>
+          <p class="card-desc">Author-forward layout with headshot, name, and title. Clean typography for expert insights.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for founders &amp; experts</p>
+        </div>
+      </button>
+      <button class="card" data-cat="news" data-aud="journalist pr" data-name="Breaking News">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div style="height:9px;border-radius:2px;background:#E04848;display:flex;align-items:center;padding:0 5px"><span style="font-size:4.6px;font-weight:800;color:#fff;letter-spacing:.2em">BREAKING</span></div>
+            <h4 style="font-size:11px;margin-top:4px">Port Reopens After Three-Day Shutdown</h4>
+            <p class="by">COLOMBO — 14:32 local · Staff wire</p>
+            <p style="margin-top:2px">Container traffic resumed at noon as crews cleared the last of the grounded vessel's cargo, port officials said.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Breaking News</h3><span class="cat news">News</span></div>
+          <p class="card-desc">Red alert masthead, bold wire-style headline, dateline, and inverted-pyramid body.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for newsrooms</p>
+        </div>
+      </button>
+      <button class="card" data-cat="news" data-aud="pr startup business" data-name="Press Release">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="display:flex;gap:3px;align-items:center"><span style="width:7px;height:7px;border-radius:2px;background:linear-gradient(135deg,#2E8EAC,#8E3FBE)"></span><span style="font-size:5.2px;font-weight:800;color:#221C5E;letter-spacing:.06em">NOVA LABS</span></div>
+              <span class="kick" style="font-size:4.4px">For immediate release</span>
+            </div>
+            <h4 style="margin-top:5px;font-size:9px">Nova Labs Raises $14M to Expand Clean-Water Sensors</h4>
+            <p class="by">SINGAPORE, June 12, 2026</p>
+            <p style="margin-top:2px">The Series A round, led by Meridian Ventures, will fund deployments across 200 municipal systems…</p>
+            <p style="font-size:4.7px;color:#9A96BE;margin-top:4px">Media contact: press@novalabs.io</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Press Release</h3><span class="cat news">News</span></div>
+          <p class="card-desc">Official PR format with logo placeholder, "For Immediate Release" header, and media contact block.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for PR &amp; communications</p>
+        </div>
+      </button>
+      <button class="card" data-cat="special" data-aud="journalist academic pr" data-name="Q&A Interview">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <h4 style="font-size:9px">"Comedy is just timing you can edit"</h4>
+            <p class="by">A conversation with director Sam Whitlow</p>
+            <div class="qrow"><b class="qb" style="color:#4B43C4">Q</b><p>You shot the whole season in one apartment. Why?</p></div>
+            <div class="qrow"><b class="qb" style="color:#D86BC0">A</b><p>Constraints are free writers. That room gave us jokes a bigger set never would have.</p></div>
+            <div class="qrow"><b class="qb" style="color:#4B43C4">Q</b><p>And what did the network say?</p></div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Q&amp;A Interview</h3><span class="cat special">Special</span></div>
+          <p class="card-desc">Color-coded Q&amp;A blocks — blue for questions, pink for answers. Clean interview formatting.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for interviews &amp; podcasts</p>
+        </div>
+      </button>
+      <button class="card" data-cat="special" data-aud="journalist business startup" data-name="Profile Story">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div class="cols" style="height:100%">
+              <div class="timg leaf" style="flex:0 0 38%;height:96%"></div>
+              <div>
+                <p class="kick">Profile</p>
+                <h4 style="font-size:9px">The Last Lighthouse Keeper of Galle</h4>
+                <p style="margin-top:2px">At 71, Mr. Fernando still climbs the 212 steps before dawn, the way he has for four decades.</p>
+                <p style="font-size:4.7px;color:#9A96BE;margin-top:3px">Age 71 · 43 yrs of service · 0 missed nights</p>
+              </div>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-article-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Profile Story</h3><span class="cat special">Special</span></div>
+          <p class="card-desc">Subject portrait left with structured biographical story and key facts right.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for features about people</p>
+        </div>
+      </button>
+    </div>
+    <p class="empty-state">No layouts match those filters — try clearing the audience or category filter.</p>
+  </div>
+  <div class="selbar">
+    <span class="sel-info"><b>Editorial Spread</b> selected · Feature layout</span>
+    <button class="btn btn-ghost">Preview</button>
+    <button class="btn btn-primary" data-go="s-article-editor">Use this layout →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 2 · ARTICLE EDITOR
+     ============================================================ -->
+<section class="screen editor" id="s-article-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#" data-go="s-article-gallery">← Templates</a>
+      <span class="crumb">Article Engine <span>/</span> <b>Editorial Spread</b></span>
+    </div>
+    <nav class="steps"><span class="step done"><span class="n">✓</span> Layout</span><span class="step-sep"></span><span class="step on"><span class="n">2</span> Content</span><span class="step-sep"></span><span class="step"><span class="n">3</span> Export</span></nav>
+    <div class="ab-right">
+      <button class="hist-btn" title="Undo">↩</button>
+      <button class="hist-btn" title="Redo">↪</button>
+      <span class="save-state"><span class="dot"></span> Saved</span>
+      <button class="btn btn-ghost">Preview</button>
+      <button class="btn btn-primary">⬇ Export</button>
+    </div>
+  </header>
+
+  <div class="edt">
+    <!-- left -->
+    <aside class="create">
+      <div class="mode-tabs"><button class="mode-tab on">Generate</button><button class="mode-tab">Design</button></div>
+      <div class="create-scroll">
+        <div class="fgroup">
+          <div class="flabel">Article topic</div>
+          <input type="text" placeholder="e.g. The future of remote medicine">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Target keyword <span class="opt">Optional</span></div>
+          <input type="text" placeholder="e.g. remote patient monitoring">
+          <p class="hint">Used for SEO structure, headings, and meta tags.</p>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Source URL <span class="opt">Optional</span></div>
+          <input type="url" placeholder="https://example.com">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Brief <span class="opt">Optional</span></div>
+          <textarea placeholder="Any extra instructions or context — angle, audience, facts to include…"></textarea>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Writing style</div>
+          <select><option>Editorial — narrative &amp; structured</option><option>Academic — formal &amp; cited</option><option>Journalistic — factual &amp; direct</option><option>Conversational — clear &amp; friendly</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Tone</div>
+          <select><option>Professional</option><option>Authoritative</option><option>Neutral</option><option>Warm</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Length</div>
+          <div class="len-row">
+            <select><option>Standard · 700–900 words</option><option>Short · 400–600</option><option>Long · 1200–1500</option><option>Custom…</option></select>
+            <input type="number" placeholder="Exact words">
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Images <span class="opt">Optional</span></div>
+          <button class="upload">⬆ Upload images to embed</button>
+        </div>
+      </div>
+      <div class="create-foot">
+        <button class="btn btn-primary gen-btn">Generate article</button>
+        <p class="gen-hint">Drafts a complete article in your chosen layout</p>
+      </div>
+    </aside>
+
+    <!-- center -->
+    <main class="stage">
+      <div class="canvas-toolbar">
+        <div class="ct-group">
+          <select class="ct-sel"><option>Paragraph</option><option>Heading 1</option><option>Heading 2</option><option>Heading 3</option><option>Quote</option></select>
+          <select class="ct-sel"><option>Inter</option><option>Fraunces</option><option>Georgia</option></select>
+          <select class="ct-sel" style="width:60px"><option>16</option><option>14</option><option>18</option><option>24</option></select>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn on"><b>B</b></button><button class="ct-btn"><i>I</i></button><button class="ct-btn"><u>U</u></button><button class="ct-btn" title="Text color"><span class="ct-swatch"></span></button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn">⫷</button><button class="ct-btn on">≡</button><button class="ct-btn">⫸</button><button class="ct-btn">☰</button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn">🔗</button><button class="ct-btn" title="Insert image"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="5.6" cy="6.6" r="1"/><path d="M3 12l3.2-3 2.3 2.2L11 8l2 2"/></svg></button><button class="ct-btn" style="font-size:11px;font-weight:600;width:auto">+ Section</button></div>
+      </div>
+      <div class="stage-body">
+        <div class="paper">
+          <div class="paper-empty">
+            <div class="pe-ic"><img src="assets/streamink-mark.png" alt=""></div>
+            <p class="pe-title">Your article will appear here</p>
+            <p class="pe-sub">Fill in the brief on the left and StreamInk will draft a complete article in the Editorial Spread layout.</p>
+            <div class="pe-steps">
+              <div class="pe-step"><span class="n">1</span> Add a topic — keyword and brief are optional</div>
+              <div class="pe-step"><span class="n">2</span> Press <b>&nbsp;Generate article&nbsp;</b> and watch it draft</div>
+              <div class="pe-step"><span class="n">3</span> Select any text to refine it with AI</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div class="zoom"><button>−</button><span>100%</span><button>+</button></div>
+        <span>·</span><span>Editorial Spread · A4 portrait</span>
+        <span>·</span><span>0 words</span>
+      </div>
+    </main>
+
+    <!-- right -->
+    <aside class="inspector">
+      <div class="insp-tabs">
+        <button class="insp-tab on" data-pane="format">Format</button>
+        <button class="insp-tab" data-pane="ai">AI Refine</button>
+        <button class="insp-tab" data-pane="export">Export</button>
+      </div>
+      <div class="insp-body">
+        <div class="insp-pane on" data-pane="format">
+          <div class="fgroup">
+            <div class="flabel">Title</div>
+            <div class="row2">
+              <select><option>Size · 34</option><option>28</option><option>40</option></select>
+              <select><option>Fraunces</option><option>Inter</option></select>
+            </div>
+            <div class="align-row" style="margin-top:8px"><button class="ct-btn">⫷</button><button class="ct-btn on">≡</button><button class="ct-btn">⫸</button></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Selected image</div>
+            <div class="align-row" style="margin-bottom:8px"><button class="ct-btn">⇤</button><button class="ct-btn on">↔</button><button class="ct-btn">⇥</button></div>
+            <div class="row2">
+              <select><option>Width · Full</option><option>Large</option><option>Medium</option><option>Small</option></select>
+              <button class="tool-btn">↺ Reset</button>
+            </div>
+            <p class="hint">Click an image in the article to adjust it.</p>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Page</div>
+            <div class="row2">
+              <select><option>Margins · Comfort</option><option>Compact</option><option>Wide</option></select>
+              <select><option>Spacing · 1.6</option><option>1.4</option><option>1.8</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="ai">
+          <div class="fgroup">
+            <div class="flabel">AI assistant</div>
+            <p class="hint" style="margin:0 0 10px">Select text in your article, then choose an action — or open the full AI panel for custom rewrites.</p>
+            <div class="ai-quick">
+              <button class="tool-btn">Rewrite</button>
+              <button class="tool-btn">Shorten</button>
+              <button class="tool-btn">Expand</button>
+              <button class="tool-btn">✓ Fix grammar</button>
+              <button class="tool-btn">More formal</button>
+              <button class="tool-btn">Simplify</button>
+            </div>
+            <button class="btn btn-primary tool-btn full" style="border-radius:8px">Open AI panel</button>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Continue writing</div>
+            <button class="tool-btn full" style="margin:0">⤵ Continue from cursor</button>
+            <button class="tool-btn full">📑 Suggest next section</button>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="export">
+          <div class="fgroup">
+            <div class="flabel">Download</div>
+            <div class="tool-grid">
+              <button class="tool-btn">PDF</button>
+              <button class="tool-btn">DOC</button>
+              <button class="tool-btn">HTML</button>
+              <button class="tool-btn">PNG</button>
+            </div>
+            <button class="tool-btn full">📋 Copy HTML</button>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">SEO meta <span class="opt">For HTML</span></div>
+            <button class="tool-btn full" style="margin:0 0 8px">Generate meta tags</button>
+            <input type="text" placeholder="Meta title" style="margin-bottom:7px">
+            <textarea placeholder="Meta description (≈155 characters)"></textarea>
+          </div>
+          <p class="exp-note">PDF exports at print quality with your fonts embedded. HTML includes heading hierarchy and meta tags, ready to publish.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 3 · BLOG TEMPLATE GALLERY
+     ============================================================ -->
+<section class="screen gallery" id="s-blog-gallery" data-editor="s-blog-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#">← Dashboard</a>
+      <span class="crumb">Blog Engine <span>/</span> <b>Choose layout</b></span>
+    </div>
+    <nav class="steps"><span class="step on"><span class="n">1</span> Layout</span><span class="step-sep"></span><span class="step"><span class="n">2</span> Content</span><span class="step-sep"></span><span class="step"><span class="n">3</span> Design &amp; export</span></nav>
+    <div class="ab-right">
+      <a class="skip" href="#" data-go="s-blog-editor">Skip for now</a>
+      <button class="btn btn-ghost" data-go="s-blog-editor">Blank canvas</button>
+      <button class="btn btn-primary" data-go="s-blog-editor">Continue →</button>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="glowfield"><span class="glowblob a"></span><span class="glowblob b"></span><span class="glowblob c"></span></div>
+    <div class="page-head">
+      <span class="eyebrow vi">Blog template gallery</span>
+      <h1>Set the <span class="g">stage</span> for your words</h1>
+      <p class="page-sub">12 professionally designed templates. Every layout is fully editable — customise fonts, colors, and content to match your brand.</p>
+    </div>
+    <div class="toolbar">
+      <div class="toolbar-row">
+        <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" placeholder="Search layouts…"></label>
+        <div class="tabs">
+          <button class="tab on" data-cat="all">All <span class="ct">12</span></button>
+          <button class="tab" data-cat="editorial">Editorial <span class="ct">4</span></button>
+          <button class="tab" data-cat="magazine">Magazine <span class="ct">3</span></button>
+          <button class="tab" data-cat="minimal">Minimal <span class="ct">3</span></button>
+          <button class="tab" data-cat="special">Special <span class="ct">2</span></button>
+        </div>
+      </div>
+      <div class="aud-row">
+        <span class="aud-label">I blog about →</span>
+        <button class="chip" data-aud="health">Healthcare</button>
+        <button class="chip" data-aud="nutrition">🥗 Nutrition &amp; Wellness</button>
+        <button class="chip" data-aud="fashion">👗 Fashion &amp; Beauty</button>
+        <button class="chip" data-aud="research">Research &amp; Academia</button>
+        <button class="chip" data-aud="startup">Startups &amp; Business</button>
+        <button class="chip" data-aud="education">Education</button>
+        <button class="chip" data-aud="creator">Content Creation</button>
+        <button class="chip" data-aud="food">Food &amp; Lifestyle</button>
+        <button class="chip" data-aud="realestate">Real Estate</button>
+        <button class="chip" data-aud="wellness">Wellness Coaching</button>
+      </div>
+    </div>
+    <div class="grid">
+      <button class="card sel" data-cat="editorial" data-aud="health nutrition startup education" data-name="Center Hero">
+        <span class="badge-new popular">Popular</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div class="timg dawn" style="height:38%"></div>
+            <h4 style="text-align:center;margin-top:5px">Slow Mornings, Better Work</h4>
+            <p class="by" style="text-align:center">Mira Tan · Wellness · 5 min read</p>
+            <p style="text-align:center;margin-top:2px">What happened when I swapped my 6am inbox for forty unhurried minutes — and why my output went up anyway.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Center Hero</h3><span class="cat editorial">Editorial</span></div>
+          <p class="card-desc">Classic top-image layout with centered title and flowing body text. Perfect for feature articles.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best all-rounder — works for any topic</p>
+        </div>
+      </button>
+      <button class="card" data-cat="editorial" data-aud="startup education research" data-name="Hero Article">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <h4 style="font-size:11px">A Field Guide to Better Meetings</h4>
+            <p class="by">Jon Park · Operations · 7 min read</p>
+            <div class="cols" style="margin-top:4px">
+              <p style="flex:1.4">Most meetings fail in the first two minutes — before anyone speaks. The agenda already decided it. Here is how to write one that earns its hour…</p>
+              <div class="timg sky" style="flex:1;height:38px"></div>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Hero Article</h3><span class="cat editorial">Editorial</span></div>
+          <p class="card-desc">Long-form editorial with a dominant title bar and an elegant floating pull-image.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for essays &amp; deep dives</p>
+        </div>
+      </button>
+      <button class="card" data-cat="editorial" data-aud="fashion food creator" data-name="Split Feature">
+        <span class="badge-new fresh">New</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div class="cols" style="height:100%">
+              <div class="timg leaf" style="flex:1;height:96%"></div>
+              <div>
+                <p class="kick">Travel</p>
+                <h4 style="font-size:9.5px">Three Days in the Tea Country</h4>
+                <p style="margin-top:2px">Mist, switchbacks, and the best roti of my life — a slow loop through Ella without a plan.</p>
+              </div>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Split Feature</h3><span class="cat editorial">Editorial</span></div>
+          <p class="card-desc">Striking 50/50 split with full-height image on one side and rich content on the other.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for visual storytelling</p>
+        </div>
+      </button>
+      <button class="card" data-cat="editorial" data-aud="creator fashion food" data-name="Full Width Story">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev dark-stage">
+          <div class="tpl photo">
+            <p class="kick" style="color:#D7E2F5">Photo story</p>
+            <h4 style="color:#fff;font-size:11.5px">Monsoon, From a Train Window</h4>
+            <p style="color:#C5D2EC">Nine hours on the coastal line as the rains finally arrived.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Full Width Story</h3><span class="cat editorial">Editorial</span></div>
+          <p class="card-desc">Immersive full-bleed image with text overlay. Stunning for photography and breaking news.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for photo-led posts</p>
+        </div>
+      </button>
+      <button class="card" data-cat="magazine" data-aud="fashion food creator realestate" data-name="Grid Magazine">
+        <span class="badge-new popular">Popular</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <p style="text-align:center;font-family:var(--ff-d);font-weight:600;font-size:8px;color:#221C5E;letter-spacing:.1em">THE WEEKLY EDIT</p>
+            <div style="height:1px;background:#E2E0F0;margin:3px 0 5px"></div>
+            <div class="cols">
+              <div><div class="timg dawn" style="height:24px"></div><p style="font-size:4.9px;margin-top:2px;font-weight:700;color:#221C5E;line-height:1.3">The new bakeries worth the queue</p></div>
+              <div><div class="timg sky" style="height:24px"></div><p style="font-size:4.9px;margin-top:2px;font-weight:700;color:#221C5E;line-height:1.3">Small flats, big redesigns</p></div>
+              <div><div class="timg leaf" style="height:24px"></div><p style="font-size:4.9px;margin-top:2px;font-weight:700;color:#221C5E;line-height:1.3">Five weekend walks</p></div>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Grid Magazine</h3><span class="cat magazine">Magazine</span></div>
+          <p class="card-desc">Three-column grid inspired by premium magazines. Great for multi-topic publications.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for multi-story roundups</p>
+        </div>
+      </button>
+      <button class="card" data-cat="magazine" data-aud="research startup education" data-name="News Columns">
+        <span class="badge-new fresh">New</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <p style="text-align:center;font-family:var(--ff-d);font-weight:600;font-size:9px;color:#221C5E">The Daily Ledger</p>
+            <div style="border-top:1.5px solid #221C5E;border-bottom:.5px solid #221C5E;height:3px;margin:2px 0 4px"></div>
+            <div class="cols">
+              <div><div class="timg sky" style="height:18px"></div><p style="margin-top:2px">Council backs riverfront plan after marathon session…</p></div>
+              <p><b style="color:#221C5E">Markets steady.</b> Local exporters shrugged off the rate decision as orders held firm through May, with shipping costs easing…</p>
+            </div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>News Columns</h3><span class="cat magazine">Magazine</span></div>
+          <p class="card-desc">Newspaper-inspired two-column layout with masthead. Ideal for news sites and journals.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for newsy blogs</p>
+        </div>
+      </button>
+      <button class="card" data-cat="magazine" data-aud="creator fashion realestate" data-name="Mosaic Board">
+        <span class="badge-new pro">Pro</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div class="cols" style="height:72%">
+              <div class="timg inkk" style="flex:1.5;height:100%;display:flex;align-items:flex-end;padding:5px"><span style="font-size:6px;font-weight:700;color:#fff;line-height:1.3">Studio tour: where we make things</span></div>
+              <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+                <div class="timg dawn" style="flex:1"></div>
+                <div class="timg leaf" style="flex:1"></div>
+              </div>
+            </div>
+            <p style="margin-top:4px;font-size:4.9px;color:#9A96BE">+ 6 more stories this week</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Mosaic Board</h3><span class="cat magazine">Magazine</span></div>
+          <p class="card-desc">Dynamic asymmetric mosaic with a large hero card flanked by smaller story tiles.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for portfolio-style blogs</p>
+        </div>
+      </button>
+      <button class="card" data-cat="minimal" data-aud="education research wellness" data-name="Minimal Blog">
+        <span class="badge-new popular">Popular</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl" style="padding:20px 18px">
+            <h4 style="font-size:12.5px">On Writing Less</h4>
+            <p class="by">March 2026 · 3 min read</p>
+            <p style="margin-top:6px;max-width:88%">Every sentence you delete pays rent to the ones that stay. The hard part is believing the page can hold silence — and that your reader will thank you for it.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Minimal Blog</h3><span class="cat minimal">Minimal</span></div>
+          <p class="card-desc">Typography-first, distraction-free writing layout. Let your words be the star of the show.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for pure writing</p>
+        </div>
+      </button>
+      <button class="card" data-cat="minimal" data-aud="wellness food creator" data-name="Personal Journal">
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl cream">
+            <p style="font-family:var(--ff-d);font-style:italic;font-size:7px;color:#8A7C52">Saturday, April 12</p>
+            <h4 style="font-size:10px;color:#4F4630;margin-top:2px">The market was out of mangoes</h4>
+            <p style="color:#857A58;margin-top:3px">…so we bought rambutan instead and ate them on the seawall, and honestly it might have been better this way.</p>
+            <p style="font-family:var(--ff-d);font-style:italic;font-size:6px;color:#B3A57E;margin-top:5px">— more tomorrow ✿</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Personal Journal</h3><span class="cat minimal">Minimal</span></div>
+          <p class="card-desc">Warm, intimate layout with a diary-like feel. Perfect for personal blogs and travel writing.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for personal stories</p>
+        </div>
+      </button>
+      <button class="card" data-cat="minimal" data-aud="startup education creator" data-name="Tech Dark">
+        <span class="badge-new pro">Pro</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev dark-stage">
+          <div class="tpl dark">
+            <p class="kick" style="color:#2E8EAC">Tutorial</p>
+            <h4 style="font-size:9.5px">Caching Strategies That Don't Bite Back</h4>
+            <div class="code"><i>const</i> cache = <b>new</b> Map();<br><i>if</i> (cache.has(key)) <b>return</b> cache.get(key);</div>
+            <p style="color:#8E8DC0;margin-top:3px">Stale-while-revalidate, explained with one diagram and zero jargon.</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Tech Dark</h3><span class="cat minimal">Minimal</span></div>
+          <p class="card-desc">Dark-mode developer blog with code-block styling. Built for tutorials and technical writing.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for dev &amp; tech tutorials</p>
+        </div>
+      </button>
+      <button class="card" data-cat="special" data-aud="fashion food creator realestate" data-name="Photo Essay">
+        <span class="badge-new pro">Pro</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <div class="timg sky" style="height:34%"></div>
+            <div class="cols" style="margin-top:4px">
+              <div class="timg dawn" style="height:15px;flex:1"></div>
+              <div class="timg leaf" style="height:15px;flex:1"></div>
+              <div class="timg inkk" style="height:15px;flex:1"></div>
+            </div>
+            <p style="text-align:center;font-family:var(--ff-d);font-style:italic;font-size:5.6px;color:#9A96BE;margin-top:4px">Fishing fleet at first light — Negombo lagoon, a series of twelve</p>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Photo Essay</h3><span class="cat special">Special</span></div>
+          <p class="card-desc">Photography-first layout with a large hero, gallery grid, and editorial captions.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for photographers</p>
+        </div>
+      </button>
+      <button class="card" data-cat="special" data-aud="creator startup nutrition food" data-name="Listicle">
+        <span class="badge-new fresh">New</span>
+        <span class="check"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="sheen"></span><div class="prev">
+          <div class="tpl">
+            <h4 style="font-size:9.5px">7 Tiny Habits That Outlast Motivation</h4>
+            <p class="by">Habit science · 4 min read</p>
+            <div class="numli"><b style="color:#8E3FBE">1</b><p>Put the book on the pillow, not the shelf.</p></div>
+            <div class="numli"><b style="color:#4B43C4">2</b><p>Two-minute rule: start, don't finish.</p></div>
+            <div class="numli"><b style="color:#2E8EAC">3</b><p>Same time beats more time, every time.</p></div>
+          </div>
+          <div class="hover-act"><span class="mini-btn">Preview</span><span class="mini-btn fill" data-go="s-blog-editor">Use this layout</span></div>
+        </div>
+        <div class="card-meta">
+          <div class="card-name"><h3>Listicle</h3><span class="cat special">Special</span></div>
+          <p class="card-desc">Numbered list article format. Scannable, engaging, perfect for "Top 10"-style posts.</p>
+          <p class="card-fit"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Best for viral list posts</p>
+        </div>
+      </button>
+    </div>
+    <p class="empty-state">No layouts match those filters — try clearing the blog-type or category filter.</p>
+  </div>
+  <div class="selbar">
+    <span class="sel-info"><b>Center Hero</b> selected · Editorial layout</span>
+    <button class="btn btn-ghost">Preview</button>
+    <button class="btn btn-primary" data-go="s-blog-editor">Use this layout →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 4 · BLOG EDITOR
+     ============================================================ -->
+<section class="screen editor" id="s-blog-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#" data-go="s-blog-gallery">← Templates</a>
+      <span class="crumb">Blog Engine <span>/</span> <b>Center Hero</b></span>
+    </div>
+    <nav class="steps"><span class="step done"><span class="n">✓</span> Layout</span><span class="step-sep"></span><span class="step on"><span class="n">2</span> Content</span><span class="step-sep"></span><span class="step"><span class="n">3</span> Design &amp; export</span></nav>
+    <div class="ab-right">
+      <button class="hist-btn" title="Undo">↩</button>
+      <button class="hist-btn" title="Redo">↪</button>
+      <span class="save-state"><span class="dot"></span> Saved</span>
+      <button class="btn btn-ghost">Preview</button>
+      <button class="btn btn-primary">⬇ Export</button>
+    </div>
+  </header>
+
+  <div class="edt">
+    <aside class="create">
+      <div class="mode-tabs"><button class="mode-tab on">Generate</button><button class="mode-tab">Design</button></div>
+      <div class="create-scroll">
+        <div class="fgroup">
+          <div class="flabel">Blog topic</div>
+          <input type="text" placeholder="e.g. Cosmetic dentistry trends in 2026">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Target keyword <span class="opt">Optional</span></div>
+          <input type="text" placeholder="e.g. teeth whitening at home">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Website URL <span class="opt">Optional</span></div>
+          <input type="url" placeholder="https://example.com">
+          <p class="hint">We'll match your site's topic and tone of voice.</p>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Brief <span class="opt">Optional</span></div>
+          <textarea placeholder="Any extra instructions — angle, audience, points to cover…"></textarea>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Tone</div>
+          <select><option>Professional</option><option>Friendly &amp; engaging</option><option>Playful</option><option>Authoritative</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Length</div>
+          <div class="len-row">
+            <select><option>Medium · 600–800 words</option><option>Short · 300–500</option><option>Long · 1000–1400</option><option>Custom…</option></select>
+            <input type="number" placeholder="Exact words">
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Images <span class="opt">Optional</span></div>
+          <button class="upload">⬆ Upload images for the post</button>
+        </div>
+      </div>
+      <div class="create-foot">
+        <button class="btn btn-primary gen-btn">Generate blog post</button>
+        <p class="gen-hint">Then style it in the Design tab — backgrounds, images &amp; more</p>
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="canvas-toolbar">
+        <div class="ct-group">
+          <select class="ct-sel"><option>Paragraph</option><option>Heading 1</option><option>Heading 2</option><option>Quote</option></select>
+          <select class="ct-sel"><option>Inter</option><option>Fraunces</option><option>Georgia</option></select>
+          <select class="ct-sel" style="width:60px"><option>16</option><option>14</option><option>20</option></select>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn on"><b>B</b></button><button class="ct-btn"><i>I</i></button><button class="ct-btn"><u>U</u></button><button class="ct-btn" title="Text color"><span class="ct-swatch"></span></button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn">⫷</button><button class="ct-btn on">≡</button><button class="ct-btn">⫸</button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn">🔗</button><button class="ct-btn" title="Insert image"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="5.6" cy="6.6" r="1"/><path d="M3 12l3.2-3 2.3 2.2L11 8l2 2"/></svg></button><button class="ct-btn">🌈</button></div>
+      </div>
+      <div class="stage-body">
+        <div class="paper">
+          <div class="paper-empty">
+            <div class="pe-ic"><img src="assets/streamink-mark.png" alt=""></div>
+            <p class="pe-title">Your blog post will appear here</p>
+            <p class="pe-sub">Fill in the brief on the left and StreamInk will draft your post in the Center Hero layout.</p>
+            <div class="pe-steps">
+              <div class="pe-step"><span class="n">1</span> Add a topic — keyword and URL are optional</div>
+              <div class="pe-step"><span class="n">2</span> Press <b>&nbsp;Generate blog post&nbsp;</b></div>
+              <div class="pe-step"><span class="n">3</span> Switch to <b>&nbsp;Design&nbsp;</b> to style backgrounds &amp; images</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div class="zoom"><button>−</button><span>100%</span><button>+</button></div>
+        <span>·</span><span>Center Hero · Web page</span>
+        <span>·</span><span>0 words</span>
+      </div>
+    </main>
+
+    <aside class="inspector">
+      <div class="insp-tabs">
+        <button class="insp-tab on" data-pane="design">Design</button>
+        <button class="insp-tab" data-pane="ai">AI Refine</button>
+        <button class="insp-tab" data-pane="export">Export</button>
+      </div>
+      <div class="insp-body">
+        <div class="insp-pane on" data-pane="design">
+          <div class="fgroup">
+            <div class="flabel">Page background</div>
+            <div class="swatches">
+              <button class="sw on" style="background:#fff"></button>
+              <button class="sw" style="background:#F8F2E4"></button>
+              <button class="sw" style="background:#F1F0FA"></button>
+              <button class="sw" style="background:#0D0B1E"></button>
+              <button class="sw" style="background:linear-gradient(135deg,#2E8EAC,#4B43C4)"></button>
+              <button class="sw" style="background:conic-gradient(#2E8EAC,#8E3FBE,#2E8EAC)"></button>
+            </div>
+            <button class="tool-btn full">Use image as background</button>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Hero image</div>
+            <div class="slider-row"><label>Height</label><input type="range" min="20" max="80" value="45"><output>45%</output></div>
+            <div class="slider-row"><label>Overlay</label><input type="range" min="0" max="100" value="20"><output>20%</output></div>
+            <div class="row2"><button class="tool-btn">⬆ Replace</button><button class="tool-btn danger">✕ Remove</button></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Typography</div>
+            <div class="row2">
+              <select><option>Heads · Fraunces</option><option>Inter</option><option>Playfair</option></select>
+              <select><option>Body · Inter</option><option>Georgia</option><option>Albert Sans</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="ai">
+          <div class="fgroup">
+            <div class="flabel">AI assistant</div>
+            <p class="hint" style="margin:0 0 10px">Select text in your post, then choose a quick action.</p>
+            <div class="ai-quick">
+              <button class="tool-btn">Rewrite</button>
+              <button class="tool-btn">Shorten</button>
+              <button class="tool-btn">Expand</button>
+              <button class="tool-btn">✓ Fix grammar</button>
+              <button class="tool-btn">😄 More fun</button>
+              <button class="tool-btn">Simplify</button>
+            </div>
+            <button class="btn btn-primary tool-btn full" style="border-radius:8px">Open AI panel</button>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="export">
+          <div class="fgroup">
+            <div class="flabel">Download</div>
+            <div class="tool-grid">
+              <button class="tool-btn">PNG</button>
+              <button class="tool-btn">PDF</button>
+              <button class="tool-btn">HTML</button>
+              <button class="tool-btn">DOC</button>
+            </div>
+            <button class="tool-btn full">📋 Copy HTML</button>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">SEO meta <span class="opt">For HTML</span></div>
+            <button class="tool-btn full" style="margin:0 0 8px">Generate meta tags</button>
+            <input type="text" placeholder="Meta title" style="margin-bottom:7px">
+            <textarea placeholder="Meta description (≈155 characters)"></textarea>
+          </div>
+          <p class="exp-note">PNG captures your full design including backgrounds. HTML is publish-ready with meta tags included.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 5 · EMAIL NEWSLETTER EDITOR
+     ============================================================ -->
+<section class="screen editor" id="s-email-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#">← Dashboard</a>
+      <span class="crumb">Email Newsletter <span>/</span> <b>Untitled newsletter</b></span>
+    </div>
+    <nav class="steps"><span class="step on"><span class="n">1</span> Content</span><span class="step-sep"></span><span class="step"><span class="n">2</span> Design</span><span class="step-sep"></span><span class="step"><span class="n">3</span> Export HTML</span></nav>
+    <div class="ab-right">
+      <button class="hist-btn" title="Undo">↩</button>
+      <button class="hist-btn" title="Redo">↪</button>
+      <span class="save-state"><span class="dot"></span> Saved</span>
+      <button class="btn btn-ghost">Preview</button>
+      <button class="btn btn-primary">📋 Copy HTML</button>
+    </div>
+  </header>
+
+  <div class="edt">
+    <aside class="create">
+      <div class="mode-tabs"><button class="mode-tab on">Generate</button><button class="mode-tab">Design</button></div>
+      <div class="create-scroll">
+        <div class="fgroup">
+          <div class="flabel">Email topic</div>
+          <input type="text" placeholder="e.g. Monthly health tips, product launch…">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Brand / sender name</div>
+          <input type="text" placeholder="e.g. SmilePro Dental">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Website URL <span class="opt">Optional</span></div>
+          <input type="url" placeholder="https://example.com">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Sections <span class="opt">Drag to reorder</span></div>
+          <div class="sec-input"><div class="flabel" style="font-size:10px">Section 1</div><input type="text" placeholder="e.g. Welcome &amp; introduction"></div>
+          <div class="sec-input"><div class="flabel" style="font-size:10px">Section 2</div><input type="text" placeholder="e.g. Main article or tips"></div>
+          <div class="sec-input"><div class="flabel" style="font-size:10px">Section 3</div><input type="text" placeholder="e.g. Promotion or offer"></div>
+          <button class="add-sec">＋ Add section</button>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Tone</div>
+          <select><option>Professional</option><option>Friendly &amp; warm</option><option>Promotional</option><option>Informative</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Call to action <span class="opt">Optional</span></div>
+          <input type="text" placeholder="e.g. Book an appointment">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Length</div>
+          <select><option>Medium · 400–500 words</option><option>Short · 200–300</option><option>Long · 600–800</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Images <span class="opt">Optional</span></div>
+          <button class="upload">⬆ Upload images</button>
+          <p class="hint">Click a thumbnail, then click a section to place it as a background or inline image.</p>
+        </div>
+      </div>
+      <div class="create-foot">
+        <button class="btn btn-primary gen-btn">Generate newsletter</button>
+        <p class="gen-hint">Email-safe inline CSS — paste into Mailchimp &amp; send</p>
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="canvas-toolbar">
+        <div class="ct-group">
+          <select class="ct-sel"><option>Arial</option><option>Georgia</option><option>Verdana</option><option>Helvetica</option></select>
+          <select class="ct-sel" style="width:60px"><option>14</option><option>12</option><option>16</option><option>18</option></select>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn"><b>B</b></button><button class="ct-btn"><i>I</i></button><button class="ct-btn"><u>U</u></button><button class="ct-btn" title="Text color"><span class="ct-swatch"></span></button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn">⫷</button><button class="ct-btn on">≡</button><button class="ct-btn">⫸</button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn" style="width:auto;font-size:11px;font-weight:600">Insert image</button><button class="ct-btn" style="width:auto;font-size:11px;font-weight:600">+ Text</button></div>
+      </div>
+      <div class="stage-body">
+        <div class="email-doc">
+          <div class="em-head">
+            <p class="em-brand">SmilePro Dental</p>
+            <h2>Your June Smile Update </h2>
+          </div>
+          <div class="esec on">
+            <span class="etag">Section 1 · Welcome</span>
+            <h3>Welcome &amp; introduction</h3>
+            <p style="font-size:13px;color:#5A5680;line-height:1.6">Click <b>Generate newsletter</b> and this section fills with a warm AI-written opener — or click any section to write and style it yourself.</p>
+            <div class="ebar" style="width:88%"></div>
+            <div class="ebar" style="width:72%"></div>
+          </div>
+          <div class="esec">
+            <span class="etag">Section 2 · Main</span>
+            <h3>Main article or tips</h3>
+            <div class="ebar" style="width:94%"></div>
+            <div class="ebar" style="width:86%"></div>
+            <div class="ebar" style="width:90%"></div>
+          </div>
+          <div class="esec">
+            <span class="etag">Section 3 · Promo</span>
+            <h3>Promotion or offer</h3>
+            <div class="ebar" style="width:80%"></div>
+            <div class="ebar" style="width:64%"></div>
+            <span class="ecta">Book an appointment</span>
+          </div>
+          <div class="em-foot">You're receiving this because you subscribed at smilepro.example · Unsubscribe</div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div class="zoom"><button>−</button><span>100%</span><button>+</button></div>
+        <span>·</span><span>600px email width · inline CSS</span>
+        <span>·</span><span>Desktop ▾</span>
+      </div>
+    </main>
+
+    <aside class="inspector">
+      <div class="insp-tabs">
+        <button class="insp-tab on" data-pane="section">Section</button>
+        <button class="insp-tab" data-pane="image">Image</button>
+        <button class="insp-tab" data-pane="export">Export</button>
+      </div>
+      <div class="insp-body">
+        <div class="insp-pane on" data-pane="section">
+          <div class="fgroup">
+            <div class="flabel">Selected section</div>
+            <p class="hint" style="margin:0 0 10px">Section 1 · Welcome — click any section on the canvas to edit its style.</p>
+            <div class="flabel" style="margin-top:4px">Background</div>
+            <div class="swatches">
+              <button class="sw on" style="background:#fff"></button>
+              <button class="sw" style="background:#FAFAFE"></button>
+              <button class="sw" style="background:#F1F0FA"></button>
+              <button class="sw" style="background:#EFF8FD"></button>
+              <button class="sw" style="background:#FDF6EC"></button>
+              <button class="sw" style="background:linear-gradient(135deg,#4B43C4,#8E3FBE)"></button>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Spacing &amp; overlay</div>
+            <div class="slider-row"><label>Padding</label><input type="range" min="8" max="48" value="24"><output>24px</output></div>
+            <div class="slider-row"><label>Overlay</label><input type="range" min="0" max="100" value="0"><output>0%</output></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Section actions</div>
+            <div class="tool-grid">
+              <button class="tool-btn">↑ Move up</button>
+              <button class="tool-btn">↓ Move down</button>
+              <button class="tool-btn">⧉ Duplicate</button>
+              <button class="tool-btn danger">✕ Delete</button>
+            </div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="image">
+          <div class="fgroup">
+            <div class="flabel">Apply selected image as</div>
+            <button class="tool-btn full" style="margin:0 0 7px">▦ Section background</button>
+            <button class="tool-btn full" style="margin:0">↓ Inline in section</button>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Inline wrap</div>
+            <div class="align-row"><button class="ct-btn on">■</button><button class="ct-btn">←</button><button class="ct-btn">→</button></div>
+            <p class="hint">Full width, or wrap text to the left / right of the image.</p>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Adjust</div>
+            <div class="slider-row"><label>Width</label><input type="range" min="20" max="100" value="100"><output>100%</output></div>
+            <div class="slider-row"><label>Corner</label><input type="range" min="0" max="24" value="6"><output>6px</output></div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="export">
+          <div class="fgroup">
+            <div class="flabel">Export</div>
+            <button class="btn btn-primary tool-btn full" style="border-radius:8px;margin:0 0 7px">📋 Copy HTML</button>
+            <div class="tool-grid">
+              <button class="tool-btn">⬇ HTML file</button>
+              <button class="tool-btn">Plain text</button>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Compatibility</div>
+            <p class="exp-note" style="margin-top:0">✓ Inline CSS only — safe for Mailchimp, Brevo, HubSpot &amp; Outlook<br>✓ 600px table layout<br>✓ Plain-text fallback included</p>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Subject line</div>
+            <button class="tool-btn full" style="margin:0 0 8px">Suggest subject lines</button>
+            <input type="text" placeholder="Email subject">
+            <input type="text" placeholder="Preview text" style="margin-top:7px">
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 6 · SOCIAL POST CREATOR
+     ============================================================ -->
+<section class="screen editor" id="s-social-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#">← Dashboard</a>
+      <span class="crumb">Social Post Creator <span>/</span> <b id="socSize">Instagram post · 1080×1080</b></span>
+    </div>
+    <div class="ab-right" style="margin-left:auto;margin-right:auto">
+      <button class="hist-btn" title="Undo">↩</button>
+      <button class="hist-btn" title="Redo">↪</button>
+      <span class="save-state"><span class="dot"></span> All changes saved</span>
+    </div>
+    <div class="ab-right">
+      <button class="btn btn-ghost">Preview</button>
+      <button class="btn btn-primary">⬇ Export</button>
+    </div>
+  </header>
+
+  <div class="edt">
+    <aside class="create">
+      <div class="create-scroll" style="padding-top:18px">
+        <div class="fgroup">
+          <div class="flabel">Platform</div>
+          <div class="platforms">
+            <button class="plat on" data-size="Instagram post · 1080×1080"><span class="ic">IG</span>Insta</button>
+            <button class="plat" data-size="X / Twitter post · 1600×900"><span class="ic">X</span>X</button>
+            <button class="plat" data-size="LinkedIn post · 1200×1200"><span class="ic">in</span>LinkedIn</button>
+            <button class="plat" data-size="Facebook post · 1200×630"><span class="ic">f</span>Facebook</button>
+            <button class="plat" data-size="Story · 1080×1920"><span class="ic">St</span>Story</button>
+          </div>
+          <p class="plat-size"><span>Canvas size</span><b>1080 × 1080 px</b></p>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Topic / message</div>
+          <textarea placeholder="What's this post about? e.g. New product launch, weekly health tip…"></textarea>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Brand name</div>
+          <input type="text" placeholder="Your brand or business name">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Tone</div>
+          <select><option>Engaging &amp; friendly</option><option>Professional &amp; polished</option><option>Bold &amp; punchy</option><option>Playful &amp; witty</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Call to action <span class="opt">Optional</span></div>
+          <input type="text" placeholder="e.g. Shop now · Learn more · Book today">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Background image</div>
+          <div class="bg-tabs"><button class="bg-tab">⬆ Upload</button><button class="bg-tab on">AI generate</button></div>
+          <input type="text" placeholder="Describe the image — e.g. 'sunset city skyline'">
+          <p class="hint">AI copy includes platform-tuned hashtags automatically.</p>
+        </div>
+      </div>
+      <div class="create-foot">
+        <button class="btn btn-primary gen-btn">Generate post</button>
+        <p class="gen-hint">Creates copy + 4 design variants in ~10 seconds</p>
+      </div>
+    </aside>
+
+    <main class="stage">
+      <div class="canvas-toolbar">
+        <div class="ct-group">
+          <select class="ct-sel"><option>Fraunces</option><option>Inter</option><option>Albert Sans</option></select>
+          <select class="ct-sel" style="width:60px"><option>32</option><option>40</option><option>56</option></select>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn on"><b>B</b></button><button class="ct-btn"><i>I</i></button><button class="ct-btn"><u>U</u></button><button class="ct-btn" title="Text color"><span class="ct-swatch"></span></button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn">⫷</button><button class="ct-btn on">≡</button><button class="ct-btn">⫸</button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn" style="width:auto;font-size:11px;font-weight:600">+ Text</button></div>
+      </div>
+      <div class="stage-body" style="align-items:center">
+        <div class="sq-canvas">
+          <div class="cv-text">
+            <p class="cv-brand">STREAMINK STUDIO</p>
+            <h2 class="cv-headline" contenteditable="true" spellcheck="false">Your story deserves<br>better ink. </h2>
+            <span class="cv-cta">Learn more</span>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div class="zoom"><button>−</button><span>100%</span><button>+</button></div>
+        <span>·</span>
+        <div class="variants">
+          <span>Variants</span>
+          <button class="var-dot on" style="background:linear-gradient(135deg,#B85B7A,#3D5C8C)"></button>
+          <button class="var-dot" style="background:linear-gradient(135deg,#2E8EAC,#4B43C4)"></button>
+          <button class="var-dot" style="background:linear-gradient(135deg,#8E3FBE,#4B43C4)"></button>
+          <button class="var-dot" style="background:linear-gradient(135deg,#2A2550,#0D0B1E)"></button>
+          <button class="var-add">＋</button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="inspector">
+      <div class="insp-tabs">
+        <button class="insp-tab on" data-pane="text">Text</button>
+        <button class="insp-tab" data-pane="image">Image</button>
+        <button class="insp-tab" data-pane="canvas">Canvas</button>
+      </div>
+      <div class="insp-body">
+        <div class="insp-pane on" data-pane="text">
+          <div class="fgroup"><button class="tool-btn full" style="margin:0;border-style:dashed">＋ Add text box</button></div>
+          <div class="fgroup layers">
+            <div class="flabel">Layers</div>
+            <div class="layer on"><span class="lyr-ic">T</span> Headline <button class="vis"></button></div>
+            <div class="layer"><span class="lyr-ic">T</span> Brand name <button class="vis"></button></div>
+            <div class="layer"><span class="lyr-ic">🔘</span> CTA button <button class="vis"></button></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Selected text</div>
+            <div class="align-row" style="margin-bottom:9px"><button class="ct-btn">⫷</button><button class="ct-btn on">≡</button><button class="ct-btn">⫸</button></div>
+            <div class="row2">
+              <select><option>Size · 32</option><option>40</option><option>56</option></select>
+              <select><option>Semibold</option><option>Bold</option><option>Regular</option></select>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Text color</div>
+            <div class="swatches">
+              <button class="sw on" style="background:#fff"></button>
+              <button class="sw" style="background:#0D0B1E"></button>
+              <button class="sw" style="background:#2E8EAC"></button>
+              <button class="sw" style="background:#4B43C4"></button>
+              <button class="sw" style="background:#8E3FBE"></button>
+              <button class="sw" style="background:#FFC65C"></button>
+            </div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="image">
+          <div class="fgroup">
+            <div class="flabel">Adjust</div>
+            <div class="slider-row"><label>Scale</label><input type="range" min="50" max="200" value="100"><output>100%</output></div>
+            <div class="slider-row"><label>Rotate</label><input type="range" min="-180" max="180" value="0"><output>0°</output></div>
+            <div class="slider-row"><label>Bright</label><input type="range" min="0" max="200" value="100"><output>100%</output></div>
+            <div class="slider-row"><label>Overlay</label><input type="range" min="0" max="100" value="45"><output>45%</output></div>
+            <div class="slider-row"><label>Blur</label><input type="range" min="0" max="20" value="0"><output>0px</output></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Transform</div>
+            <div class="tool-grid">
+              <button class="tool-btn">Crop</button><button class="tool-btn">↔ Flip H</button>
+              <button class="tool-btn">↕ Flip V</button><button class="tool-btn">↺ Reset</button>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Source</div>
+            <div class="tool-grid"><button class="tool-btn">⬆ Replace</button><button class="tool-btn danger">✕ Remove</button></div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="canvas">
+          <div class="fgroup">
+            <div class="flabel">Platform size</div>
+            <select><option>Instagram · 1080×1080</option><option>X / Twitter · 1600×900</option><option>LinkedIn · 1200×1200</option><option>Facebook · 1200×630</option><option>Story · 1080×1920</option></select>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Background</div>
+            <div class="swatches">
+              <button class="sw on" style="background:linear-gradient(135deg,#B85B7A,#3D5C8C)"></button>
+              <button class="sw" style="background:linear-gradient(135deg,#2E8EAC,#4B43C4)"></button>
+              <button class="sw" style="background:linear-gradient(135deg,#8E3FBE,#4B43C4)"></button>
+              <button class="sw" style="background:#0D0B1E"></button>
+              <button class="sw" style="background:#F4F4F9"></button>
+              <button class="sw" style="background:conic-gradient(#2E8EAC,#8E3FBE,#2E8EAC)"></button>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Export</div>
+            <div class="tool-grid"><button class="tool-btn">PNG</button><button class="tool-btn">JPG</button></div>
+            <button class="tool-btn full">⬇ Download all 4 variants</button>
+            <p class="exp-note">Exports at full platform resolution — ready to post.</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- extra styles for book & script studios -->
+<style>
+/* book spread */
+.book-spread{display:flex;filter:drop-shadow(0 34px 70px rgba(0,0,0,.65))}
+.bpage{width:min(310px,40vw);aspect-ratio:210/297;overflow:hidden}
+.bpage.cover{border-radius:10px 2px 2px 10px;background:
+  radial-gradient(420px 300px at 80% 0%,rgba(157,77,232,.5),transparent 60%),
+  radial-gradient(420px 320px at 0% 100%,rgba(61,195,242,.32),transparent 60%),
+  linear-gradient(160deg,#241F52,#2E2566 55%,#3A2C82);
+  color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:34px;position:relative}
+.bpage.cover .quill{font-size:34px;margin-bottom:18px}
+.bpage.cover .rule{width:44px;height:2px;background:linear-gradient(90deg,#2E8EAC,#8E3FBE);margin:0 auto 16px}
+.bpage.cover h2{font-family:var(--ff-d);font-weight:600;font-size:25px;line-height:1.2;border:1.5px dashed rgba(255,255,255,.4);border-radius:6px;padding:6px 12px;cursor:text}
+.bpage.cover .by{font-size:12.5px;opacity:.85;margin-top:14px;font-style:italic}
+.bpage.cover .genre-chip{display:inline-block;margin-top:16px;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:5px 13px}
+.bpage.cover .imprint{position:absolute;bottom:18px;left:0;right:0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;opacity:.55}
+.spine{width:16px;background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(255,255,255,.05) 50%,rgba(0,0,0,.4));flex:none}
+.bpage.paper{border-radius:2px 10px 10px 2px;background:#FDFCF8;color:#33304E;padding:36px 32px;display:flex;flex-direction:column}
+.bpage.paper .ch-label{font-size:9.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#9A8FD0;text-align:center}
+.bpage.paper .ch-title{font-family:var(--ff-d);font-weight:600;font-size:19px;color:#221C5E;text-align:center;margin:8px 0 20px}
+.dropcap{float:left;font-family:var(--ff-d);font-weight:600;font-size:44px;line-height:.85;margin:3px 8px 0 0;background:linear-gradient(135deg,#2E8EAC,#8E3FBE);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bline{height:6px;border-radius:3px;background:#E6E3F2;margin-bottom:8px}
+.bpage .pgno{margin-top:auto;text-align:center;font-size:10px;color:#B6B2D2}
+.chap-out{min-width:38px;text-align:center;font-family:var(--ff-d);font-weight:600;font-size:17px;color:var(--text);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:3px 0}
+/* script page */
+.script-page{width:min(580px,100%);aspect-ratio:8.5/11;background:#fff;color:#222;font-family:'Courier Prime','Courier New',monospace;border-radius:4px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7),0 0 0 1px var(--line);padding:64px 70px;font-size:13px;line-height:1.7}
+.sp-title{text-align:center;margin-top:90px}
+.sp-title h2{font-size:19px;font-weight:700;letter-spacing:.18em;border:1.5px dashed #C9C5EE;border-radius:4px;display:inline-block;padding:4px 12px;cursor:text}
+.sp-title .wb{margin-top:34px;font-size:12px;color:#555}
+.sp-title .an{font-weight:700;margin-top:6px}
+.sp-title .meta{margin-top:26px;font-size:11px;color:#888}
+.sp-scene{margin-top:70px}
+.sp-scene .sh{font-weight:700}
+.sp-scene .act{margin-top:12px;color:#444}
+.sp-scene .chr{margin-top:12px;text-align:center;font-weight:700}
+.sp-scene .dlg{width:62%;margin:2px auto 0;color:#444}
+.sp-hintline{color:#B9B5D6;font-style:italic}
+/* shared list panels */
+.item-list .layer{cursor:pointer}
+.tipbox{background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:8px}
+.tipbox b{font-size:12px;display:flex;gap:7px;align-items:center;color:var(--text)}
+.tipbox p{font-size:11px;color:var(--faint);margin-top:4px;line-height:1.5}
+</style>
+
+<!-- ============================================================
+     SCREEN 7 · AI BOOK WRITER
+     ============================================================ -->
+<section class="screen editor" id="s-book-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#">← Dashboard</a>
+      <span class="crumb">AI Book Writer <span>/</span> <b>Untitled Book</b></span>
+    </div>
+    <nav class="steps"><span class="step on"><span class="n">1</span> Setup</span><span class="step-sep"></span><span class="step"><span class="n">2</span> Write &amp; refine</span><span class="step-sep"></span><span class="step"><span class="n">3</span> Export</span></nav>
+    <div class="ab-right">
+      <button class="hist-btn" title="Undo">↩</button>
+      <button class="hist-btn" title="Redo">↪</button>
+      <span class="save-state"><span class="dot"></span> Saved</span>
+      <button class="btn btn-ghost">Preview</button>
+      <button class="btn btn-primary">⬇ Export PDF</button>
+    </div>
+  </header>
+
+  <div class="edt">
+    <!-- left -->
+    <aside class="create">
+      <div class="mode-tabs"><button class="mode-tab on">Setup</button><button class="mode-tab">Chapters</button></div>
+      <div class="create-scroll">
+        <div class="fgroup">
+          <div class="flabel">Book title</div>
+          <input type="text" placeholder="Untitled Book">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Author</div>
+          <input type="text" placeholder="Author name">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Story brief</div>
+          <textarea style="min-height:84px" placeholder="Describe your story — world, characters, conflict, how it should end…"></textarea>
+          <p class="hint">The richer the brief, the better the book.</p>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Genre</div>
+          <select><option>Fantasy</option><option>Sci-fi</option><option>Romance</option><option>Mystery</option><option>Horror</option><option>Light novel</option><option>Memoir</option><option>🏛 Historical</option><option>😄 Comedy</option><option>🌊 Adventure</option><option>🎭 Drama</option><option>🧒 Children's</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Writing style</div>
+          <select><option>Descriptive &amp; immersive</option><option>Fast-paced &amp; punchy</option><option>Lyrical &amp; literary</option><option>Plain &amp; accessible</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Chapters</div>
+          <div class="slider-row" style="margin-bottom:0">
+            <input type="range" min="3" max="30" value="8" style="flex:1">
+            <span class="chap-out">8</span>
+          </div>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Words per chapter</div>
+          <select><option>~1,000 words · Standard</option><option>~600 words · Short</option><option>~1,800 words · Long</option><option>~2,500 words · Epic</option></select>
+          <p class="hint">8 chapters × ~1,000 words ≈ 8,000-word book</p>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Typesetting</div>
+          <div class="row2">
+            <select><option>Lora — elegant serif</option><option>Fraunces</option><option>Garamond</option><option>Georgia</option></select>
+            <select><option>A4 · 210×297</option><option>A5 · 148×210</option><option>US Trade · 6×9″</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="create-foot">
+        <button class="btn btn-primary gen-btn">Generate book</button>
+        <button class="btn btn-ghost gen-btn" style="margin-top:8px">▶ Generate next chapter</button>
+        <p class="gen-hint">Writes chapter by chapter — watch it draft live</p>
+      </div>
+    </aside>
+
+    <!-- center -->
+    <main class="stage">
+      <div class="canvas-toolbar">
+        <div class="ct-group">
+          <button class="ct-btn">«</button><button class="ct-btn">‹</button>
+          <span style="font-size:12px;font-weight:600;color:var(--text);padding:0 10px">Cover</span>
+          <button class="ct-btn">›</button><button class="ct-btn">»</button>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group">
+          <select class="ct-sel"><option>Lora</option><option>Fraunces</option><option>Garamond</option></select>
+          <select class="ct-sel" style="width:58px"><option>12</option><option>11</option><option>13</option></select>
+          <select class="ct-sel" style="width:88px"><option>Spacing 1.7</option><option>1.5</option><option>2.0</option></select>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn"><b>B</b></button><button class="ct-btn"><i>I</i></button><button class="ct-btn" title="Text color"><span class="ct-swatch"></span></button><button class="ct-btn" title="Insert image"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="5.6" cy="6.6" r="1"/><path d="M3 12l3.2-3 2.3 2.2L11 8l2 2"/></svg></button></div>
+      </div>
+      <div class="stage-body" style="align-items:center">
+        <div class="book-spread">
+          <div class="bpage cover">
+            <div class="quill"><img src="assets/streamink-mark.png" alt=""></div>
+            <div class="rule"></div>
+            <h2 contenteditable="true" spellcheck="false">Untitled Book</h2>
+            <p class="by">by Author Name</p>
+            <span class="genre-chip">Fantasy novel</span>
+            <p class="imprint">StreamInk Studio</p>
+          </div>
+          <div class="spine"></div>
+          <div class="bpage paper">
+            <p class="ch-label">Chapter One</p>
+            <p class="ch-title">Where it begins</p>
+            <p style="font-size:11.5px;line-height:1.7;color:#6A6690"><span class="dropcap">O</span>nce you press <b>Write my book</b>, your opening chapter flows onto this page with automatic drop caps — or click anywhere to write it yourself.</p>
+            <div class="bline" style="width:96%;margin-top:12px"></div>
+            <div class="bline" style="width:90%"></div>
+            <div class="bline" style="width:94%"></div>
+            <div class="bline" style="width:64%"></div>
+            <p class="pgno">1</p>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div class="zoom"><button>−</button><span>100%</span><button>+</button></div>
+        <span>·</span><span>Cover · page 1 of 2</span>
+        <span>·</span><span>0 / ≈8,000 words</span>
+      </div>
+    </main>
+
+    <!-- right -->
+    <aside class="inspector">
+      <div class="insp-tabs">
+        <button class="insp-tab on" data-pane="ai">AI Assistant</button>
+        <button class="insp-tab" data-pane="style">Style</button>
+        <button class="insp-tab" data-pane="export">Export</button>
+      </div>
+      <div class="insp-body">
+        <div class="insp-pane on" data-pane="ai">
+          <div class="fgroup">
+            <div class="flabel">Chapter</div>
+            <select><option>Cover page</option><option>Chapter 1 — Where it begins</option><option>Chapter 2</option><option>Chapter 3</option></select>
+            <p class="hint">0 words · 0 paragraphs</p>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Quick actions</div>
+            <div class="ai-quick">
+              <button class="tool-btn">🔄 Regenerate</button>
+              <button class="tool-btn">Expand</button>
+              <button class="tool-btn">Make concise</button>
+              <button class="tool-btn">Polish</button>
+              <button class="tool-btn">✓ Fix grammar</button>
+              <button class="tool-btn">🖋 More description</button>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Custom instruction</div>
+            <textarea placeholder="e.g. Add a plot twist at the end of this chapter…"></textarea>
+            <button class="btn btn-primary tool-btn full" style="border-radius:8px">Apply with AI</button>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Tips</div>
+            <div class="tipbox"><b>🖋 Drop caps</b><p>Chapter openings get decorative drop caps automatically — nothing to set up.</p></div>
+            <div class="tipbox"><b>Direct editing</b><p>Click any text on the book pages to edit it in place.</p></div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="style">
+          <div class="fgroup">
+            <div class="flabel">Cover</div>
+            <div class="swatches">
+              <button class="sw on" style="background:linear-gradient(160deg,#241F52,#3A2C82)"></button>
+              <button class="sw" style="background:linear-gradient(160deg,#0E3A4A,#2E8EAC)"></button>
+              <button class="sw" style="background:linear-gradient(160deg,#4A1B45,#8E3FBE)"></button>
+              <button class="sw" style="background:#0D0B1E"></button>
+              <button class="sw" style="background:#F8F2E4"></button>
+              <button class="sw" style="background:conic-gradient(#2E8EAC,#8E3FBE,#2E8EAC)"></button>
+            </div>
+            <button class="tool-btn full">Upload cover image</button>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Typography</div>
+            <div class="row2">
+              <select><option>Body · Lora</option><option>Garamond</option><option>Georgia</option></select>
+              <select><option>Heads · Fraunces</option><option>Lora</option></select>
+            </div>
+            <div class="slider-row" style="margin-top:10px"><label>Size</label><input type="range" min="10" max="14" value="12"><output>12pt</output></div>
+            <div class="slider-row"><label>Spacing</label><input type="range" min="14" max="22" value="17"><output>1.7</output></div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="export">
+          <div class="fgroup">
+            <div class="flabel">Export</div>
+            <button class="btn btn-primary tool-btn full" style="border-radius:8px;margin:0 0 7px">⬇ Export PDF</button>
+            <div class="tool-grid"><button class="tool-btn">DOCX</button><button class="tool-btn">EPUB</button></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">PDF options</div>
+            <div class="tool-grid">
+              <button class="tool-btn">✓ Include cover</button>
+              <button class="tool-btn">✓ Contents page</button>
+              <button class="tool-btn">✓ Page numbers</button>
+              <button class="tool-btn">Bleed marks</button>
+            </div>
+          </div>
+          <p class="exp-note">Exports with your fonts embedded at print quality — ready for KDP, Lulu, or your printer.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 8 · AI SCRIPT WRITER
+     ============================================================ -->
+<section class="screen editor" id="s-script-editor">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#">← Dashboard</a>
+      <span class="crumb">AI Script Writer <span>/</span> <b>Untitled Script</b></span>
+    </div>
+    <nav class="steps"><span class="step on"><span class="n">1</span> Setup</span><span class="step-sep"></span><span class="step"><span class="n">2</span> Scenes</span><span class="step-sep"></span><span class="step"><span class="n">3</span> Export</span></nav>
+    <div class="ab-right">
+      <button class="hist-btn" title="Undo">↩</button>
+      <button class="hist-btn" title="Redo">↪</button>
+      <span class="save-state"><span class="dot"></span> Saved</span>
+      <button class="btn btn-ghost">Preview</button>
+      <button class="btn btn-primary">⬇ Export PDF</button>
+    </div>
+  </header>
+
+  <div class="edt">
+    <!-- left -->
+    <aside class="create">
+      <div class="mode-tabs"><button class="mode-tab on">Setup</button><button class="mode-tab">🎞 Scenes</button></div>
+      <div class="create-scroll">
+        <div class="fgroup">
+          <div class="flabel">Script title</div>
+          <input type="text" placeholder="Untitled Script">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Author</div>
+          <input type="text" placeholder="Author name">
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Script type</div>
+          <select><option>📹 YouTube script</option><option>🎞 Feature film</option><option>📺 TV episode</option><option>📺 Web series</option><option>📢 30s commercial</option><option>📢 60s commercial</option><option>Podcast script</option><option>🎭 Stage play</option><option>Short-form / Reels</option><option>Explainer video</option><option>🏢 Corporate video</option><option>🎮 Game cinematic</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Genre</div>
+          <select><option>Drama</option><option>Comedy</option><option>Thriller</option><option>Documentary</option><option>Action</option><option>Romance</option></select>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Logline / brief</div>
+          <textarea style="min-height:84px" placeholder="One or two sentences: who wants what, and what stands in the way…"></textarea>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Target runtime</div>
+          <div class="len-row">
+            <select><option>8–10 min · YouTube</option><option>30 sec</option><option>60 sec</option><option>22 min · TV</option><option>90–120 min · Feature</option><option>Custom…</option></select>
+            <input type="number" placeholder="Minutes">
+          </div>
+          <p class="hint">Industry standard: 1 screenplay page ≈ 1 minute.</p>
+        </div>
+        <div class="fgroup">
+          <div class="flabel">Tone</div>
+          <select><option>Grounded &amp; natural</option><option>Heightened &amp; dramatic</option><option>Comedic &amp; light</option><option>Suspenseful</option></select>
+        </div>
+      </div>
+      <div class="create-foot">
+        <button class="btn btn-primary gen-btn">Generate script</button>
+        <p class="gen-hint">Industry-standard formatting, scene by scene</p>
+      </div>
+    </aside>
+
+    <!-- center -->
+    <main class="stage">
+      <div class="canvas-toolbar">
+        <div class="ct-group">
+          <select class="ct-sel"><option>Scene heading</option><option>Action</option><option>Character</option><option>Dialogue</option><option>Parenthetical</option><option>Transition</option></select>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group">
+          <select class="ct-sel"><option>Courier Prime</option><option>Courier New</option></select>
+          <select class="ct-sel" style="width:58px"><option>12</option></select>
+        </div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn"><b>B</b></button><button class="ct-btn"><i>I</i></button><button class="ct-btn"><u>U</u></button></div>
+        <span class="ct-sep"></span>
+        <div class="ct-group"><button class="ct-btn" style="width:auto;font-size:11px;font-weight:600">+ Scene</button></div>
+      </div>
+      <div class="stage-body">
+        <div class="script-page">
+          <div class="sp-title">
+            <h2 contenteditable="true" spellcheck="false">UNTITLED SCRIPT</h2>
+            <p class="wb">Written by</p>
+            <p class="an">Author Name</p>
+            <p class="meta">Drama · YouTube Script</p>
+          </div>
+          <div class="sp-scene">
+            <p class="sh">INT. COFFEE SHOP — DAY</p>
+            <p class="act sp-hintline">Press Generate script and your scenes appear here in proper screenplay format — or click any line to write directly.</p>
+            <p class="chr">MAYA</p>
+            <p class="dlg sp-hintline">(typing) One page of this equals one minute on screen.</p>
+          </div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <div class="zoom"><button>−</button><span>100%</span><button>+</button></div>
+        <span>·</span><span>Title page · 1 of 1</span>
+        <span>·</span><span>⏱ Est. runtime 0:00 — 1 page ≈ 1 min</span>
+      </div>
+    </main>
+
+    <!-- right -->
+    <aside class="inspector">
+      <div class="insp-tabs">
+        <button class="insp-tab on" data-pane="director">Scene Director</button>
+        <button class="insp-tab" data-pane="format">Format</button>
+        <button class="insp-tab" data-pane="export">Export</button>
+      </div>
+      <div class="insp-body">
+        <div class="insp-pane on" data-pane="director">
+          <div class="fgroup">
+            <div class="flabel">Scene</div>
+            <select><option>Scene 1 — INT. COFFEE SHOP</option><option>＋ New scene…</option></select>
+            <p class="hint">0 words · 0 dialogue lines</p>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Direct the scene</div>
+            <div class="ai-quick">
+              <button class="tool-btn">🔄 Regenerate</button>
+              <button class="tool-btn">Add tension</button>
+              <button class="tool-btn">Better dialogue</button>
+              <button class="tool-btn">More visual</button>
+              <button class="tool-btn">Tighten</button>
+              <button class="tool-btn">🌀 Plot twist</button>
+            </div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Custom direction</div>
+            <textarea placeholder="e.g. Rewrite the ending so the villain escapes; add humour in the middle…"></textarea>
+            <button class="btn btn-primary tool-btn full" style="border-radius:8px">Apply direction</button>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="format">
+          <div class="fgroup">
+            <div class="flabel">Screenplay standards</div>
+            <div class="tipbox"><b>Scene format</b><p>Headings are INT./EXT. + location + time. Bold character names precede dialogue.</p></div>
+            <div class="tipbox"><b>⏱ 1 page = 1 min</b><p>One screenplay page equals roughly one minute of screen time.</p></div>
+            <div class="tipbox"><b>Direct editing</b><p>Click any line on the page to edit it — element type is detected automatically.</p></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Page</div>
+            <div class="row2">
+              <select><option>US Letter</option><option>A4</option></select>
+              <select><option>Numbering · On</option><option>Off</option></select>
+            </div>
+          </div>
+        </div>
+        <div class="insp-pane" data-pane="export">
+          <div class="fgroup">
+            <div class="flabel">Export</div>
+            <button class="btn btn-primary tool-btn full" style="border-radius:8px;margin:0 0 7px">⬇ Export PDF</button>
+            <div class="tool-grid"><button class="tool-btn">FDX (Final Draft)</button><button class="tool-btn">Plain text</button></div>
+          </div>
+          <div class="fgroup">
+            <div class="flabel">Title page</div>
+            <div class="tool-grid">
+              <button class="tool-btn">✓ Include</button>
+              <button class="tool-btn">Contact info</button>
+            </div>
+          </div>
+          <p class="exp-note">PDF exports in industry-standard Courier 12pt with correct margins — ready to submit or shoot.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- extra styles for dashboard, auth, pricing, checkout -->
+<style>
+/* dashboard */
+.dash{display:flex;min-height:100vh}
+.side{width:232px;flex:none;background:var(--panel);border-right:1px solid var(--line-soft);padding:18px 13px 16px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.side-brand{display:flex;align-items:center;gap:10px;padding:4px 9px 16px}
+.side-brand .mark{width:auto;height:30px;display:block;flex:none}
+.side-brand b{font-family:var(--ff-d);font-weight:600;font-size:15.5px;display:block;line-height:1.1}
+.side-brand span{font-size:9.5px;color:var(--faint);letter-spacing:.06em}
+.side-grp{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);padding:14px 9px 6px}
+.side-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:none;border-radius:var(--r-sm);padding:8px 9px;width:100%;text-align:left}
+.side-item:hover{background:var(--panel-2);color:var(--text)}
+.side-item.on{background:var(--grad);color:#fff}
+.side-item .sdot{width:8px;height:8px;border-radius:50%;flex:none}
+.side-foot{margin-top:auto;padding:10px 9px 0;border-top:1px solid var(--line-soft)}
+.dash-main{flex:1;min-width:0;padding:26px 30px 60px}
+.dash-hello{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.dash-hello h1{font-size:clamp(24px,2.6vw,30px)}
+.dash-hello p{color:var(--muted);font-size:14px;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px}
+@media(max-width:900px){.stats{grid-template-columns:1fr}}
+.stat{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px}
+.stat .sic{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:18px;background:var(--panel-2);border:1px solid var(--line)}
+.stat b{font-family:var(--ff-d);font-weight:600;font-size:22px;display:block;line-height:1.1}
+.stat .slabel{font-size:12px;color:var(--muted)}
+.stat .ssub{font-size:11px;color:var(--faint)}
+.dash-sec{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.qgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:14px}
+@media(max-width:980px){.qgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.qgrid{grid-template-columns:1fr}}
+.qcard{--hue:var(--blue);position:relative;display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:15px 16px;text-align:left;transition:.18s;overflow:hidden}
+.qcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--hue);opacity:.85}
+.qcard:hover{transform:translateY(-3px);border-color:var(--hue);box-shadow:0 14px 32px -16px rgba(91,108,240,.45)}
+.qcard .qic{width:42px;height:42px;flex:none;border-radius:11px;display:grid;place-items:center;font-size:19px;background:color-mix(in srgb,var(--hue) 14%,var(--panel-2));border:1px solid color-mix(in srgb,var(--hue) 30%,var(--line))}
+.qcard b{font-size:14px;display:block}
+.qcard span{font-size:11.5px;color:var(--faint)}
+.qcard .qarr{margin-left:auto;color:var(--hue);font-weight:700;transition:.18s}
+.qcard:hover .qarr{transform:translateX(4px)}
+.muse{font-size:12px;color:var(--faint);margin:4px 0 30px}
+.muse b{color:var(--muted);font-weight:600}
+.doc-tools{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.doc-empty{border:1px dashed var(--line);border-radius:var(--r-lg);padding:44px 24px;text-align:center}
+.doc-empty .dei{font-size:30px}
+.doc-empty h3{font-family:var(--ff-d);font-weight:600;font-size:18px;margin-top:10px}
+.doc-empty p{color:var(--faint);font-size:13px;margin:6px 0 16px}
+.doc-sugs{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+/* auth */
+.auth{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+@media(max-width:880px){.auth{grid-template-columns:1fr}.auth-brand{display:none}}
+.auth-brand{position:relative;overflow:hidden;background:
+  radial-gradient(640px 480px at 82% 6%,rgba(123,65,201,.30),transparent 62%),
+  radial-gradient(640px 480px at 6% 94%,rgba(46,142,172,.18),transparent 60%),
+  linear-gradient(162deg,#181428,#221D40);
+  display:flex;flex-direction:column;justify-content:center;padding:64px}
+.auth-brand .mark{width:auto;height:64px;margin-bottom:26px;display:block}
+.auth-brand h2{font-family:var(--ff-d);font-weight:600;font-size:clamp(26px,2.6vw,34px);line-height:1.2;max-width:380px}
+.auth-brand p{color:#B9B5E3;font-size:14.5px;margin-top:14px;max-width:360px;line-height:1.65}
+.auth-brand .spec{width:160px;height:4px;border-radius:99px;background:var(--grad);margin-top:26px}
+.auth-brand .engines{margin-top:30px;font-size:12px;color:#8C87C2;line-height:2}
+.auth-form{display:flex;align-items:center;justify-content:center;padding:46px 28px}
+.auth-card{width:min(380px,100%)}
+.auth-card h1{font-size:24px}
+.auth-card .sub{color:var(--muted);font-size:13.5px;margin:6px 0 26px}
+.pw-wrap{position:relative}
+.pw-wrap .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:11.5px;font-weight:700;color:var(--faint)}
+.pw-wrap .pw-toggle:hover{color:var(--text)}
+.auth-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--faint);margin:10px 0 18px}
+.auth-row a{color:var(--blue);font-weight:600}
+.or{display:flex;align-items:center;gap:12px;color:var(--faint);font-size:11px;margin:16px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.auth-foot{text-align:center;font-size:12.5px;color:var(--faint);margin-top:20px}
+.auth-foot a{color:var(--blue);font-weight:600}
+/* pricing */
+.price-head{text-align:center;padding:46px 0 8px}
+.seg{display:inline-flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px;margin-top:22px}
+.seg button{font-size:12.5px;font-weight:700;color:var(--muted);background:none;border:none;border-radius:999px;padding:8px 18px}
+.seg button.on{color:#fff;background:var(--grad)}
+.seg .save{font-size:10px;background:rgba(92,232,181,.15);color:#5CE8B5;border-radius:99px;padding:2px 7px;margin-left:6px}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,330px));justify-content:center;gap:20px;padding:34px 24px 30px}
+@media(max-width:980px){.plans{grid-template-columns:minmax(0,420px)}}
+.plan{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px 24px;display:flex;flex-direction:column}
+.plan.pop{background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;border:2px solid transparent;transform:translateY(-10px)}
+.plan .pop-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--grad);border-radius:99px;padding:5px 14px}
+.plan .pname{font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.plan .pprice{font-family:var(--ff-d);font-weight:600;font-size:44px;margin-top:10px}
+.plan .pprice small{font-family:var(--ff-b);font-size:13px;color:var(--faint);font-weight:500}
+.plan .pbill{font-size:11.5px;color:var(--faint);min-height:16px}
+.plan .pdesc{font-size:13px;color:var(--muted);margin:14px 0 18px;line-height:1.55;min-height:40px}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--line-soft);padding-top:18px;margin-bottom:22px}
+.plan li{display:flex;gap:9px;align-items:flex-start;font-size:12.8px;color:var(--text)}
+.plan li svg{flex:none;width:15px;height:15px;margin-top:2px}
+.plan li.dim{color:var(--faint)}
+.plan li.dim svg path{stroke:var(--faint)}
+.plan .pcta{margin-top:auto;width:100%;justify-content:center;padding:12px}
+.price-note{text-align:center;color:var(--faint);font-size:12.5px;padding-bottom:60px}
+.price-note a{color:var(--blue);font-weight:600}
+/* checkout */
+.pay{display:grid;grid-template-columns:1fr 360px;gap:24px;max-width:980px;margin:30px auto 70px;padding:0 24px;align-items:start}
+@media(max-width:900px){.pay{grid-template-columns:1fr}}
+.panelbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px}
+.panelbox h3{font-family:var(--ff-d);font-weight:600;font-size:17px;margin-bottom:16px}
+.payrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pm{display:flex;gap:8px;margin-bottom:14px}
+.pm button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:11px}
+.pm button.on{border-color:var(--blue);color:var(--text);background:var(--panel-2)}
+.sum-line{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding:7px 0}
+.sum-line b{color:var(--text)}
+.sum-line.total{border-top:1px solid var(--line-soft);margin-top:8px;padding-top:13px;font-size:15px}
+.sum-line.total b{font-family:var(--ff-d);font-size:19px}
+.secure{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--faint);margin-top:14px}
+.guarantee{font-size:11.5px;color:var(--faint);line-height:1.6;margin-top:12px;border-top:1px solid var(--line-soft);padding-top:12px}
+.plan-pick{display:flex;align-items:center;gap:12px;background:var(--field);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px}
+.plan-pick .ppic{width:38px;height:38px;border-radius:10px;background:var(--grad);display:grid;place-items:center;font-size:17px;flex:none}
+.plan-pick b{font-size:13.5px;display:block}
+.plan-pick span{font-size:11.5px;color:var(--faint)}
+</style>
+
+<!-- ============================================================
+     SCREEN 9 · DASHBOARD
+     ============================================================ -->
+<section class="screen" id="s-dashboard">
+  <div class="dash">
+    <aside class="side">
+      <div class="side-brand"><img class="mark" src="assets/streamink-mark.png" alt="StreamInk"><span><b>StreamInk</b><span>STUDIO</span></span></div>
+      <p class="side-grp">Workspace</p>
+      <button class="side-item on">Dashboard</button>
+      <button class="side-item">＋ New document</button>
+      <button class="side-item">Brand kit</button>
+      <p class="side-grp">Create</p>
+      <button class="side-item" data-go="s-article-gallery"><span class="sdot" style="background:#2E8EAC"></span> Article Engine</button>
+      <button class="side-item" data-go="s-blog-gallery"><span class="sdot" style="background:#3A60C2"></span> Blog Engine</button>
+      <button class="side-item" data-go="s-social-editor"><span class="sdot" style="background:#4B43C4"></span> Social Posts</button>
+      <button class="side-item" data-go="s-email-editor"><span class="sdot" style="background:#5A40BE"></span> Email Newsletter</button>
+      <button class="side-item" data-go="s-book-editor"><span class="sdot" style="background:#6E3BC8"></span> Book Writer</button>
+      <button class="side-item" data-go="s-script-editor"><span class="sdot" style="background:#8E3FBE"></span> Script Writer</button>
+      <p class="side-grp">Account</p>
+      <button class="side-item">Settings</button>
+      <button class="side-item" data-go="s-pricing">Pricing</button>
+      <div class="side-foot">
+        <button class="side-item">↩ Back to home</button>
+      </div>
+    </aside>
+    <main class="dash-main">
+      <div class="dash-hello">
+        <div>
+          <h1>Good afternoon </h1>
+          <p>Here's your content workspace. Pick up where you left off.</p>
+        </div>
+        <button class="btn btn-primary">＋ New document</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="sic"></span><div><b>0</b><span class="slabel">Documents</span><br><span class="ssub">Your first one is a click away</span></div></div>
+        <div class="stat"><span class="sic"></span><div><b>0</b><span class="slabel">Created this week</span><br><span class="ssub">Streak starts today</span></div></div>
+        <div class="stat"><span class="sic"></span><div><b>0 / 6</b><span class="slabel">Engines explored</span><br><span class="ssub">Try one from Quick start ↓</span></div></div>
+      </div>
+
+      <p class="dash-sec">Quick start</p>
+      <div class="qgrid">
+        <button class="qcard" style="--hue:#2E8EAC" data-go="s-article-gallery"><span class="qic">Ar</span><span><b>Article Engine</b><span>Editorial · Feature · Authority</span></span><span class="qarr">→</span></button>
+        <button class="qcard" style="--hue:#3A60C2" data-go="s-blog-gallery"><span class="qic">Bl</span><span><b>Blog Engine</b><span>Center Hero · Magazine · Minimal</span></span><span class="qarr">→</span></button>
+        <button class="qcard" style="--hue:#4B43C4" data-go="s-social-editor"><span class="qic">So</span><span><b>Social Posts</b><span>Instagram · X · LinkedIn</span></span><span class="qarr">→</span></button>
+        <button class="qcard" style="--hue:#5A40BE" data-go="s-email-editor"><span class="qic">Em</span><span><b>Email Newsletter</b><span>AI-crafted, Mailchimp-ready</span></span><span class="qarr">→</span></button>
+        <button class="qcard" style="--hue:#6E3BC8" data-go="s-book-editor"><span class="qic">Bk</span><span><b>AI Book Writer</b><span>Novels · Light novels · Memoirs</span></span><span class="qarr">→</span></button>
+        <button class="qcard" style="--hue:#8E3FBE" data-go="s-script-editor"><span class="qic">Sc</span><span><b>AI Script Writer</b><span>Film · TV · Ads · YouTube</span></span><span class="qarr">→</span></button>
+      </div>
+      <p class="muse">Today's spark: <b>nutritionists sharing healthy tips · directors writing film scripts · founders launching with great copy</b></p>
+
+      <p class="dash-sec">My documents</p>
+      <div class="doc-tools">
+        <label class="search" style="max-width:280px"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" placeholder="Search documents…"></label>
+        <select style="width:auto;min-width:130px"><option>All types</option><option>Articles</option><option>Blogs</option><option>Social</option><option>Emails</option><option>Books</option><option>Scripts</option></select>
+      </div>
+      <div class="doc-empty">
+        <p class="dei"></p>
+        <h3>No documents yet</h3>
+        <p>Generate your first piece of content and it will be saved here.</p>
+        <button class="btn btn-primary">＋ Create your first document</button>
+        <div class="doc-sugs">
+          <button class="chip" data-go="s-blog-gallery">Try a blog post</button>
+          <button class="chip" data-go="s-social-editor">Make a social post</button>
+          <button class="chip" data-go="s-book-editor">Start a book</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 10 · SIGN IN
+     ============================================================ -->
+<section class="screen" id="s-signin">
+  <div class="auth">
+    <div class="auth-brand">
+      <img class="mark" src="assets/streamink-mark.png" alt="StreamInk">
+      <h2>Where ideas flow into words.</h2>
+      <p>One studio for everything you write — articles, blogs, social posts, newsletters, books, and scripts. Drafted by AI, finished by you.</p>
+      <div class="spec"></div>
+      <p class="engines">Article Engine &nbsp;·&nbsp; Blog Engine &nbsp;·&nbsp; Social Posts<br>Email Newsletter &nbsp;·&nbsp; Book Writer &nbsp;·&nbsp; Script Writer</p>
+    </div>
+    <div class="auth-form">
+      <div class="auth-card">
+        <h1>Welcome back</h1>
+        <p class="sub">Sign in to access your documents across devices.</p>
+        <div class="fgroup">
+          <div class="flabel">Email address</div>
+          <input type="text" placeholder="you@example.com">
+        </div>
+        <div class="fgroup" style="margin-bottom:0">
+          <div class="flabel">Password</div>
+          <div class="pw-wrap">
+            <input type="text" placeholder="••••••••" style="padding-right:54px">
+            <button class="pw-toggle">SHOW</button>
+          </div>
+        </div>
+        <div class="auth-row"><label style="display:flex;gap:7px;align-items:center;cursor:pointer"><input type="checkbox" style="width:auto;accent-color:#4B43C4" checked> Keep me signed in</label><a href="#">Forgot password?</a></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px" data-go="s-dashboard">Sign in</button>
+        <div class="or">or</div>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;padding:12px" data-go="s-dashboard">Continue without an account</button>
+        <p class="hint" style="text-align:center;margin-top:8px">Local only — documents stay on this device.</p>
+        <p class="auth-foot">Don't have an account? <a href="#">Create one free →</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCREEN 11 · PRICING
+     ============================================================ -->
+<section class="screen" id="s-pricing">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <span class="crumb"><b>StreamInk Studio</b></span>
+    </div>
+    <nav class="steps" style="gap:22px;color:var(--muted)">
+      <a href="#" class="skip">Home</a>
+      <a href="#" class="skip" data-go="s-dashboard">Dashboard</a>
+      <a href="#" style="font-size:13px;font-weight:700;color:var(--text)">Pricing</a>
+    </nav>
+    <div class="ab-right">
+      <a class="skip" href="#" data-go="s-signin">Sign in</a>
+      <button class="btn btn-primary" data-go="s-dashboard">Get started →</button>
+    </div>
+  </header>
+  <div class="price-head">
+    <span class="eyebrow vi">Pricing</span>
+    <h1>Simple pricing for <span class="g">every writer</span></h1>
+    <p class="page-sub">Every plan includes all six engines. Upgrade when your output grows.</p>
+    <div class="seg" id="billSeg">
+      <button class="on" data-bill="m">Monthly</button>
+      <button data-bill="y">Yearly <span class="save">Save 20%</span></button>
+    </div>
+  </div>
+  <div class="plans">
+    <div class="plan">
+      <p class="pname">Starter</p>
+      <p class="pprice">$0 <small>/mo</small></p>
+      <p class="pbill">Free forever</p>
+      <p class="pdesc">Everything you need to start creating AI-powered content.</p>
+      <ul>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Up to 10 saved documents</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>All six engines included</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF + PNG export</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Brand kit (1 brand)</li>
+        <li class="dim"><svg viewBox="0 0 16 16" fill="none"><path d="M4 8h8" stroke-width="2" stroke-linecap="round" stroke="#6B66A0"/></svg>AI Refine</li>
+        <li class="dim"><svg viewBox="0 0 16 16" fill="none"><path d="M4 8h8" stroke-width="2" stroke-linecap="round" stroke="#6B66A0"/></svg>Priority generation</li>
+      </ul>
+      <button class="btn btn-ghost pcta" data-go="s-dashboard">Start for free</button>
+    </div>
+    <div class="plan pop">
+      <span class="pop-badge">Most popular</span>
+      <p class="pname">Pro</p>
+      <p class="pprice"><span data-m="$29" data-y="$23">$29</span> <small>/mo</small></p>
+      <p class="pbill" data-m="Billed monthly" data-y="Billed yearly — $276/yr">Billed monthly</p>
+      <p class="pdesc">For professionals who create content daily and need unlimited power.</p>
+      <ul>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited documents</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>AI Refine (unlimited)</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority AI generation</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF + PNG + HTML + DOCX export</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Brand kit + custom fonts</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Document history &amp; bulk export</li>
+      </ul>
+      <button class="btn btn-primary pcta" data-go="s-checkout">Get Pro →</button>
+    </div>
+    <div class="plan">
+      <p class="pname">Agency</p>
+      <p class="pprice"><span data-m="$79" data-y="$63">$79</span> <small>/mo</small></p>
+      <p class="pbill" data-m="Billed monthly" data-y="Billed yearly — $756/yr">Billed monthly</p>
+      <p class="pdesc">For teams and agencies managing content for multiple clients.</p>
+      <ul>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#8E3FBE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Pro</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#8E3FBE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>5 team members</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#8E3FBE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Client workspaces</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#8E3FBE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>White-label exports</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#8E3FBE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Analytics dashboard</li>
+        <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#8E3FBE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated onboarding</li>
+      </ul>
+      <button class="btn btn-ghost pcta">Contact sales</button>
+    </div>
+  </div>
+  <p class="price-note">All plans include all core content types. <a href="#">Compare every feature ↓</a> · Cancel anytime · Prices in USD</p>
+</section>
+
+<!-- ============================================================
+     SCREEN 12 · CHECKOUT
+     ============================================================ -->
+<section class="screen" id="s-checkout">
+  <header class="appbar">
+    <div class="ab-left">
+      <a class="brandtab" href="#" data-go="s-dashboard"><img src="assets/streamink-mark.png" alt="StreamInk Studio"></a>
+      <a class="icon-btn" href="#" data-go="s-pricing">← Pricing</a>
+      <span class="crumb">Checkout <span>/</span> <b>StreamInk Pro</b></span>
+    </div>
+    <div class="ab-right"><span class="save-state">Secure checkout</span></div>
+  </header>
+  <div class="pay">
+    <div class="panelbox">
+      <h3>Payment details</h3>
+      <div class="fgroup">
+        <div class="flabel">Account email</div>
+        <input type="text" placeholder="you@example.com">
+        <p class="hint">Your receipt and license go here.</p>
+      </div>
+      <div class="fgroup">
+        <div class="flabel">Pay with</div>
+        <div class="pm">
+          <button class="on">Card</button>
+          <button>PayPal</button>
+          <button> Apple Pay</button>
+        </div>
+        <div class="fgroup" style="margin-bottom:10px">
+          <div class="flabel">Card number</div>
+          <input type="text" placeholder="1234 5678 9012 3456">
+        </div>
+        <div class="payrow">
+          <div><div class="flabel">Expiry</div><input type="text" placeholder="MM / YY"></div>
+          <div><div class="flabel">CVC</div><input type="text" placeholder="123"></div>
+        </div>
+      </div>
+      <div class="fgroup">
+        <div class="flabel">Name on card</div>
+        <input type="text" placeholder="Full name">
+      </div>
+      <div class="payrow" style="margin-bottom:18px">
+        <div><div class="flabel">Country</div><select><option>Sri Lanka</option><option>United States</option><option>United Kingdom</option><option>India</option><option>Australia</option></select></div>
+        <div><div class="flabel">Postal code <span class="opt">Optional</span></div><input type="text" placeholder="00000"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;font-size:14.5px" data-go="s-dashboard" id="payBtn">Pay $29.00 — start Pro</button>
+      <p class="hint" style="text-align:center;margin-top:9px">By paying you agree to the Terms of Service. Subscription renews automatically; cancel anytime in Settings.</p>
+    </div>
+    <div class="panelbox">
+      <h3>Order summary</h3>
+      <div class="plan-pick"><span class="ppic"><img src="assets/streamink-mark.png" alt=""></span><span><b>StreamInk Pro</b><span>Unlimited documents · all engines</span></span></div>
+      <div class="seg" id="paySeg" style="margin:0 0 14px;width:100%;display:flex">
+        <button class="on" data-bill="m" style="flex:1">Monthly</button>
+        <button data-bill="y" style="flex:1">Yearly <span class="save">−20%</span></button>
+      </div>
+      <div class="sum-line"><span>Pro plan</span><b id="sumPlan">$29.00 / mo</b></div>
+      <div class="sum-line" id="sumSaveRow" style="display:none"><span>Yearly discount</span><b style="color:#5CE8B5">−$69.60</b></div>
+      <div class="sum-line"><span>Tax</span><span>Calculated by region</span></div>
+      <div class="sum-line total"><span>Due today</span><b id="sumTotal">$29.00</b></div>
+      <p class="guarantee">✓ 14-day money-back guarantee<br>✓ Keep everything you've created if you cancel<br>✓ Instant access after payment</p>
+      <p class="secure">Encrypted payment · Powered by Stripe</p>
+    </div>
+  </div>
+</section>
+
+<script>
+/* pricing + checkout billing toggles */
+function bindBilling(segId, apply){
+  var seg=document.getElementById(segId); if(!seg) return;
+  var btns=[].slice.call(seg.querySelectorAll('button[data-bill]'));
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    btns.forEach(function(x){x.classList.remove('on')});b.classList.add('on');apply(b.dataset.bill);
+  });});
+}
+bindBilling('billSeg',function(mode){
+  document.querySelectorAll('#s-pricing [data-m]').forEach(function(el){
+    el.textContent=mode==='y'?el.dataset.y:el.dataset.m;
+  });
+});
+bindBilling('paySeg',function(mode){
+  var plan=document.getElementById('sumPlan'),tot=document.getElementById('sumTotal'),
+      save=document.getElementById('sumSaveRow'),btn=document.getElementById('payBtn');
+  if(mode==='y'){plan.textContent='$276.00 / yr';tot.textContent='$276.00';save.style.display='flex';btn.textContent='Pay $276.00 — start Pro';}
+  else{plan.textContent='$29.00 / mo';tot.textContent='$29.00';save.style.display='none';btn.textContent='Pay $29.00 — start Pro';}
+});
+/* payment method toggle */
+(function(){var pm=document.querySelector('#s-checkout .pm');if(!pm)return;
+var bs=[].slice.call(pm.querySelectorAll('button'));
+bs.forEach(function(b){b.addEventListener('click',function(){bs.forEach(function(x){x.classList.remove('on')});b.classList.add('on');});});})();
+/* password show toggle */
+(function(){var t=document.querySelector('#s-signin .pw-toggle');if(!t)return;
+t.addEventListener('click',function(){t.textContent=t.textContent==='SHOW'?'HIDE':'SHOW';});})();
+</script>
+
+<script>
+/* ===== screen switching ===== */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.getElementById('snav').classList.remove('open');
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');
+  if(g){e.preventDefault();e.stopPropagation();go(g.dataset.go);}
+});
+document.getElementById('snavToggle').addEventListener('click',()=>document.getElementById('snav').classList.toggle('open'));
+/* deep-link from marketing home: ?go=s-xxx opens that screen on load */
+(function(){
+  const want=new URLSearchParams(location.search).get('go');
+  if(want&&document.getElementById(want))go(want);
+})();
+
+/* ===== galleries: select, filter, search ===== */
+document.querySelectorAll('.gallery').forEach(gal=>{
+  const cards=[...gal.querySelectorAll('.card')];
+  const tabs=[...gal.querySelectorAll('.tab')];
+  const chips=[...gal.querySelectorAll('.chip')];
+  const search=gal.querySelector('.search input');
+  const empty=gal.querySelector('.empty-state');
+  const selinfo=gal.querySelector('.sel-info');
+  let cat='all',auds=new Set(),q='';
+  function apply(){
+    let v=0;
+    cards.forEach(c=>{
+      const okC=cat==='all'||c.dataset.cat===cat;
+      const okA=auds.size===0||[...auds].some(a=>c.dataset.aud.includes(a));
+      const okQ=!q||c.dataset.name.toLowerCase().includes(q)||c.querySelector('.card-desc').textContent.toLowerCase().includes(q);
+      const s=okC&&okA&&okQ;
+      c.style.display=s?'':'none'; if(s)v++;
+    });
+    if(empty)empty.style.display=v?'none':'block';
+  }
+  cards.forEach(c=>c.addEventListener('click',ev=>{
+    if(ev.target.closest('[data-go]'))return; // navigation handled globally
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');
+    if(selinfo)selinfo.innerHTML='<b>'+c.dataset.name+'</b> selected · '+c.querySelector('.cat').textContent+' layout';
+  }));
+  tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');cat=t.dataset.cat;apply();}));
+  chips.forEach(ch=>ch.addEventListener('click',()=>{ch.classList.toggle('on');ch.classList.contains('on')?auds.add(ch.dataset.aud):auds.delete(ch.dataset.aud);apply();}));
+  if(search)search.addEventListener('input',e=>{q=e.target.value.toLowerCase();apply();});
+});
+
+/* ===== inspectors: tab panes (scoped) ===== */
+document.querySelectorAll('.inspector').forEach(ins=>{
+  const tabs=[...ins.querySelectorAll('.insp-tab')];
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');
+    ins.querySelectorAll('.insp-pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===t.dataset.pane));
+  }));
+});
+
+/* ===== generic toggle groups ===== */
+function group(selector,itemSel){
+  document.querySelectorAll(selector).forEach(g=>{
+    const items=[...g.querySelectorAll(itemSel)];
+    items.forEach(i=>i.addEventListener('click',()=>{items.forEach(x=>x.classList.remove('on'));i.classList.add('on');}));
+  });
+}
+group('.swatches','.sw');
+group('.mode-tabs','.mode-tab');
+group('.bg-tabs','.bg-tab');
+group('.layers','.layer');
+group('.variants','.var-dot');
+group('.align-row','.ct-btn');
+
+/* sliders show live value */
+document.querySelectorAll('.slider-row').forEach(r=>{
+  const inp=r.querySelector('input'),out=r.querySelector('output');
+  if(!inp||!out)return;
+  const unit=out.textContent.replace(/[-\d]/g,'');
+  inp.addEventListener('input',()=>out.textContent=inp.value+unit);
+});
+
+/* social: platform picker updates breadcrumb + size */
+const soc=document.getElementById('s-social-editor');
+const plats=[...soc.querySelectorAll('.plat')];
+plats.forEach(p=>p.addEventListener('click',()=>{
+  plats.forEach(x=>x.classList.remove('on'));p.classList.add('on');
+  soc.querySelector('.plat-size b').textContent=p.dataset.size.split('·')[1].trim()+' px';
+  document.getElementById('socSize').textContent=p.dataset.size;
+}));
+
+/* email: section select highlights + inspector label */
+const em=document.getElementById('s-email-editor');
+const esecs=[...em.querySelectorAll('.esec')];
+esecs.forEach(s=>s.addEventListener('click',()=>{
+  esecs.forEach(x=>x.classList.remove('on'));s.classList.add('on');
+  const tag=s.querySelector('.etag').textContent;
+  em.querySelector('.insp-pane[data-pane="section"] .hint').textContent=tag+' — click any section on the canvas to edit its style.';
+}));
+
+/* email: add section */
+em.querySelector('.add-sec').addEventListener('click',function(){
+  const n=em.querySelectorAll('.sec-input').length+1;
+  const d=document.createElement('div');
+  d.className='sec-input';
+  d.innerHTML='<div class="flabel" style="font-size:10px">Section '+n+' <span class="opt">Optional</span></div><input type="text" placeholder="e.g. Upcoming events">';
+  this.before(d);
+});
+</script>
+<!-- ===== vibrancy & motion pass ===== -->
+<style>
+/* staggered card entrance (replays each time a gallery screen opens) */
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+.grid .card{animation:cardIn .55s cubic-bezier(.2,.7,.3,1) both}
+.grid .card:nth-child(1){animation-delay:.03s}.grid .card:nth-child(2){animation-delay:.08s}
+.grid .card:nth-child(3){animation-delay:.13s}.grid .card:nth-child(4){animation-delay:.18s}
+.grid .card:nth-child(5){animation-delay:.23s}.grid .card:nth-child(6){animation-delay:.28s}
+.grid .card:nth-child(7){animation-delay:.33s}.grid .card:nth-child(8){animation-delay:.38s}
+.grid .card:nth-child(9){animation-delay:.43s}.grid .card:nth-child(10){animation-delay:.48s}
+.grid .card:nth-child(11){animation-delay:.53s}.grid .card:nth-child(12){animation-delay:.58s}
+
+/* primary button polish */
+.btn-primary{box-shadow:0 8px 20px -10px rgba(75,67,196,.55)}
+.snav-btn{box-shadow:0 10px 26px -10px rgba(75,67,196,.6)}
+
+/* selection feedback */
+@keyframes checkPop{0%{transform:scale(.3)}70%{transform:scale(1.18)}100%{transform:scale(1)}}
+.card.sel .check{animation:checkPop .35s cubic-bezier(.2,.8,.3,1.4)}
+@keyframes selBump{0%{transform:translate(-50%,8px);opacity:.5}100%{transform:translate(-50%,0);opacity:1}}
+.selbar.bump{animation:selBump .35s ease}
+@keyframes badgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+.badge-new{animation:badgeFloat 3.2s ease-in-out infinite}
+
+/* ===== painted mini-scenes inside previews ===== */
+.tpl .timg{position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.card:hover .tpl .timg{transform:scale(1.055)}
+
+/* coast & morning sun */
+.timg.sky{background:linear-gradient(180deg,#A9CBF2 0%,#DCEAF9 52%,#7FB3D9 53%,#5E93C9 100%)}
+.timg.sky::before{content:"";position:absolute;width:24%;aspect-ratio:1;border-radius:50%;top:14%;left:12%;background:radial-gradient(circle at 35% 35%,#FFF6DD,#F7C873);box-shadow:0 0 14px rgba(255,220,140,.85);transition:transform .55s ease}
+.card:hover .timg.sky::before{transform:translateY(-16%)}
+.timg.sky::after{content:"";position:absolute;left:8%;width:46%;bottom:20%;height:2px;border-radius:2px;background:rgba(255,255,255,.7);box-shadow:14px 7px 0 -1px rgba(255,255,255,.4)}
+
+/* dawn bloom (slow drifting light) */
+.timg.dawn{background:linear-gradient(160deg,#F6C8B6,#E8A9C8 45%,#A88BE8)}
+.timg.dawn::before{content:"";position:absolute;inset:-45%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.6),transparent 42%),radial-gradient(circle at 75% 72%,rgba(255,214,170,.55),transparent 40%);animation:drift 7s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(-3%,-2%) rotate(0deg)}to{transform:translate(3%,3%) rotate(2deg)}}
+
+/* tea-country hills */
+.timg.leaf{background:linear-gradient(180deg,#BBE0F2 0%,#D6F0E2 48%)}
+.timg.leaf::before{content:"";position:absolute;width:130%;height:58%;left:-15%;bottom:-14%;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#8FCDAA,#5FA886)}
+.timg.leaf::after{content:"";position:absolute;width:95%;height:44%;right:-22%;bottom:-10%;border-radius:50% 50% 0 0;background:linear-gradient(180deg,#6FB892,#4E9374)}
+
+/* ink night sky with moon & twinkling stars */
+.timg.inkk{background:linear-gradient(180deg,#27244E,#3A3768 60%,#4C4790)}
+.timg.inkk::before{content:"";position:absolute;width:17%;aspect-ratio:1;border-radius:50%;top:12%;right:14%;background:radial-gradient(circle at 38% 38%,#FDF8E8,#E8D9A8);box-shadow:0 0 10px rgba(255,245,200,.75)}
+.timg.inkk::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.95) 1px,transparent 1.5px),radial-gradient(circle,rgba(255,255,255,.7) .8px,transparent 1.2px);background-size:26px 22px,17px 19px;background-position:3px 5px,10px 12px;animation:starTwinkle 3.4s ease-in-out infinite alternate}
+@keyframes starTwinkle{from{opacity:.3}to{opacity:.95}}
+
+/* monsoon train window: layered rain over the photo story */
+.tpl.photo{background:linear-gradient(180deg,#9FB4E4 0%,#7287C2 48%,#3C4470 100%)}
+.tpl.photo>*{position:relative;z-index:1}
+.tpl.photo::before{content:"";position:absolute;inset:0;z-index:0;background:repeating-linear-gradient(112deg,transparent 0 9px,rgba(255,255,255,.14) 9px 10.5px);animation:rain 1.5s linear infinite;pointer-events:none}
+@keyframes rain{from{transform:translate3d(0,0,0)}to{transform:translate3d(30px,0,0)}}
+.tpl.photo::after{content:"";position:absolute;left:6%;right:36%;top:30%;height:2px;z-index:0;border-radius:2px;background:rgba(255,255,255,.45);box-shadow:20px 9px 0 -1px rgba(255,255,255,.28)}
+
+/* generate buttons: sheen sweep on hover */
+.gen-btn{position:relative;overflow:hidden}
+.gen-btn::after{content:"";position:absolute;top:0;bottom:0;width:46%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg)}
+.gen-btn:hover::after{animation:sheen .8s ease}
+@keyframes sheen{to{left:130%}}
+
+/* engine quick-cards on dashboard get the same life */
+.qcard .qic{transition:transform .35s cubic-bezier(.2,.8,.3,1.4)}
+.qcard:hover .qic{transform:scale(1.12) rotate(-4deg)}
+
+@media(prefers-reduced-motion:reduce){
+  .grid .card,.badge-new,h1 .g,.btn-primary,.snav-btn,.timg.dawn::before,.timg.inkk::after,.tpl.photo::before{animation:none!important}
+  .tpl .timg,.timg.sky::before,.card:hover .tpl .timg{transition:none!important;transform:none!important}
+}
+
+/* ===== real imagery + animation ===== */
+.timg.sky{background-image:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center;position:relative}
+.timg.dawn{background-image:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center;position:relative}
+.timg.leaf{background-image:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center;position:relative}
+.timg.inkk{background-image:linear-gradient(135deg,rgba(91,108,240,.12),rgba(157,77,232,.12)),url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&q=70&auto=format&fit=crop');background-size:cover;background-position:center;position:relative}
+
+/* shimmer sweep over image blocks while loading-in */
+.timg::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);background-size:220% 100%;animation:imgsheen 3.4s ease-in-out infinite;opacity:.0}
+.card:hover .timg::after{opacity:1}
+@keyframes imgsheen{0%{background-position:140% 0}100%{background-position:-40% 0}}
+
+/* ambient animated glows behind the grid */
+.gallery .wrap{position:relative}
+.glowfield{position:absolute;inset:-40px 0 0;z-index:-1;overflow:hidden;pointer-events:none}
+.glowblob{position:absolute;border-radius:50%;filter:blur(95px);opacity:.6;animation:floaty 18s ease-in-out infinite}
+.glowblob.a{width:380px;height:380px;background:radial-gradient(circle,rgba(75,67,196,.09),transparent 70%);top:30px;left:-90px}
+.glowblob.b{width:420px;height:420px;background:radial-gradient(circle,rgba(182,83,52,.07),transparent 70%);top:360px;right:-100px;animation-delay:-6s}
+.glowblob.c{width:340px;height:340px;background:radial-gradient(circle,rgba(75,67,196,.06),transparent 70%);top:740px;left:40%;animation-delay:-10s}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-24px) scale(1.08)}66%{transform:translate(-22px,18px) scale(.95)}}
+
+/* card entrance stagger */
+.gallery .grid .card{opacity:0;transform:translateY(16px);animation:cardin .55s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes cardin{to{opacity:1;transform:none}}
+.gallery .grid .card:nth-child(1){animation-delay:.02s}.gallery .grid .card:nth-child(2){animation-delay:.06s}
+.gallery .grid .card:nth-child(3){animation-delay:.10s}.gallery .grid .card:nth-child(4){animation-delay:.14s}
+.gallery .grid .card:nth-child(5){animation-delay:.18s}.gallery .grid .card:nth-child(6){animation-delay:.22s}
+.gallery .grid .card:nth-child(7){animation-delay:.26s}.gallery .grid .card:nth-child(8){animation-delay:.30s}
+.gallery .grid .card:nth-child(9){animation-delay:.34s}.gallery .grid .card:nth-child(10){animation-delay:.38s}
+.gallery .grid .card:nth-child(11){animation-delay:.42s}.gallery .grid .card:nth-child(12){animation-delay:.46s}
+
+/* sheen sweep across whole card on hover */
+.card{isolation:isolate}
+.card .sheen{position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;overflow:hidden;opacity:0;transition:opacity .2s}
+.card:hover .sheen{opacity:1}
+.card .sheen::before{content:"";position:absolute;top:-60%;left:-30%;width:40%;height:220%;transform:rotate(18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);animation:cardsheen 1.1s ease forwards}
+@keyframes cardsheen{from{left:-40%}to{left:130%}}
+
+/* selected card gradient-ring breathing glow */
+.card.sel{box-shadow:0 0 0 1px rgba(91,108,240,.4),0 16px 40px -16px rgba(91,108,240,.55);animation:selglow 2.6s ease-in-out infinite}
+@keyframes selglow{0%,100%{box-shadow:0 0 0 1px rgba(91,108,240,.4),0 16px 40px -16px rgba(91,108,240,.5)}50%{box-shadow:0 0 0 1px rgba(157,77,232,.5),0 20px 52px -14px rgba(157,77,232,.6)}}
+
+/* animated gradient flourish under headline */
+.page-head h1::after{background:linear-gradient(90deg,#2E8EAC,#4B43C4,#8E3FBE,#2E8EAC);background-size:300% 100%;animation:flow 4s linear infinite}
+@keyframes flow{to{background-position:300% 0}}
+
+/* gradient text shimmer */
+h1 .g{background:linear-gradient(90deg,#2E8EAC,#4B43C4,#8E3FBE,#2E8EAC);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 5s linear infinite}
+
+/* selection bar lift + glow pulse */
+.selbar{animation:selbarin .4s cubic-bezier(.2,.8,.2,1) both,selbarpulse 3s ease-in-out 1s infinite}
+@keyframes selbarin{from{transform:translate(-50%,20px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes selbarpulse{0%,100%{box-shadow:0 20px 50px -12px rgba(0,0,0,.65)}50%{box-shadow:0 20px 50px -12px rgba(0,0,0,.65),0 0 26px -2px rgba(91,108,240,.5)}}
+.selbar .btn-primary{position:relative;overflow:hidden}
+.selbar .btn-primary::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:btnsheen 2.6s ease-in-out infinite}
+@keyframes btnsheen{0%{left:-60%}60%,100%{left:140%}}
+
+/* generate buttons in editors get a gentle glow pulse */
+.gen-btn.btn-primary{animation:genpulse 3.2s ease-in-out infinite}
+@keyframes genpulse{0%,100%{box-shadow:0 6px 16px -6px rgba(91,108,240,.55)}50%{box-shadow:0 6px 22px -4px rgba(91,108,240,.85),0 0 0 1px rgba(157,77,232,.3)}}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important}
+  .gallery .grid .card{opacity:1;transform:none}
+}
+
+</style>
+<script>
+/* selection bar bump when a layout is picked */
+document.querySelectorAll('.gallery').forEach(function(gal){
+  var bar=gal.querySelector('.selbar'); if(!bar) return;
+  gal.querySelectorAll('.card').forEach(function(c){
+    c.addEventListener('click',function(){
+      bar.classList.remove('bump'); void bar.offsetWidth; bar.classList.add('bump');
+    });
+  });
+});
+</script>
+
+</body>
+</html>

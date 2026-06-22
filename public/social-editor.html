@@ -1,0 +1,3458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Post Creator · StreamInk Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Hanken Grotesk',system-ui,sans-serif;overflow:hidden;background:#F1ECE1;display:flex;flex-direction:column}
+
+    /* ── APPBAR ── */
+    .si-appbar{display:flex;align-items:center;gap:12px;padding:0 16px;height:54px;background:#fff;border-bottom:1px solid #E3DACA;flex-shrink:0;z-index:20;width:100%}
+    .si-brandtab{display:flex;align-items:center;gap:7px;padding:4px 10px 4px 4px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;color:#211C14;border:1px solid transparent;transition:.15s;flex-shrink:0}
+    .si-brandtab:hover{border-color:#E3DACA;background:#FBF7EF}
+    .si-brandtab img{height:24px;width:auto}
+    .si-crumb{font-size:13px;color:#6E6557;white-space:nowrap}
+    .si-crumb b{color:#211C14}
+    .si-crumb .sep{color:#E3DACA;margin:0 4px}
+    .si-ab-mid{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
+    .si-save-state{font-size:12px;color:#A89E8C;display:flex;align-items:center;gap:5px}
+    .si-save-state .dot{width:7px;height:7px;border-radius:50%;background:#2E8EAC}
+    .si-ab-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .si-btn-ghost{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid #D8CBB6;color:#6E6557;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;padding:7px 14px;text-decoration:none}
+    .si-btn-ghost:hover{background:#F2EDE2;color:#211C14}
+    .si-btn-primary{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(165deg,#5750D8,#3F37AC);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;padding:8px 16px}
+    .si-btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    body[data-ui-theme="dark"] .si-appbar{background:#1a2234;border-color:#2D3A4E}
+    body[data-ui-theme="dark"] .si-brandtab{color:#E3DACA}
+    body[data-ui-theme="dark"] .si-brandtab:hover{background:#211C14;border-color:#2D3A4E}
+    body[data-ui-theme="dark"] .si-crumb{color:#A89E8C}
+    body[data-ui-theme="dark"] .si-crumb b{color:#E3DACA}
+    body[data-ui-theme="dark"] .si-btn-ghost{border-color:#2D3A4E;color:#A89E8C}
+    body[data-ui-theme="dark"] .si-btn-ghost:hover{background:#211C14;color:#E3DACA}
+
+    /* ── LAYOUT ── */
+    .sp-studio{display:flex;height:calc(100vh - 54px);width:100%}
+
+    /* ── LEFT SIDEBAR ── */
+    .sp-sidebar{width:310px;min-width:310px;background:#fff;border-right:1px solid #E3DACA;display:flex;flex-direction:column;overflow:hidden}
+    .sp-sidebar-hdr{padding:14px 18px 10px;border-bottom:1px solid #E3DACA;flex-shrink:0}
+    .sp-back{font-size:12px;color:#6E6557;text-decoration:none;display:flex;align-items:center;gap:4px;margin-bottom:8px;transition:.15s}
+    .sp-back:hover{color:#4B43C4}
+    .sp-title{font-family:'Newsreader',Georgia,serif;font-size:18px;font-weight:600;color:#211C14;letter-spacing:-.01em}
+    .sp-sub{font-size:11px;color:#A89E8C;margin-top:2px}
+    .sp-theme-toggle{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;padding:3px;border-radius:999px;background:rgba(75,67,196,.08);border:1px solid #E3DACA}
+    .sp-theme-btn{border:none;border-radius:999px;background:transparent;color:#6E6557;font-size:11px;font-weight:800;padding:6px 8px;cursor:pointer;font-family:inherit;transition:.18s}
+    .sp-theme-btn.active{background:#fff;color:#211C14;box-shadow:0 3px 10px rgba(15,23,42,.12)}
+
+    /* Mode tabs */
+    .sp-tabs{display:flex;gap:5px;padding:10px 14px 0;flex-shrink:0}
+    .sp-tab{flex:1;padding:7px;border-radius:8px;border:1px solid #E3DACA;font-weight:600;cursor:pointer;background:#F2EDE2;font-size:12px;transition:.15s;color:#211C14}
+    .sp-tab.active{background:#4B43C4;color:#fff;border-color:#4B43C4}
+
+    .sp-panel{display:none;flex:1;overflow:hidden;flex-direction:column}
+    .sp-panel.active{display:flex}
+    .sp-scroll{overflow-y:auto;flex:1;padding:14px 16px}
+
+    /* Form elements */
+    .sp-label{font-size:12px;font-weight:600;color:#211C14;margin:12px 0 5px;display:block}
+    .sp-input,.sp-select,.sp-textarea{width:100%;padding:9px 12px;border-radius:10px;border:1px solid #E3DACA;background:#F2EDE2;font-size:13px;font-family:inherit;transition:.15s;color:#211C14}
+    .sp-input:focus,.sp-textarea:focus,.sp-select:focus{outline:none;border-color:#7B41C9;background:#fff}
+    .sp-textarea{resize:vertical;min-height:58px}
+
+    /* Platform grid */
+    .sp-plat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:4px}
+    .sp-plat{padding:7px 4px;border-radius:10px;border:2px solid #E3DACA;background:#F2EDE2;cursor:pointer;text-align:center;font-size:10px;font-weight:700;color:#6E6557;transition:.2s;line-height:1.4}
+    .sp-plat span{display:block;font-size:13px;font-weight:800;font-family:'JetBrains Mono',ui-monospace,monospace;margin-bottom:3px}
+    .sp-plat.active{border-color:#7B41C9;background:rgba(75,67,196,.06);color:#7B41C9}
+    .sp-plat:hover:not(.active){border-color:rgba(123,65,201,.35)}
+
+    /* Image section */
+    .sp-img-section{display:flex;gap:6px;margin-bottom:8px}
+    .sp-upload-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:9px;background:#4B43C4;color:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:.2s}
+    .sp-upload-btn:hover{background:#4B43C4}
+    .sp-upload-btn input{display:none}
+    .sp-ai-img-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:9px;background:linear-gradient(135deg,#B65334,#7B41C9);color:#fff;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:.2s}
+    .sp-ai-img-btn:hover{opacity:.88}
+    .sp-img-preview{height:60px;background:#F2EDE2;border-radius:8px;margin-bottom:8px;overflow:hidden;display:none;align-items:center;justify-content:center}
+    .sp-img-preview img{width:100%;height:100%;object-fit:cover}
+    .sp-img-preview.has-img{display:flex}
+
+    /* Generate button */
+    .sp-gen-btn{width:100%;margin-top:14px;padding:13px;border-radius:12px;background:linear-gradient(135deg,#7B41C9,#4B43C4);color:#fff;border:none;font-weight:800;font-size:14px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .sp-gen-btn:hover{opacity:.9;transform:translateY(-1px)}
+    .sp-gen-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    /* Design panel */
+    .sp-bg-swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+    .sp-swatch{height:44px;border-radius:9px;cursor:pointer;border:2px solid transparent;transition:.2s}
+    .sp-swatch:hover{transform:scale(1.08)}
+    .sp-swatch.active{border-color:#7B41C9;box-shadow:0 0 0 2px rgba(123,65,201,.35)}
+    .sp-grad-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:6px}
+    .sp-grad-row input[type="color"]{width:100%;height:38px;border-radius:8px;border:1px solid #E3DACA;padding:2px;cursor:pointer}
+    .sp-range-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .sp-range-row input[type="range"]{flex:1}
+    .sp-range-val{font-size:11px;color:#6E6557;min-width:28px;text-align:right}
+    .sp-apply-btn{width:100%;padding:8px;border:none;border-radius:8px;background:#4B43C4;color:#fff;font-weight:700;font-size:12px;cursor:pointer;margin-bottom:10px}
+
+    /* Shapes in design */
+    .sp-shape-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+    .sp-shape-btn{padding:10px 4px;border-radius:8px;border:1px solid #E3DACA;background:#F2EDE2;cursor:pointer;font-size:13px;text-align:center;transition:.2s}
+    .sp-shape-btn:hover{background:rgba(75,67,196,.08);border-color:rgba(75,67,196,.35)}
+    .sp-color-swatches{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+    .sp-color-sw{width:26px;height:26px;border-radius:6px;cursor:pointer;transition:.15s;flex-shrink:0;border:2px solid transparent}
+    .sp-color-sw:hover{transform:scale(1.2)}
+    .sp-color-sw.active{border-color:#211C14}
+
+    /* first duplicate of .sp-img-layer removed — kept the one above */
+
+    /* ── MAIN AREA ── */
+    .sp-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+    /* TOPBAR */
+    .sp-topbar{height:50px;background:#fff;border-bottom:1px solid #E3DACA;display:flex;align-items:center;padding:0 12px;gap:4px;flex-shrink:0;overflow-x:auto}
+    .sp-tb-select{border:1px solid transparent;background:transparent;padding:5px 7px;border-radius:4px;font-size:12px;cursor:pointer}
+    .sp-tb-select:hover{background:#EDE6D8}
+    .sp-tb-btn{border:none;background:transparent;padding:6px 8px;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600;color:#211C14;transition:.15s}
+    .sp-tb-btn:hover{background:#EDE6D8}
+    .sp-tb-btn.active{background:#4B43C4;color:#fff;border-radius:4px}
+    .sp-tb-divider{width:1px;height:22px;background:#E3DACA;margin:0 3px;flex-shrink:0}
+    .sp-tb-color{width:26px;height:22px;border:none;background:transparent;cursor:pointer;padding:0}
+    .sp-tb-label{font-size:11px;color:#A89E8C;white-space:nowrap;flex-shrink:0}
+
+    /* CONTENT ROW */
+    .sp-content-row{display:flex;flex:1;overflow:hidden;min-height:0}
+
+    /* CANVAS AREA */
+    .sp-canvas-area{flex:1;overflow:auto;background:#E3DACA;display:flex;flex-direction:column;align-items:center;padding:28px 28px 40px}
+
+    /* Main canvas */
+    .sp-canvas-wrap{flex-shrink:0;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.25),0 4px 16px rgba(0,0,0,.15);border-radius:4px;overflow:hidden}
+    #spCanvas{position:relative;overflow:hidden;user-select:none}
+    .sp-bg-layer{position:absolute;inset:0;transition:background .3s}
+    .sp-ov-layer{position:absolute;inset:0;pointer-events:none;transition:background .3s}
+    .sp-obj-layer{position:absolute;inset:0;pointer-events:none}
+    .sp-text-layer{position:absolute;inset:0;pointer-events:none}
+
+    /* Text elements */
+    .sp-text-el{position:absolute;cursor:move;pointer-events:all;min-width:40px;min-height:20px}
+    .sp-text-el.sel-el{outline:2px dashed #7B41C9;outline-offset:3px}
+    .sp-text-inner{outline:none;cursor:text;word-break:break-word;white-space:pre-wrap}
+    .sp-text-el .el-resize{position:absolute;bottom:-5px;right:-5px;width:12px;height:12px;background:#7B41C9;border-radius:50%;cursor:se-resize;border:2px solid #fff;z-index:2}
+    .sp-text-el .el-del{position:absolute;top:-8px;right:-8px;width:16px;height:16px;background:#B65334;border-radius:50%;cursor:pointer;border:2px solid #fff;color:#fff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;z-index:2}
+    .sp-text-el.sel-el .el-del{display:flex}
+    /* Link badge on elements */
+    .el-link-badge{position:absolute;bottom:-6px;left:4px;width:16px;height:16px;background:#4B43C4;border-radius:50%;border:2px solid #fff;font-size:8px;display:none;align-items:center;justify-content:center;color:#fff;z-index:3;cursor:default;pointer-events:none}
+    .sp-text-el[data-link] .el-link-badge{display:flex}
+    .be-object-wrap[data-link] .el-link-badge{display:flex}
+    /* Link toolbar in topbar */
+    .sp-link-toolbar{display:none;align-items:center;gap:5px;padding:0 8px;border-left:1px solid #E3DACA}
+    .sp-link-toolbar.show{display:flex}
+    .sp-link-input{height:28px;padding:0 8px;border:1.5px solid #E3DACA;border-radius:7px;font-size:11px;font-family:inherit;background:#F2EDE2;color:#211C14;min-width:200px;outline:none;transition:.15s}
+    .sp-link-input:focus{border-color:#7B41C9;background:#fff}
+    .sp-link-set-btn{height:28px;padding:0 10px;border:none;border-radius:7px;background:#4B43C4;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
+    .sp-link-set-btn:hover{opacity:.88}
+    .sp-link-clear-btn{height:28px;padding:0 8px;border:1px solid #E3DACA;border-radius:7px;background:transparent;color:#B65334;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+    /* CTA element */
+    .sp-text-el[data-type="cta"] .sp-text-inner{display:inline-block;}
+
+    /* ── VARIATIONS SECTION ── */
+    .sp-var-section{margin-top:24px;width:100%}
+    .sp-var-title{font-size:12px;font-weight:700;color:#6E6557;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;text-align:center}
+    .sp-var-grid{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .sp-var-card{border-radius:10px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.15);cursor:pointer;transition:.2s;position:relative;flex-shrink:0}
+    .sp-var-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.22)}
+    .sp-var-preview{position:relative;overflow:hidden}
+    .sp-var-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:4px 8px;display:flex;justify-content:space-between;align-items:center}
+    .sp-var-apply{background:rgba(255,255,255,.2);border:none;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;cursor:pointer;transition:.15s}
+    .sp-var-apply:hover{background:rgba(255,255,255,.4)}
+
+    /* ── RIGHT TOOLBAR ── */
+    .sp-right-bar{width:186px;flex-shrink:0;background:#fff;border-left:1px solid #E3DACA;display:flex;flex-direction:column;overflow-y:auto}
+    .sp-rb-section{padding:13px 13px 10px}
+    .sp-rb-title{font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#A89E8C;margin-bottom:9px;display:flex;align-items:center;gap:5px}
+    .sp-rb-title span{font-size:12px}
+    .sp-rb-divider{height:1px;background:#F2EDE2;margin:0 10px}
+    .sp-rb-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px}
+    .sp-rb-btn{padding:7px 5px;border:1px solid #E3DACA;background:#F2EDE2;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;color:#211C14;transition:.15s;text-align:center}
+    .sp-rb-btn:hover{background:rgba(75,67,196,.08);border-color:rgba(75,67,196,.35);color:#4B43C4}
+    .sp-rb-btn.active{background:#4B43C4;border-color:#4B43C4;color:#fff}
+    .sp-rb-align{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}
+    .sp-rb-a{padding:6px;border:1px solid #E3DACA;background:#F2EDE2;border-radius:7px;cursor:pointer;font-size:13px;transition:.15s;color:#211C14;text-align:center}
+    .sp-rb-a:hover{background:rgba(75,67,196,.08);border-color:rgba(75,67,196,.35);color:#4B43C4}
+    .sp-rb-select{width:100%;padding:6px 7px;border:1px solid #E3DACA;background:#F2EDE2;border-radius:8px;font-size:11px;color:#211C14;margin-bottom:7px;cursor:pointer;outline:none}
+    .sp-rb-label{font-size:11px;font-weight:600;color:#6E6557;display:block;margin-bottom:4px}
+    .sp-rb-export{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px}
+    .sp-rb-exp{padding:8px 4px;border:1px solid #E3DACA;background:#F2EDE2;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;color:#211C14;transition:.15s;text-align:center}
+    .sp-rb-exp:hover{background:#211C14;color:#fff;border-color:#211C14}
+    .sp-rb-exp.primary{background:#7B41C9;border-color:#7B41C9;color:#fff}
+    .sp-rb-exp.primary:hover{background:#5F2F9E}
+    .sp-rb-add-text{width:100%;padding:8px;border:1px dashed rgba(75,67,196,.35);border-radius:8px;background:rgba(75,67,196,.06);cursor:pointer;font-size:11px;font-weight:700;color:#7B41C9;margin-bottom:6px;transition:.15s}
+    .sp-rb-add-text:hover{background:rgba(123,65,201,.1)}
+
+    /* OBJECT SYSTEM (shapes) — same as blog editor */
+    .be-object-wrap{position:absolute;cursor:move;pointer-events:all;z-index:20;min-width:30px;min-height:30px}
+    .be-object-wrap.obj-selected{outline:2px solid #7B41C9;outline-offset:3px}
+    .obj-inner{width:100%;height:100%;pointer-events:none;border-radius:inherit}
+    .obj-handle{position:absolute;width:10px;height:10px;background:#7B41C9;border:2px solid #fff;border-radius:50%;z-index:3;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+    .obj-h-nw{top:-6px;left:-6px;cursor:nw-resize}.obj-h-ne{top:-6px;right:-6px;cursor:ne-resize}
+    .obj-h-sw{bottom:-6px;left:-6px;cursor:sw-resize}.obj-h-se{bottom:-6px;right:-6px;cursor:se-resize}
+    .obj-rot-line{position:absolute;top:-20px;left:50%;width:2px;height:16px;background:#7B41C9;transform:translateX(-50%);pointer-events:none}
+    .obj-h-rot{top:-30px;left:50%;transform:translateX(-50%);cursor:crosshair;background:#B65334;border-color:#fff}
+    .obj-toolbar{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);display:none;background:#211C14;border-radius:8px;padding:4px;gap:4px;box-shadow:0 4px 16px rgba(0,0,0,.4);white-space:nowrap;z-index:30;align-items:center}
+    .be-object-wrap.obj-selected .obj-toolbar{display:flex}
+    .obj-tb-btn{background:none;border:none;color:#A89E8C;font-size:12px;padding:3px 6px;border-radius:4px;cursor:pointer;transition:.15s}
+    .obj-tb-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+    .obj-color-swatch{width:18px;height:18px;border-radius:3px;cursor:pointer;border:2px solid rgba(255,255,255,.2)}
+    .obj-color-input{opacity:0;position:absolute;width:0;height:0}
+    .obj-shape-square{background:#7B41C9;border-radius:4px}
+    .obj-shape-circle{background:#7B41C9;border-radius:50%}
+    .obj-shape-triangle{width:0!important;height:0!important;background:transparent!important;border-left:40px solid transparent;border-right:40px solid transparent;border-bottom:70px solid #7B41C9;border-radius:0}
+    .obj-shape-line{background:#7B41C9;border-radius:4px;height:5px!important}
+    .obj-shape-star{background:#B68A1E;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+    .obj-shape-arrow{background:#7B41C9;clip-path:polygon(0% 20%,60% 20%,60% 0%,100% 50%,60% 100%,60% 80%,0% 80%)}
+    .obj-shape-box{background:rgba(124,58,237,.15);border:2px solid #7B41C9;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#7B41C9;font-weight:600}
+
+    /* ── BACKGROUND IMAGE ELEMENT ── */
+    .sp-img-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;background-size:cover;background-position:center;transition:.3s}
+    #spBgImg{
+      position:absolute;top:50%;left:50%;
+      min-width:100%;min-height:100%;max-width:none;
+      transform-origin:center center;
+      display:none;user-select:none;pointer-events:none;
+    }
+    #spBgImg.img-visible{display:block}
+
+    /* ── IMAGE EDITOR PANEL (right bar) ── */
+    .img-editor-wrap{padding:12px 13px 10px}
+    .img-editor-preview{
+      width:100%;height:72px;border-radius:8px;overflow:hidden;
+      background:#F2EDE2;margin-bottom:10px;position:relative;
+      display:none
+    }
+    .img-editor-preview.has-img{display:block}
+    .img-editor-preview img{width:100%;height:100%;object-fit:cover;display:block}
+    .img-editor-preview .img-prev-badge{
+      position:absolute;bottom:4px;right:5px;
+      background:rgba(0,0,0,.6);color:#fff;font-size:9px;
+      font-weight:700;padding:2px 6px;border-radius:4px;backdrop-filter:blur(4px)
+    }
+    .img-transform-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+    .img-transform-label{font-size:10px;font-weight:600;color:#6E6557;white-space:nowrap;min-width:36px}
+    .img-transform-slider{flex:1;cursor:pointer}
+    .img-transform-val{font-size:10px;color:#6E6557;min-width:28px;text-align:right}
+    .img-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px}
+    .img-action-btn{
+      padding:7px 4px;border:1px solid #E3DACA;background:#F2EDE2;
+      border-radius:8px;cursor:pointer;font-size:10px;font-weight:700;
+      color:#211C14;transition:.15s;text-align:center;font-family:inherit
+    }
+    .img-action-btn:hover{background:rgba(75,67,196,.08);border-color:rgba(75,67,196,.35);color:#4B43C4}
+    .img-action-btn.active{background:#4B43C4;border-color:#4B43C4;color:#fff}
+    .img-action-btn.danger{border-color:#D8A08C;color:#B65334}
+    .img-action-btn.danger:hover{background:rgba(182,83,52,.08);border-color:#B65334}
+    .img-move-hint{
+      font-size:10px;color:#A89E8C;text-align:center;
+      padding:5px;background:#F2EDE2;border-radius:6px;margin-bottom:6px;
+      border:1px dashed #E3DACA;display:none
+    }
+    .img-move-hint.active-hint{display:block;color:#7B41C9;border-color:rgba(123,65,201,.35);background:rgba(75,67,196,.06)}
+
+    /* ── CROP MODAL ── */
+    .crop-modal{
+      position:fixed;inset:0;background:rgba(0,0,0,.8);
+      display:none;align-items:center;justify-content:center;
+      z-index:500;flex-direction:column;gap:16px
+    }
+    .crop-modal.open{display:flex}
+    .crop-modal-title{color:#fff;font-size:14px;font-weight:700;letter-spacing:.05em}
+    .crop-stage{position:relative;overflow:hidden;cursor:crosshair;background:#211C14;flex-shrink:0;max-width:80vw;max-height:60vh}
+    .crop-stage img{display:block;max-width:80vw;max-height:60vh;object-fit:contain}
+    .crop-selection{
+      position:absolute;border:2px solid #7B41C9;cursor:move;
+      box-shadow:0 0 0 9999px rgba(0,0,0,.55);pointer-events:all
+    }
+    .crop-handle{
+      position:absolute;width:12px;height:12px;
+      background:#7B41C9;border:2px solid #fff;border-radius:50%;
+      transform:translate(-50%,-50%);cursor:pointer;z-index:2
+    }
+    .crop-handle.tl{top:0;left:0;cursor:nw-resize}
+    .crop-handle.tm{top:0;left:50%;cursor:n-resize}
+    .crop-handle.tr{top:0;left:100%;cursor:ne-resize}
+    .crop-handle.ml{top:50%;left:0;cursor:w-resize}
+    .crop-handle.mr{top:50%;left:100%;cursor:e-resize}
+    .crop-handle.bl{top:100%;left:0;cursor:sw-resize}
+    .crop-handle.bm{top:100%;left:50%;cursor:s-resize}
+    .crop-handle.br{top:100%;left:100%;cursor:se-resize}
+    .crop-btns{display:flex;gap:10px}
+    .crop-apply-btn{
+      padding:11px 28px;border:none;border-radius:10px;
+      background:linear-gradient(135deg,#7B41C9,#4B43C4);
+      color:#fff;font-weight:700;font-size:14px;cursor:pointer
+    }
+    .crop-cancel-btn{
+      padding:11px 24px;border:1px solid rgba(255,255,255,.2);border-radius:10px;
+      background:transparent;color:#fff;font-weight:600;font-size:13px;cursor:pointer
+    }
+    .crop-hint{color:rgba(255,255,255,.5);font-size:11px;text-align:center}
+
+    /* ── AI IMAGE LOADING ── */
+    .ai-img-loading{
+      position:absolute;inset:0;background:rgba(0,0,0,.5);
+      display:none;align-items:center;justify-content:center;
+      flex-direction:column;gap:10px;z-index:10
+    }
+    .ai-img-loading.show{display:flex}
+    .ai-img-spinner{
+      width:32px;height:32px;border-radius:50%;
+      border:3px solid rgba(255,255,255,.2);
+      border-top-color:#B65334;animation:spin .8s linear infinite
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ai-img-loading p{color:#fff;font-size:12px;font-weight:600}
+
+    /* ── REPOSITION CURSOR ── */
+    #spCanvas.reposition-mode{cursor:grab}
+    #spCanvas.reposition-mode:active{cursor:grabbing}
+
+    /* Save modal */
+    .sp-save-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:1000}
+    .sp-save-box{background:#fff;padding:26px;border-radius:16px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .sp-save-box h3{font-size:16px;font-weight:800;margin-bottom:6px}
+    .sp-save-box p{font-size:13px;color:#6E6557;margin-bottom:14px}
+    .sp-save-input{width:100%;padding:10px;border:1px solid #E3DACA;border-radius:8px;font-size:13px;font-family:inherit;margin-bottom:14px}
+    .sp-save-btns{display:flex;gap:8px}
+    .sp-save-cancel{flex:1;padding:10px;border:1px solid #E3DACA;border-radius:8px;background:#F2EDE2;cursor:pointer;font-size:13px;font-family:inherit}
+    .sp-save-confirm{flex:2;padding:10px;border:none;border-radius:8px;background:#7B41C9;color:#fff;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit}
+
+    /* UI theme */
+    body[data-ui-theme="light"]{
+      background:#F1ECE1;
+      color:#211C14;
+    }
+    body[data-ui-theme="light"] .sp-sidebar,
+    body[data-ui-theme="light"] .sp-topbar,
+    body[data-ui-theme="light"] .sp-right-bar{
+      background:#fff;
+      border-color:#E3DACA;
+    }
+    body[data-ui-theme="light"] .sp-sidebar-hdr{
+      background:linear-gradient(180deg,#ffffff 0%,#FBF7EF 100%);
+      border-color:#E3DACA;
+    }
+    body[data-ui-theme="light"] .sp-title{
+      background:none;
+      -webkit-text-fill-color:#211C14;
+      color:#211C14;
+    }
+    body[data-ui-theme="light"] .sp-sub,
+    body[data-ui-theme="light"] .sp-back,
+    body[data-ui-theme="light"] .sp-rb-title,
+    body[data-ui-theme="light"] .sp-tb-label,
+    body[data-ui-theme="light"] .sp-range-val,
+    body[data-ui-theme="light"] .img-transform-val{
+      color:#6E6557;
+    }
+    body[data-ui-theme="light"] .sp-canvas-area{
+      background:
+        radial-gradient(circle at 22px 22px,rgba(75,67,196,.06) 2px,transparent 2px),
+        linear-gradient(135deg,#F1ECE1 0%,#FBF7EF 50%,#F1ECE1 100%);
+      background-size:44px 44px,auto;
+    }
+    body[data-ui-theme="light"] .sp-canvas-wrap{
+      box-shadow:0 24px 70px rgba(33,28,20,.18),0 2px 10px rgba(33,28,20,.08);
+    }
+    body[data-ui-theme="light"] .sp-tab.active,
+    body[data-ui-theme="light"] .sp-gen-btn,
+    body[data-ui-theme="light"] .sp-ai-img-btn,
+    body[data-ui-theme="light"] .sp-save-confirm,
+    body[data-ui-theme="light"] .sp-rb-exp.primary,
+    body[data-ui-theme="light"] .crop-apply-btn{
+      background:linear-gradient(165deg,#5750D8,#3F37AC);
+      border-color:#3F37AC;
+    }
+    body[data-ui-theme="light"] .sp-upload-btn,
+    body[data-ui-theme="light"] .sp-apply-btn,
+    body[data-ui-theme="light"] .sp-rb-btn.active,
+    body[data-ui-theme="light"] .img-action-btn.active{
+      background:#4B43C4;
+      border-color:#4B43C4;
+    }
+    body[data-ui-theme="light"] .sp-input,
+    body[data-ui-theme="light"] .sp-select,
+    body[data-ui-theme="light"] .sp-textarea,
+    body[data-ui-theme="light"] .sp-tb-select,
+    body[data-ui-theme="light"] .sp-rb-select,
+    body[data-ui-theme="light"] .sp-plat,
+    body[data-ui-theme="light"] .sp-tab,
+    body[data-ui-theme="light"] .sp-rb-btn,
+    body[data-ui-theme="light"] .sp-rb-a,
+    body[data-ui-theme="light"] .sp-rb-exp,
+    body[data-ui-theme="light"] .img-action-btn,
+    body[data-ui-theme="light"] .sp-shape-btn{
+      background:#F2EDE2;
+      border-color:#E3DACA;
+      color:#211C14;
+    }
+    body[data-ui-theme="light"] .sp-input:focus,
+    body[data-ui-theme="light"] .sp-textarea:focus,
+    body[data-ui-theme="light"] .sp-select:focus{
+      border-color:#4B43C4;
+      background:#fff;
+      box-shadow:0 0 0 3px rgba(75,67,196,.12);
+    }
+    body[data-ui-theme="light"] .sp-plat.active{
+      border-color:#4B43C4;
+      background:rgba(75,67,196,.08);
+      color:#4B43C4;
+    }
+
+    body[data-ui-theme="dark"]{
+      background:#211C14;
+      color:#E3DACA;
+    }
+    body[data-ui-theme="dark"] .sp-sidebar,
+    body[data-ui-theme="dark"] .sp-topbar,
+    body[data-ui-theme="dark"] .sp-right-bar{
+      background:#111827;
+      border-color:#273449;
+    }
+    body[data-ui-theme="dark"] .sp-sidebar-hdr{
+      background:#0b1220;
+      border-color:#273449;
+    }
+    body[data-ui-theme="dark"] .sp-tabs,
+    body[data-ui-theme="dark"] .sp-scroll{
+      background:#111827;
+    }
+    body[data-ui-theme="dark"] .sp-canvas-area{
+      background:#0b1020;
+    }
+    body[data-ui-theme="dark"] .sp-canvas-wrap{
+      box-shadow:0 26px 80px rgba(0,0,0,.55),0 2px 16px rgba(0,0,0,.35);
+    }
+    body[data-ui-theme="dark"] .sp-label,
+    body[data-ui-theme="dark"] .sp-rb-label,
+    body[data-ui-theme="dark"] .sp-tb-btn,
+    body[data-ui-theme="dark"] .sp-rb-btn,
+    body[data-ui-theme="dark"] .sp-rb-a,
+    body[data-ui-theme="dark"] .sp-rb-exp,
+    body[data-ui-theme="dark"] .img-action-btn,
+    body[data-ui-theme="dark"] .sp-shape-btn{
+      color:#E3DACA;
+    }
+    body[data-ui-theme="dark"] .sp-sub,
+    body[data-ui-theme="dark"] .sp-back,
+    body[data-ui-theme="dark"] .sp-rb-title,
+    body[data-ui-theme="dark"] .sp-tb-label,
+    body[data-ui-theme="dark"] .sp-range-val,
+    body[data-ui-theme="dark"] .img-transform-val,
+    body[data-ui-theme="dark"] .img-transform-label{
+      color:#A89E8C;
+    }
+    body[data-ui-theme="dark"] .sp-input,
+    body[data-ui-theme="dark"] .sp-select,
+    body[data-ui-theme="dark"] .sp-textarea,
+    body[data-ui-theme="dark"] .sp-tb-select,
+    body[data-ui-theme="dark"] .sp-rb-select,
+    body[data-ui-theme="dark"] .sp-plat,
+    body[data-ui-theme="dark"] .sp-tab,
+    body[data-ui-theme="dark"] .sp-rb-btn,
+    body[data-ui-theme="dark"] .sp-rb-a,
+    body[data-ui-theme="dark"] .sp-rb-exp,
+    body[data-ui-theme="dark"] .img-action-btn,
+    body[data-ui-theme="dark"] .sp-shape-btn,
+    body[data-ui-theme="dark"] .sp-save-input{
+      background:#1a2234;
+      border-color:#2D3A4E;
+      color:#F2EDE2;
+    }
+    body[data-ui-theme="dark"] .sp-input:focus,
+    body[data-ui-theme="dark"] .sp-textarea:focus,
+    body[data-ui-theme="dark"] .sp-select:focus{
+      border-color:#9D8AE0;
+      background:#111827;
+      box-shadow:0 0 0 3px rgba(123,65,201,.16);
+    }
+    body[data-ui-theme="dark"] .sp-tab.active,
+    body[data-ui-theme="dark"] .sp-plat.active{
+      background:#3F37AC;
+      border-color:#7B41C9;
+      color:#fff;
+    }
+    body[data-ui-theme="dark"] .sp-tb-select:hover,
+    body[data-ui-theme="dark"] .sp-tb-btn:hover,
+    body[data-ui-theme="dark"] .sp-rb-btn:hover,
+    body[data-ui-theme="dark"] .sp-rb-a:hover,
+    body[data-ui-theme="dark"] .sp-shape-btn:hover,
+    body[data-ui-theme="dark"] .img-action-btn:hover{
+      background:#293449;
+      border-color:#7B41C9;
+      color:#fff;
+    }
+    body[data-ui-theme="dark"] .sp-rb-divider{
+      background:#273449;
+    }
+    body[data-ui-theme="dark"] .sp-theme-toggle{
+      background:#211C14;
+      border-color:#211C14;
+    }
+    body[data-ui-theme="dark"] .sp-theme-btn{
+      color:#A89E8C;
+    }
+    body[data-ui-theme="dark"] .sp-theme-btn.active{
+      background:#211C14;
+      color:#fff;
+      box-shadow:none;
+    }
+    body[data-ui-theme="dark"] .sp-save-box{
+      background:#111827;
+      color:#F2EDE2;
+    }
+    body[data-ui-theme="dark"] .sp-save-box p{
+      color:#A89E8C;
+    }
+    body[data-ui-theme="dark"] .sp-save-cancel{
+      background:#211C14;
+      border-color:#211C14;
+      color:#E3DACA;
+    }
+
+    /* ── PUBLISH / CONNECT SECTION ── */
+    .pub-platform-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F2EDE2}
+    .pub-platform-row:last-child{border-bottom:none}
+    .pub-plat-info{display:flex;align-items:center;gap:8px}
+    .pub-plat-icon{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace;flex-shrink:0;letter-spacing:-.02em}
+    .pub-plat-name{font-size:11.5px;font-weight:700;color:#211C14}
+    .pub-plat-acct{font-size:10px;color:#A89E8C;margin-top:1px}
+    .pub-connect-btn{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;cursor:pointer;border:1px solid;transition:.14s;font-family:inherit;white-space:nowrap}
+    .pub-connect-btn.connect{background:#F2EDE2;border-color:#E3DACA;color:#6E6557}
+    .pub-connect-btn.connect:hover{background:rgba(75,67,196,.08);border-color:rgba(75,67,196,.35);color:#4B43C4}
+    .pub-connect-btn.connected{background:rgba(46,142,106,.08);border-color:rgba(46,142,106,.3);color:#1e7a55}
+    .pub-connect-btn.connected:hover{background:rgba(182,83,52,.07);border-color:rgba(182,83,52,.3);color:#B65334}
+    .pub-caption-field{width:100%;padding:8px 10px;border:1px solid #E3DACA;border-radius:8px;background:#F2EDE2;font-size:11.5px;font-family:inherit;resize:vertical;min-height:54px;margin-top:8px;outline:none;line-height:1.5}
+    .pub-caption-field:focus{border-color:#7B41C9;background:#fff}
+    .pub-hashtag-hint{font-size:10px;color:#A89E8C;margin-top:4px}
+    .pub-select-all{font-size:10px;color:#4B43C4;cursor:pointer;font-weight:700;text-decoration:underline;float:right;margin-top:-20px}
+    .pub-publish-btn{width:100%;padding:10px;border:none;border-radius:10px;background:linear-gradient(165deg,#5750D8,#3F37AC);color:#fff;font-weight:800;font-size:12.5px;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px;transition:.18s;font-family:inherit;box-shadow:0 4px 14px rgba(75,67,196,.3)}
+    .pub-publish-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 22px rgba(75,67,196,.4)}
+    .pub-publish-btn:disabled{opacity:.45;pointer-events:none}
+    .pub-status{font-size:11px;text-align:center;padding:7px 10px;border-radius:7px;margin-top:7px;display:none;line-height:1.45}
+    .pub-status.success{background:rgba(46,142,106,.08);color:#1e7a55;border:1px solid rgba(46,142,106,.22);display:block}
+    .pub-status.error{background:rgba(182,83,52,.07);color:#B65334;border:1px solid rgba(182,83,52,.22);display:block}
+    .pub-status.loading{background:rgba(75,67,196,.07);color:#4B43C4;border:1px solid rgba(75,67,196,.18);display:block}
+    .pub-plat-check{display:none;align-items:center;gap:4px}
+    .pub-plat-check input[type=checkbox]{accent-color:#4B43C4;width:13px;height:13px;cursor:pointer}
+    .pub-plat-check.visible{display:flex}
+    body[data-ui-theme="dark"] .pub-platform-row{border-color:#1a2234}
+    body[data-ui-theme="dark"] .pub-plat-name{color:#E3DACA}
+    body[data-ui-theme="dark"] .pub-connect-btn.connect{background:#1a2234;border-color:#2D3A4E;color:#A89E8C}
+    body[data-ui-theme="dark"] .pub-caption-field{background:#1a2234;border-color:#2D3A4E;color:#F2EDE2}
+    body[data-ui-theme="dark"] .pub-caption-field:focus{border-color:#9D8AE0;background:#111827}
+
+    /* Setup guide */
+    .setup-note{background:#FBF7EF;border:1px solid #E3DACA;border-radius:8px;padding:9px 10px;margin-top:8px;font-size:10.5px;color:#6E6557;line-height:1.55}
+    .setup-note a{color:#4B43C4;font-weight:700;text-decoration:none}
+    body[data-ui-theme="dark"] .setup-note{background:#111827;border-color:#2D3A4E;color:#A89E8C}
+
+    /* ── IMAGE STYLE SELECTOR ── */
+    .sp-img-style-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+    .sp-img-style-btn{flex:1;min-width:48px;padding:6px 4px;border-radius:8px;border:1.5px solid #E3DACA;background:#F2EDE2;cursor:pointer;font-size:10px;font-weight:700;color:#6E6557;transition:.14s;text-align:center;line-height:1.4;font-family:inherit}
+    .sp-img-style-btn:hover{border-color:rgba(75,67,196,.4);color:#4B43C4;background:rgba(75,67,196,.05)}
+    .sp-img-style-btn.active{border-color:#7B41C9;background:rgba(123,65,201,.1);color:#7B41C9}
+    body[data-ui-theme="dark"] .sp-img-style-btn{background:#1a2234;border-color:#2D3A4E;color:#A89E8C}
+    body[data-ui-theme="dark"] .sp-img-style-btn.active{border-color:#9D8AE0;background:rgba(123,65,201,.15);color:#c4b5fd}
+
+    /* ── GIF / STICKER PICKER ── */
+    .sp-media-picker{background:#F2EDE2;border:1px solid #E3DACA;border-radius:10px;margin-bottom:8px;overflow:hidden;display:none}
+    .sp-media-picker.show{display:block}
+    .sp-media-search{display:flex;gap:6px;padding:8px 8px 6px}
+    .sp-media-search input{flex:1;padding:6px 9px;border:1px solid #E3DACA;border-radius:7px;font-size:11px;font-family:inherit;background:#fff;outline:none;color:#211C14}
+    .sp-media-search input:focus{border-color:#7B41C9}
+    .sp-media-search button{padding:6px 10px;background:#7B41C9;border:none;border-radius:7px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+    .sp-media-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;padding:0 8px 8px;max-height:180px;overflow-y:auto}
+    .sp-media-thumb{border-radius:6px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#E3DACA;border:2px solid transparent;transition:.12s}
+    .sp-media-thumb:hover{border-color:#7B41C9;transform:scale(1.04)}
+    .sp-media-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .sp-media-empty{padding:18px;text-align:center;font-size:11px;color:#A89E8C}
+    body[data-ui-theme="dark"] .sp-media-picker{background:#1a2234;border-color:#2D3A4E}
+    body[data-ui-theme="dark"] .sp-media-search input{background:#111827;border-color:#2D3A4E;color:#F2EDE2}
+
+    /* ── IMAGE GALLERY ── */
+    .sp-gallery-wrap{margin-top:14px}
+    .sp-gallery-label{font-size:11px;font-weight:700;color:#6E6557;text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
+    .sp-gallery-label span{font-size:10px;color:#A89E8C;text-transform:none;font-weight:500;letter-spacing:0;cursor:pointer}
+    .sp-gallery-label span:hover{color:#B65334}
+    .sp-gallery-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+    .sp-gallery-item{position:relative;border-radius:7px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#E3DACA;border:2px solid transparent;transition:.15s;flex-shrink:0}
+    .sp-gallery-item:hover{border-color:#7B41C9;transform:scale(1.03)}
+    .sp-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}
+    .sp-gallery-item .gal-del{position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:rgba(182,83,52,.9);border:1.5px solid #fff;color:#fff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+    .sp-gallery-item:hover .gal-del{display:flex}
+    .sp-gallery-item .gal-tag{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);color:#fff;font-size:8px;font-weight:700;padding:2px 4px;letter-spacing:.04em;text-transform:uppercase}
+    .sp-gallery-empty{font-size:11px;color:#A89E8C;text-align:center;padding:14px 8px;line-height:1.5}
+    body[data-ui-theme="dark"] .sp-gallery-wrap .sp-gallery-label{color:#A89E8C}
+
+    /* ══ RIGHT BAR TAB SYSTEM ══ */
+    .rb-tabs { display:flex; border-bottom:1px solid #E3DACA; flex-shrink:0 }
+    .rb-tab { flex:1; padding:8px 3px; font-size:9px; font-weight:700; color:#A89E8C; cursor:pointer; border-bottom:2px solid transparent; text-align:center; transition:.14s; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap }
+    .rb-tab.on { color:#7B41C9; border-bottom-color:#7B41C9 }
+    .rb-pane { display:none; flex:1; overflow-y:auto; flex-direction:column }
+    .rb-pane.on { display:flex }
+
+    /* Layer items */
+    .layer-item { display:flex; align-items:center; gap:5px; padding:5px 8px; border-radius:7px; cursor:pointer; transition:.12s; border:1.5px solid transparent }
+    .layer-item:hover { background:rgba(75,67,196,.06) }
+    .layer-item.sel { background:rgba(123,65,201,.1); border-color:rgba(123,65,201,.3) }
+    .layer-thumb { width:28px; height:28px; border-radius:4px; background:#E3DACA; flex-shrink:0; font-size:14px; display:grid; place-items:center }
+    .layer-name { font-size:10.5px; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#211C14 }
+    .layer-vis { font-size:11px; cursor:pointer; opacity:.7; flex-shrink:0; user-select:none }
+    .layer-vis.hidden { opacity:.25 }
+    .layer-blend { font-size:10px; border:none; background:transparent; color:#A89E8C; cursor:pointer; font-family:inherit; max-width:60px; font-weight:600 }
+    .layer-sep { height:1px; background:#F2EDE2; margin:5px 8px }
+    .layer-opacity-row { display:flex; align-items:center; gap:7px; padding:5px 8px 8px }
+    .layer-opacity-row label { font-size:10px; color:#6E6557; font-weight:600; min-width:44px }
+    .layer-opacity-row input { flex:1; accent-color:#7B41C9 }
+    .layer-opacity-row span { font-size:10px; color:#A89E8C; min-width:26px; text-align:right }
+
+    /* Filter presets */
+    .preset-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; padding:10px; flex-shrink:0 }
+    .preset-btn { border:1.5px solid #E3DACA; border-radius:8px; padding:0; cursor:pointer; font-size:9px; font-weight:700; color:#6E6557; background:#F2EDE2; transition:.14s; text-align:center; overflow:hidden }
+    .preset-thumb { height:38px; display:block; background:linear-gradient(135deg,#f093fb,#f5576c); width:100% }
+    .preset-name { padding:4px 2px; display:block; font-size:9px; font-weight:700 }
+    .preset-btn:hover,.preset-btn.on { border-color:#7B41C9; color:#7B41C9 }
+    .preset-btn.on { background:rgba(123,65,201,.08) }
+
+    /* Adjustment rows */
+    .adj-section { padding:0 10px 4px }
+    .adj-title { font-size:9.5px; font-weight:700; color:#A89E8C; text-transform:uppercase; letter-spacing:.08em; margin:10px 0 6px }
+    .adj-row { display:flex; align-items:center; gap:6px; margin-bottom:5px }
+    .adj-lbl { font-size:10px; color:#6E6557; font-weight:600; min-width:60px }
+    .adj-slider { flex:1; accent-color:#7B41C9; height:3px }
+    .adj-val { font-size:10px; color:#A89E8C; min-width:26px; text-align:right; font-family:monospace }
+    .blend-row { padding:0 10px 8px }
+    .blend-sel { width:100%; padding:6px 8px; border:1px solid #E3DACA; border-radius:8px; font-size:11px; background:#F2EDE2; color:#211C14; font-family:inherit }
+
+    /* Frames grid */
+    .frames-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; padding:10px }
+    .frame-card { border-radius:9px; border:2px solid #E3DACA; overflow:hidden; cursor:pointer; transition:.15s; position:relative; background:#F2EDE2 }
+    .frame-card:hover { border-color:rgba(123,65,201,.5); transform:scale(1.03) }
+    .frame-card.on { border-color:#7B41C9; box-shadow:0 0 0 2px rgba(123,65,201,.2) }
+    .frame-preview { width:100%; aspect-ratio:1; position:relative; overflow:hidden; background:linear-gradient(135deg,#e8e0d0,#d0c8b8) }
+    .frame-name { font-size:9px; font-weight:700; padding:4px 6px; text-align:center; color:#6E6557; background:#fff; border-top:1px solid #E3DACA }
+    .frame-controls { padding:8px 10px 10px; border-top:1px solid #E3DACA; flex-shrink:0 }
+
+    /* Text effects */
+    .tx-fx-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; padding:0 10px 8px }
+    .tx-fx-btn { padding:8px 5px; border:1.5px solid #E3DACA; border-radius:8px; cursor:pointer; font-size:10px; font-weight:700; color:#6E6557; background:#F2EDE2; transition:.14s; text-align:center; font-family:inherit }
+    .tx-fx-btn:hover { border-color:#7B41C9; color:#7B41C9; background:rgba(123,65,201,.06) }
+    .tx-fx-btn.on { border-color:#7B41C9; background:rgba(123,65,201,.1); color:#7B41C9 }
+
+    /* Draw tools */
+    .draw-row { display:flex; gap:5px; padding:0 10px 8px }
+    .draw-tool { flex:1; padding:8px 5px; border:1.5px solid #E3DACA; border-radius:8px; cursor:pointer; font-size:14px; text-align:center; background:#F2EDE2; transition:.14s; color:#6E6557; font-family:inherit }
+    .draw-tool:hover,.draw-tool.on { border-color:#7B41C9; background:rgba(123,65,196,.08); color:#7B41C9 }
+    .sp-rb-lbl { font-size:10px; font-weight:700; color:#6E6557; padding:0 10px; margin:6px 0 4px; display:block }
+
+    /* Frame animation keyframes */
+    @keyframes glitch-shift {
+      0%,95%,100%{transform:translate(0)} 96%{transform:translate(-3px,1px)} 97%{transform:translate(3px,-1px)} 98%{transform:translate(-2px,2px)} 99%{transform:translate(2px,-2px)}
+    }
+    @keyframes neon-pulse {
+      0%,100%{opacity:1} 50%{opacity:.6}
+    }
+    @keyframes scanline {
+      0%{background-position:0 0} 100%{background-position:0 100%}
+    }
+
+    /* Dark mode additions */
+    body[data-ui-theme="dark"] .rb-tab { color:#6E6557 }
+    body[data-ui-theme="dark"] .rb-tab.on { color:#c4b5fd }
+    body[data-ui-theme="dark"] .layer-name { color:#E3DACA }
+    body[data-ui-theme="dark"] .layer-item:hover { background:rgba(75,67,196,.1) }
+    body[data-ui-theme="dark"] .layer-item.sel { background:rgba(123,65,201,.18) }
+    body[data-ui-theme="dark"] .layer-sep,.body[data-ui-theme="dark"] .rb-tabs { border-color:#2D3A4E }
+    body[data-ui-theme="dark"] .adj-lbl,.body[data-ui-theme="dark"] .adj-title { color:#A89E8C }
+    body[data-ui-theme="dark"] .preset-btn,.body[data-ui-theme="dark"] .frame-card,.body[data-ui-theme="dark"] .tx-fx-btn,.body[data-ui-theme="dark"] .draw-tool { background:#1a2234; border-color:#2D3A4E; color:#A89E8C }
+    body[data-ui-theme="dark"] .blend-sel { background:#1a2234; border-color:#2D3A4E; color:#F2EDE2 }
+    body[data-ui-theme="dark"] .frame-name,.body[data-ui-theme="dark"] .preset-name { background:#111827; color:#A89E8C }
+    body[data-ui-theme="dark"] .sp-rb-lbl { color:#A89E8C }
+  </style>
+  <!-- Social editor uses body[data-ui-theme] — key shared with app theme -->
+  <script>
+    (function(){
+      const KEY = 'StreamInk_AppTheme';
+      var t; try { t = localStorage.getItem(KEY) || 'light'; } catch(e){ t='light'; }
+      // Apply immediately before render to avoid flash
+      document.documentElement.style.setProperty('--_t', t);
+      document.addEventListener('DOMContentLoaded', function(){
+        document.body.dataset.uiTheme = t;
+        document.querySelectorAll('[data-theme-choice]').forEach(function(btn){
+          btn.classList.toggle('active', btn.dataset.themeChoice === t);
+        });
+      });
+    })();
+  </script>
+</head>
+<body>
+
+<!-- ══ APPBAR ══ -->
+<header class="si-appbar">
+  <a href="/dashboard" class="si-brandtab">
+    <img src="/images/streamink-mark.png" alt="StreamInk">
+    <span>StreamInk</span>
+  </a>
+  <a href="/dashboard" class="si-btn-ghost" style="font-size:12px;padding:5px 10px">← Dashboard</a>
+  <span class="si-crumb"><span class="sep">/</span> Social Post Creator <span class="sep">/</span> <b id="socCrumb">Instagram post · 1080×1080</b></span>
+  <div class="si-ab-mid">
+    <span class="si-save-state"><span class="dot"></span> All changes saved</span>
+  </div>
+  <div class="si-ab-right">
+    <button class="si-btn-ghost" onclick="window.open(location.href,'_blank')">Preview</button>
+    <button class="si-btn-primary" onclick="spExportPng()">Export</button>
+  </div>
+</header>
+
+<div class="sp-studio">
+
+  <!-- ══ LEFT SIDEBAR ══ -->
+  <div class="sp-sidebar">
+    <div class="sp-sidebar-hdr">
+      <a href="/dashboard" class="sp-back" style="display:none">← Dashboard</a>
+      <div class="sp-title">Social Post Creator</div>
+      <div class="sp-sub">AI · Design · Export</div>
+      <div class="sp-theme-toggle" role="group" aria-label="Editor theme">
+        <button type="button" class="sp-theme-btn active" data-theme-choice="light">Light</button>
+        <button type="button" class="sp-theme-btn" data-theme-choice="dark">Dark</button>
+      </div>
+    </div>
+
+    <div class="sp-tabs">
+      <button class="sp-tab active" data-panel="gen">Generator</button>
+      <button class="sp-tab" data-panel="design">Design</button>
+    </div>
+
+    <!-- GENERATOR PANEL -->
+    <div class="sp-panel active" id="sp-panel-gen">
+      <div class="sp-scroll">
+
+        <span class="sp-label">Platform</span>
+        <div class="sp-plat-grid">
+          <div class="sp-plat active" data-plat="instagram" data-w="500" data-h="500"><span>IG</span>Instagram</div>
+          <div class="sp-plat" data-plat="twitter"   data-w="600" data-h="338"><span>X</span>Twitter/X</div>
+          <div class="sp-plat" data-plat="linkedin"  data-w="600" data-h="314"><span>In</span>LinkedIn</div>
+          <div class="sp-plat" data-plat="facebook"  data-w="600" data-h="315"><span>FB</span>Facebook</div>
+          <div class="sp-plat" data-plat="story"     data-w="320" data-h="568"><span>St</span>Story</div>
+        </div>
+
+        <span class="sp-label">Topic / Message</span>
+        <textarea id="sp-topic" class="sp-textarea" placeholder="What's this post about? e.g. New product launch, health tips…"></textarea>
+
+        <span class="sp-label">Brand Name</span>
+        <input id="sp-brand" class="sp-input" placeholder="Your brand or business name">
+
+        <span class="sp-label">Tone</span>
+        <select id="sp-tone" class="sp-select">
+          <option value="engaging">Engaging &amp; Friendly</option>
+          <option value="professional">Professional</option>
+          <option value="bold">Bold &amp; Confident</option>
+          <option value="inspiring">Inspiring</option>
+          <option value="educational">Educational</option>
+          <option value="luxury">Luxury &amp; Premium</option>
+          <option value="humorous">Fun &amp; Humorous</option>
+        </select>
+
+        <span class="sp-label">CTA Text</span>
+        <input id="sp-cta" class="sp-input" placeholder="e.g. Shop Now, Learn More, Book Today">
+
+        <span class="sp-label">Optional Brief</span>
+        <textarea id="sp-brief" class="sp-textarea" style="min-height:44px" placeholder="Any extra details…"></textarea>
+
+        <span class="sp-label">Background Image</span>
+
+        <!-- Image style selector -->
+        <div class="sp-img-style-row" id="imgStyleRow">
+          <button class="sp-img-style-btn active" data-style="photo">📸<br>Real</button>
+          <button class="sp-img-style-btn" data-style="2d">🎨<br>2D Art</button>
+          <button class="sp-img-style-btn" data-style="3d">🔷<br>3D</button>
+          <button class="sp-img-style-btn" data-style="gif">🎭<br>GIF</button>
+          <button class="sp-img-style-btn" data-style="sticker">🏷<br>Sticker</button>
+        </div>
+
+        <!-- GIF / Sticker picker (shown when style=gif or sticker) -->
+        <div class="sp-media-picker" id="spMediaPicker">
+          <div class="sp-media-search">
+            <input type="text" id="spMediaQuery" placeholder="Search GIFs / stickers…">
+            <button onclick="searchMedia()">Search</button>
+          </div>
+          <div class="sp-media-grid" id="spMediaGrid">
+            <div class="sp-media-empty">Enter a search term above</div>
+          </div>
+        </div>
+
+        <div class="sp-img-section">
+          <label class="sp-upload-btn">
+            Upload
+            <input type="file" id="sp-img-upload" accept="image/*,image/gif">
+          </label>
+          <button class="sp-ai-img-btn" id="sp-ai-img-btn">AI Generate</button>
+        </div>
+        <input id="sp-img-keyword" class="sp-input" placeholder="AI image prompt — e.g. 'sunset city skyline'" style="margin-bottom:8px">
+        <!-- Image preview with edit buttons -->
+        <div id="sp-img-preview-wrap" style="display:none;margin-bottom:8px">
+          <div style="position:relative;border-radius:10px;overflow:hidden;border:1px solid #E3DACA">
+            <img id="sp-img-thumb" src="" alt="" style="width:100%;height:80px;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.5),transparent);display:flex;align-items:flex-end;padding:6px;gap:5px">
+              <button onclick="openCropModal()" style="flex:1;padding:5px;background:rgba(255,255,255,.9);border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;color:#211C14">✂ Crop</button>
+              <button onclick="removeImage()" style="padding:5px 8px;background:rgba(182,83,52,.8);border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;color:#fff">✕</button>
+            </div>
+          </div>
+          <p style="font-size:10px;color:#A89E8C;margin-top:4px;text-align:center">Use the Image Editor in the right panel to adjust</p>
+        </div>
+
+        <button class="sp-gen-btn" id="sp-gen-btn">Generate Post</button>
+
+        <!-- ── GENERATED IMAGE GALLERY ── -->
+        <div class="sp-gallery-wrap" id="imgGallery" style="display:none">
+          <div class="sp-gallery-label">
+            Recent Images
+            <span onclick="clearGallery()">Clear all</span>
+          </div>
+          <div class="sp-gallery-grid" id="galleryGrid"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DESIGN PANEL -->
+    <div class="sp-panel" id="sp-panel-design">
+      <div class="sp-scroll">
+
+        <span class="sp-label">Background Style</span>
+        <div class="sp-bg-swatches" id="spSwatches">
+          <div class="sp-swatch active" data-bg="linear-gradient(135deg,#f093fb,#f5576c,#4facfe)" style="background:linear-gradient(135deg,#f093fb,#f5576c,#4facfe)"></div>
+          <div class="sp-swatch" data-bg="linear-gradient(135deg,#0f2027,#203a43,#2c5364)" style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)"></div>
+          <div class="sp-swatch" data-bg="linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)" style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)"></div>
+          <div class="sp-swatch" data-bg="linear-gradient(135deg,#11998e,#38ef7d)" style="background:linear-gradient(135deg,#11998e,#38ef7d)"></div>
+          <div class="sp-swatch" data-bg="linear-gradient(135deg,#fc4a1a,#f7b733)" style="background:linear-gradient(135deg,#fc4a1a,#f7b733)"></div>
+          <div class="sp-swatch" data-bg="linear-gradient(135deg,#373b44,#4286f4)" style="background:linear-gradient(135deg,#373b44,#4286f4)"></div>
+          <div class="sp-swatch" data-bg="#ffffff" style="background:#fff;border:1px solid #E3DACA"></div>
+          <div class="sp-swatch" data-bg="#111111" style="background:#211C14"></div>
+        </div>
+
+        <span class="sp-label">Custom Gradient</span>
+        <div class="sp-grad-row">
+          <input type="color" id="spGrad1" value="#7B41C9">
+          <input type="color" id="spGrad2" value="#B65334">
+        </div>
+        <select id="spGradDir" style="width:100%;padding:6px;border-radius:8px;border:1px solid #E3DACA;margin-bottom:6px;font-size:12px">
+          <option value="135deg">Diagonal ↘</option>
+          <option value="90deg">Horizontal →</option>
+          <option value="180deg">Vertical ↓</option>
+          <option value="45deg">Diagonal ↗</option>
+        </select>
+        <button class="sp-apply-btn" id="spApplyGrad">Apply Gradient</button>
+
+        <span class="sp-label">Image Overlay</span>
+        <div class="sp-range-row">
+          <span style="font-size:11px;color:#6E6557">Darkness</span>
+          <input type="range" id="spOvDark" min="0" max="0.95" step="0.05" value="0.35">
+          <span class="sp-range-val" id="spOvDarkVal">35%</span>
+        </div>
+        <div class="sp-range-row">
+          <span style="font-size:11px;color:#6E6557">Blur</span>
+          <input type="range" id="spImgBlur" min="0" max="20" step="1" value="0">
+          <span class="sp-range-val" id="spImgBlurVal">0px</span>
+        </div>
+
+        <span class="sp-label" style="margin-top:16px">Shapes &amp; Elements</span>
+        <div class="sp-shape-grid">
+          <button class="sp-shape-btn" onclick="spAddShape('square')">▪</button>
+          <button class="sp-shape-btn" onclick="spAddShape('circle')">●</button>
+          <button class="sp-shape-btn" onclick="spAddShape('triangle')">▲</button>
+          <button class="sp-shape-btn" onclick="spAddShape('line')">━</button>
+          <button class="sp-shape-btn" onclick="spAddShape('star')">★</button>
+          <button class="sp-shape-btn" onclick="spAddShape('arrow')">➜</button>
+          <button class="sp-shape-btn" onclick="spAddShape('box')">▭</button>
+        </div>
+
+        <span class="sp-label">Shape Color</span>
+        <div class="sp-color-swatches" id="spColorSwatches">
+          <div class="sp-color-sw active" data-color="#ffffff" style="background:#fff;border-color:#E3DACA"></div>
+          <div class="sp-color-sw" data-color="#7B41C9" style="background:#7B41C9"></div>
+          <div class="sp-color-sw" data-color="#B65334" style="background:#B65334"></div>
+          <div class="sp-color-sw" data-color="#B68A1E" style="background:#B68A1E"></div>
+          <div class="sp-color-sw" data-color="#2E8E6A" style="background:#2E8E6A"></div>
+          <div class="sp-color-sw" data-color="#111111" style="background:#211C14"></div>
+          <input type="color" value="#7B41C9" id="spColorCustom" style="width:26px;height:26px;border-radius:6px;border:1px solid #E3DACA;padding:2px;cursor:pointer">
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN AREA ══ -->
+  <main class="sp-main">
+
+    <!-- TOPBAR -->
+    <div class="sp-topbar">
+      <button class="sp-tb-btn on" id="toolBtnMove"  onclick="setDrawTool('move')"  title="Move / Select (V)">↖</button>
+      <button class="sp-tb-btn"    id="toolBtnDraw"  onclick="setDrawTool('draw')"  title="Brush (B)">✏</button>
+      <button class="sp-tb-btn"    id="toolBtnErase" onclick="setDrawTool('erase')" title="Eraser (E)">⬜</button>
+      <input type="color" id="drawColorPick" value="#ffffff" title="Brush color" style="width:24px;height:24px;border:1px solid #E3DACA;border-radius:5px;cursor:pointer;padding:1px;background:none">
+      <select class="sp-tb-select" id="drawSizeSel" style="max-width:52px" title="Brush size">
+        <option value="4">4px</option><option value="8">8px</option><option value="14" selected>14px</option>
+        <option value="24">24px</option><option value="48">48px</option><option value="80">80px</option>
+      </select>
+      <div class="sp-tb-divider"></div>
+      <span class="sp-tb-label">Font:</span>
+      <select class="sp-tb-select" id="sp-font-sel" onchange="spApplyFont(this.value)">
+        <option value="Inter,sans-serif">Inter</option>
+        <option value="'Hanken Grotesk',sans-serif">Hanken</option>
+        <option value="'Space Grotesk',sans-serif">Space Grotesk</option>
+        <option value="'Montserrat',sans-serif">Montserrat</option>
+        <option value="'Poppins',sans-serif">Poppins</option>
+        <option value="'Roboto',sans-serif">Roboto</option>
+        <option value="'Playfair Display',serif">Playfair</option>
+        <option value="'Newsreader',serif">Newsreader</option>
+        <option value="'Lora',serif">Lora</option>
+        <option value="'Merriweather',serif">Merriweather</option>
+        <option value="Georgia,serif">Georgia</option>
+        <option value="'JetBrains Mono',monospace">JetBrains Mono</option>
+        <option value="'Courier New',monospace">Courier</option>
+        <option value="Impact,sans-serif">Impact</option>
+        <option value="Arial,sans-serif">Arial</option>
+      </select>
+      <select class="sp-tb-select" id="sp-fsize-sel" onchange="spApplyFontSize(this.value)">
+        <option value="">Size</option>
+        <option value="12px">12</option>
+        <option value="14px">14</option>
+        <option value="16px">16</option>
+        <option value="18px">18</option>
+        <option value="22px">22</option>
+        <option value="28px">28</option>
+        <option value="36px">36</option>
+        <option value="48px">48</option>
+        <option value="64px">64</option>
+      </select>
+      <div class="sp-tb-divider"></div>
+      <button class="sp-tb-btn" onclick="spExecCmd('bold')"><b>B</b></button>
+      <button class="sp-tb-btn" onclick="spExecCmd('italic')"><i>I</i></button>
+      <button class="sp-tb-btn" onclick="spExecCmd('underline')"><u>U</u></button>
+      <input type="color" class="sp-tb-color" id="sp-text-color" value="#ffffff" onchange="spApplyTextColor(this.value)" title="Text color">
+      <div class="sp-tb-divider"></div>
+      <button class="sp-tb-btn" onclick="spTextAlign('left')" title="Align left">≡</button>
+      <button class="sp-tb-btn" onclick="spTextAlign('center')" title="Align center">≣</button>
+      <button class="sp-tb-btn" onclick="spTextAlign('right')" title="Align right">≢</button>
+      <div class="sp-tb-divider"></div>
+      <button class="sp-tb-btn" onclick="spAddTextBox()" title="Add text box">＋T</button>
+      <div class="sp-tb-divider"></div>
+      <!-- Link toolbar — shown when an element is selected -->
+      <div class="sp-link-toolbar" id="spLinkToolbar">
+        <span style="font-size:11px;font-weight:700;color:#4B43C4;white-space:nowrap">🔗</span>
+        <input class="sp-link-input" id="spLinkInput" type="url" placeholder="https://your-link.com" onkeydown="if(event.key==='Enter')setElementLink()" title="Add a URL link to the selected element">
+        <button class="sp-link-set-btn" onclick="setElementLink()">Set Link</button>
+        <button class="sp-link-clear-btn" onclick="clearElementLink()" title="Remove link">✕</button>
+      </div>
+      <div class="sp-tb-divider"></div>
+      <button class="sp-tb-btn" id="sp-save-btn" style="background:#7B41C9;color:#fff;border-radius:6px;padding:5px 12px;font-size:12px">💾 Save</button>
+    </div>
+
+    <!-- CANVAS + RIGHT BAR -->
+    <div class="sp-content-row">
+
+      <div class="sp-canvas-area" id="spCanvasArea">
+
+        <!-- MAIN CANVAS -->
+        <div class="sp-canvas-wrap" id="spCanvasWrap">
+          <div id="spCanvas" style="width:500px;height:500px">
+            <div class="sp-bg-layer" id="spBgLayer" style="background:linear-gradient(135deg,#f093fb,#f5576c,#4facfe)"></div>
+            <div class="sp-img-layer" id="spImgLayer">
+              <img id="spBgImg" src="" alt="" draggable="false">
+            </div>
+            <div class="sp-ov-layer" id="spOvLayer" style="background:rgba(0,0,0,0)"></div>
+            <div class="sp-obj-layer" id="spObjLayer"></div>
+            <div class="sp-text-layer" id="spTextLayer"></div>
+            <!-- Frame overlay -->
+            <div id="spFrameLayer" style="position:absolute;inset:0;pointer-events:none;z-index:45;overflow:hidden"></div>
+            <!-- Drawing canvas -->
+            <canvas id="spDrawCanvas" style="position:absolute;top:0;left:0;z-index:48;display:none;pointer-events:none"></canvas>
+            <!-- AI image loading spinner -->
+            <div class="ai-img-loading" id="aiImgLoading">
+              <div class="ai-img-spinner"></div>
+              <p id="aiImgLoadingTxt">Generating AI image…</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- VARIATIONS -->
+        <div class="sp-var-section" id="spVarSection" style="display:none">
+          <div class="sp-var-title">Alternative Styles — click to apply</div>
+          <div class="sp-var-grid" id="spVarGrid"></div>
+        </div>
+
+      </div>
+
+      <!-- ══ RIGHT TOOLBAR ══ -->
+      <div class="sp-right-bar" style="width:228px;min-width:228px">
+
+        <!-- Save always visible -->
+        <div style="padding:10px 12px 8px;flex-shrink:0">
+          <button onclick="document.getElementById('sp-save-btn').click()" style="width:100%;padding:9px;border:none;border-radius:10px;background:linear-gradient(165deg,#5750D8,#3F37AC);color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit">
+            Save Post
+          </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="rb-tabs" id="rbTabs">
+          <div class="rb-tab on"  data-rb="edit"    onclick="switchRB('edit')">Edit</div>
+          <div class="rb-tab"     data-rb="layers"  onclick="switchRB('layers')">Layers</div>
+          <div class="rb-tab"     data-rb="effects" onclick="switchRB('effects')">FX</div>
+          <div class="rb-tab"     data-rb="frames"  onclick="switchRB('frames')">Frames</div>
+          <div class="rb-tab"     data-rb="export"  onclick="switchRB('export')">Export</div>
+        </div>
+
+        <!-- ── EDIT PANE ── -->
+        <div class="rb-pane on" id="rbPaneEdit">
+
+          <!-- TEXT -->
+          <div class="sp-rb-section">
+            <div class="sp-rb-title"><span>T</span> Text</div>
+            <button class="sp-rb-add-text" onclick="spAddTextBox()">＋ Add Text Box</button>
+            <div class="sp-rb-label">Align</div>
+            <div class="sp-rb-align">
+              <button class="sp-rb-a" onclick="spTextAlign('left')">≡</button>
+              <button class="sp-rb-a" onclick="spTextAlign('center')">≣</button>
+              <button class="sp-rb-a" onclick="spTextAlign('right')">≢</button>
+            </div>
+            <div class="sp-rb-label">Font Size</div>
+            <select class="sp-rb-select" onchange="spApplyFontSize(this.value)">
+              <option value="">— pick —</option>
+              <option value="12px">12</option><option value="16px">16</option>
+              <option value="22px">22</option><option value="32px">32</option>
+              <option value="48px">48</option><option value="64px">64</option>
+              <option value="96px">96</option>
+            </select>
+          </div>
+
+          <div class="sp-rb-divider"></div>
+
+          <!-- TEXT EFFECTS -->
+          <div class="sp-rb-section" style="padding-bottom:6px">
+            <div class="sp-rb-title">✨ Text Effects</div>
+            <div class="tx-fx-grid">
+              <button class="tx-fx-btn" onclick="applyTextEffect('shadow')" title="Drop shadow">💧 Shadow</button>
+              <button class="tx-fx-btn" onclick="applyTextEffect('glow')"   title="Neon glow">🌟 Glow</button>
+              <button class="tx-fx-btn" onclick="applyTextEffect('stroke')" title="Outline">◻ Stroke</button>
+              <button class="tx-fx-btn" onclick="applyTextEffect('gradient-text')" title="Gradient fill">🌈 Gradient</button>
+              <button class="tx-fx-btn" onclick="applyTextEffect('3d')"    title="3D depth">📦 3D</button>
+              <button class="tx-fx-btn" onclick="applyTextEffect('none')"  title="Remove effects">✕ Clear</button>
+            </div>
+            <div class="sp-rb-label">Effect Color</div>
+            <input type="color" id="txFxColor" value="#7B41C9" style="width:100%;height:28px;border:1px solid #E3DACA;border-radius:7px;cursor:pointer;padding:2px;background:#F2EDE2;margin-bottom:6px">
+            <div class="sp-rb-label">Effect Intensity</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+              <input type="range" id="txFxIntensity" min="1" max="30" value="8" style="flex:1;accent-color:#7B41C9" oninput="document.getElementById('txFxIntVal').textContent=this.value+'px'">
+              <span id="txFxIntVal" style="font-size:10px;color:#A89E8C;min-width:26px">8px</span>
+            </div>
+          </div>
+
+          <div class="sp-rb-divider"></div>
+
+          <!-- IMAGE EDITOR -->
+          <div class="sp-rb-section">
+            <div class="sp-rb-title">Image Editor</div>
+            <div class="img-editor-preview" id="imgEditorPreview">
+              <img id="imgEditorThumb" src="" alt="">
+              <div class="img-prev-badge">BG IMAGE</div>
+            </div>
+            <div class="img-move-hint" id="imgMoveHint">Drag on canvas to reposition</div>
+            <button class="img-action-btn active" id="imgRepositionBtn" onclick="toggleReposition()" style="width:100%;margin-bottom:6px">↕ Drag to Reposition</button>
+            <div class="img-transform-row">
+              <span class="img-transform-label">Scale</span>
+              <input type="range" class="img-transform-slider" id="imgScaleSlider" min="50" max="300" value="100" oninput="onImgScale(this.value)">
+              <span class="img-transform-val" id="imgScaleVal">100%</span>
+            </div>
+            <div class="img-transform-row">
+              <span class="img-transform-label">Rotate</span>
+              <input type="range" class="img-transform-slider" id="imgRotateSlider" min="-180" max="180" value="0" oninput="onImgRotate(this.value)">
+              <span class="img-transform-val" id="imgRotateVal">0°</span>
+            </div>
+            <div class="img-transform-row">
+              <span class="img-transform-label">Bright</span>
+              <input type="range" class="img-transform-slider" id="imgBrightSlider" min="20" max="200" value="100" oninput="onImgBright(this.value)">
+              <span class="img-transform-val" id="imgBrightVal">100%</span>
+            </div>
+            <div class="img-action-grid">
+              <button class="img-action-btn" onclick="openCropModal()">✂ Crop</button>
+              <button class="img-action-btn" onclick="flipImage('h')">↔ Flip H</button>
+              <button class="img-action-btn" onclick="flipImage('v')">↕ Flip V</button>
+              <button class="img-action-btn" onclick="resetImgTransform()">↩ Reset</button>
+            </div>
+            <button class="img-action-btn danger" onclick="removeImage()" style="width:100%;margin-top:2px">✕ Remove Image</button>
+            <div style="margin:8px -13px 0;height:1px;background:#F2EDE2"></div>
+            <div class="sp-rb-label" style="margin-top:8px">Overlay darkness</div>
+            <input type="range" min="0" max="0.95" step="0.05" value="0.35" style="width:100%;margin-bottom:8px" oninput="spSetOverlay(this.value)" id="spOvSlider2">
+            <div class="sp-rb-label">Image blur</div>
+            <input type="range" min="0" max="20" step="1" value="0" style="width:100%;margin-bottom:8px" oninput="spSetBlur(this.value)" id="spBlurSlider2">
+          </div>
+
+          <div class="sp-rb-divider"></div>
+
+          <!-- CANVAS SIZE -->
+          <div class="sp-rb-section">
+            <div class="sp-rb-title">Canvas</div>
+            <div class="sp-rb-label">Platform size</div>
+            <select class="sp-rb-select" id="platformSizeSelect" onchange="spChangePlatform(this.value)">
+              <option value="500x500">Instagram · 500×500</option>
+              <option value="600x338">Twitter · 600×338</option>
+              <option value="600x314">LinkedIn · 600×314</option>
+              <option value="600x315">Facebook · 600×315</option>
+              <option value="320x568">Story · 320×568</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ── LAYERS PANE ── -->
+        <div class="rb-pane" id="rbPaneLayers">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 10px 6px;flex-shrink:0">
+            <span style="font-size:10px;font-weight:700;color:#6E6557;text-transform:uppercase;letter-spacing:.08em">Layers</span>
+            <button onclick="refreshLayers()" style="font-size:10px;color:#4B43C4;background:none;border:none;cursor:pointer;font-weight:700;font-family:inherit">↺ Refresh</button>
+          </div>
+          <div id="layersList" style="flex:1;overflow-y:auto;padding:0 8px 8px"></div>
+          <!-- Selected layer controls -->
+          <div id="layerControls" style="border-top:1px solid #E3DACA;padding:10px;flex-shrink:0;display:none">
+            <div class="layer-opacity-row">
+              <label>Opacity</label>
+              <input type="range" min="0" max="100" value="100" id="layerOpacitySlider" oninput="setLayerOpacity(this.value)">
+              <span id="layerOpacityVal">100%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:0 8px 6px">
+              <span style="font-size:10px;color:#6E6557;font-weight:600;min-width:44px">Blend</span>
+              <select class="blend-sel" id="layerBlendSel" onchange="setLayerBlend(this.value)">
+                <option value="normal">Normal</option>
+                <option value="multiply">Multiply</option>
+                <option value="screen">Screen</option>
+                <option value="overlay">Overlay</option>
+                <option value="soft-light">Soft Light</option>
+                <option value="hard-light">Hard Light</option>
+                <option value="color-dodge">Color Dodge</option>
+                <option value="color-burn">Color Burn</option>
+                <option value="difference">Difference</option>
+                <option value="exclusion">Exclusion</option>
+                <option value="hue">Hue</option>
+                <option value="saturation">Saturation</option>
+                <option value="color">Color</option>
+                <option value="luminosity">Luminosity</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── EFFECTS PANE ── -->
+        <div class="rb-pane" id="rbPaneEffects">
+
+          <!-- Filter presets -->
+          <div style="padding:10px 10px 0;flex-shrink:0">
+            <span style="font-size:9.5px;font-weight:700;color:#A89E8C;text-transform:uppercase;letter-spacing:.08em">Filter Presets</span>
+          </div>
+          <div class="preset-grid" id="presetGrid">
+            <!-- Populated by JS -->
+          </div>
+
+          <div style="height:1px;background:#E3DACA;margin:0 10px;flex-shrink:0"></div>
+
+          <!-- Adjustments -->
+          <div class="adj-section">
+            <div class="adj-title">Adjustments</div>
+            <div class="adj-row">
+              <span class="adj-lbl">Brightness</span>
+              <input type="range" class="adj-slider" id="adjBright" min="-100" max="100" value="0" oninput="applyAdj()">
+              <span class="adj-val" id="adjBrightVal">0</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Contrast</span>
+              <input type="range" class="adj-slider" id="adjContrast" min="-100" max="100" value="0" oninput="applyAdj()">
+              <span class="adj-val" id="adjContrastVal">0</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Saturation</span>
+              <input type="range" class="adj-slider" id="adjSat" min="-100" max="100" value="0" oninput="applyAdj()">
+              <span class="adj-val" id="adjSatVal">0</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Hue</span>
+              <input type="range" class="adj-slider" id="adjHue" min="-180" max="180" value="0" oninput="applyAdj()">
+              <span class="adj-val" id="adjHueVal">0°</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Blur</span>
+              <input type="range" class="adj-slider" id="adjBlur" min="0" max="20" value="0" oninput="applyAdj()">
+              <span class="adj-val" id="adjBlurVal">0px</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Sharpness</span>
+              <input type="range" class="adj-slider" id="adjSharp" min="0" max="100" value="0" oninput="applyAdj()">
+              <span class="adj-val" id="adjSharpVal">0</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Fade</span>
+              <input type="range" class="adj-slider" id="adjFade" min="0" max="80" value="0" oninput="applyAdj()">
+              <span class="adj-val" id="adjFadeVal">0</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Vignette</span>
+              <input type="range" class="adj-slider" id="adjVignette" min="0" max="100" value="0" oninput="applyVignette(this.value)">
+              <span class="adj-val" id="adjVignetteVal">0</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Grain</span>
+              <input type="range" class="adj-slider" id="adjGrain" min="0" max="100" value="0" oninput="applyGrain(this.value)">
+              <span class="adj-val" id="adjGrainVal">0</span>
+            </div>
+            <button onclick="resetAdj()" style="width:100%;padding:7px;border:1px solid #E3DACA;border-radius:8px;background:#F2EDE2;color:#6E6557;font-size:11px;font-weight:700;cursor:pointer;margin-top:4px;font-family:inherit">↩ Reset all</button>
+          </div>
+
+          <div style="height:1px;background:#E3DACA;margin:10px 10px 0;flex-shrink:0"></div>
+
+          <!-- Canvas blend mode -->
+          <div class="blend-row" style="padding-top:10px">
+            <div class="adj-title" style="margin-top:0">Image Blend Mode</div>
+            <select class="blend-sel" id="imgBlendSel" onchange="setImgBlend(this.value)">
+              <option value="normal">Normal</option>
+              <option value="multiply">Multiply</option>
+              <option value="screen">Screen</option>
+              <option value="overlay">Overlay</option>
+              <option value="soft-light">Soft Light</option>
+              <option value="hard-light">Hard Light</option>
+              <option value="color-dodge">Color Dodge</option>
+              <option value="color-burn">Color Burn</option>
+              <option value="difference">Difference</option>
+              <option value="exclusion">Exclusion</option>
+              <option value="luminosity">Luminosity</option>
+            </select>
+          </div>
+
+          <!-- Drawing panel -->
+          <div style="padding:0 10px 10px;flex-shrink:0">
+            <div class="adj-title">Drawing Tools</div>
+            <div class="draw-row">
+              <button class="draw-tool" id="dbMove"  onclick="setDrawTool('move')"  title="Move">↖ Move</button>
+              <button class="draw-tool" id="dbDraw"  onclick="setDrawTool('draw')"  title="Brush">✏ Brush</button>
+              <button class="draw-tool" id="dbErase" onclick="setDrawTool('erase')" title="Eraser">⬜ Erase</button>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Color</span>
+              <input type="color" id="drawColor2" value="#ffffff" style="flex:1;height:24px;border:1px solid #E3DACA;border-radius:6px;cursor:pointer;padding:1px;background:none" oninput="drawColor=this.value;document.getElementById('drawColorPick').value=this.value">
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Size</span>
+              <input type="range" class="adj-slider" id="drawSizeSlider" min="2" max="80" value="14" oninput="drawSize=+this.value;document.getElementById('adjDrawSizeVal').textContent=this.value+'px'">
+              <span class="adj-val" id="adjDrawSizeVal">14px</span>
+            </div>
+            <div class="adj-row">
+              <span class="adj-lbl">Opacity</span>
+              <input type="range" class="adj-slider" id="drawOpacitySlider" min="5" max="100" value="100" oninput="drawOpacity=this.value/100;document.getElementById('adjDrawOpVal').textContent=this.value+'%'">
+              <span class="adj-val" id="adjDrawOpVal">100%</span>
+            </div>
+            <button onclick="clearDrawing()" style="width:100%;padding:7px;border:1px solid #E3DACA;border-radius:8px;background:#F2EDE2;color:#B65334;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">✕ Clear Drawing</button>
+          </div>
+        </div>
+
+        <!-- ── FRAMES PANE ── -->
+        <div class="rb-pane" id="rbPaneFrames">
+          <div style="padding:10px 10px 6px;flex-shrink:0">
+            <span style="font-size:9.5px;font-weight:700;color:#A89E8C;text-transform:uppercase;letter-spacing:.08em">Impact Frames</span>
+          </div>
+          <div class="frames-grid" id="framesGrid">
+            <!-- Populated by JS -->
+          </div>
+          <!-- Frame controls -->
+          <div class="frame-controls" id="frameControls" style="display:none">
+            <div class="adj-row">
+              <span class="adj-lbl">Opacity</span>
+              <input type="range" class="adj-slider" id="frameOpacity" min="10" max="100" value="80" oninput="setFrameOpacity(this.value)">
+              <span class="adj-val" id="frameOpacityVal">80%</span>
+            </div>
+            <div class="adj-row" id="frameColorRow">
+              <span class="adj-lbl">Color</span>
+              <input type="color" id="frameColor" value="#7B41C9" style="flex:1;height:24px;border:1px solid #E3DACA;border-radius:6px;cursor:pointer;padding:1px;background:none" oninput="reapplyFrame()">
+            </div>
+            <button onclick="removeFrame()" style="width:100%;padding:7px;border:1px solid rgba(182,83,52,.3);border-radius:8px;background:rgba(182,83,52,.06);color:#B65334;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">✕ Remove Frame</button>
+          </div>
+        </div>
+
+        <!-- ── EXPORT PANE ── -->
+        <div class="rb-pane" id="rbPaneExport">
+          <div class="sp-rb-section">
+            <div class="sp-rb-title">Export</div>
+            <div class="sp-rb-export">
+              <button class="sp-rb-exp primary" onclick="spExportPng()">PNG</button>
+              <button class="sp-rb-exp primary" onclick="spExportJpg()">JPG</button>
+            </div>
+            <button style="width:100%;padding:8px;border:1px solid #E3DACA;background:#F2EDE2;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;color:#211C14;margin-bottom:6px" onclick="spExportAll()">
+              ↓ Download All 4 Variants
+            </button>
+            <button style="width:100%;padding:8px;border:1.5px solid #4B43C4;background:rgba(75,67,196,.07);border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;color:#4B43C4;margin-bottom:2px" onclick="exportAsHTML()" title="Export as HTML with working links">
+              🔗 Export as HTML (with links)
+            </button>
+          </div>
+          <div class="sp-rb-divider"></div>
+
+          <!-- PUBLISH (disabled) -->
+          <div class="sp-rb-section">
+            <div class="sp-rb-title">🚀 Publish to Social</div>
+            <div id="pubPlatformRows" style="opacity:.45;pointer-events:none;user-select:none">
+              <div class="pub-platform-row">
+                <div class="pub-plat-info">
+                  <div class="pub-plat-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)">IG</div>
+                  <div><div class="pub-plat-name">Instagram</div><div class="pub-plat-acct">Coming soon</div></div>
+                </div>
+                <button class="pub-connect-btn connect" disabled>Connect</button>
+              </div>
+              <div class="pub-platform-row">
+                <div class="pub-plat-info">
+                  <div class="pub-plat-icon" style="background:#000;font-size:12px">𝕏</div>
+                  <div><div class="pub-plat-name">Twitter / X</div><div class="pub-plat-acct">Coming soon</div></div>
+                </div>
+                <button class="pub-connect-btn connect" disabled>Connect</button>
+              </div>
+              <div class="pub-platform-row">
+                <div class="pub-plat-info">
+                  <div class="pub-plat-icon" style="background:#0A66C2">In</div>
+                  <div><div class="pub-plat-name">LinkedIn</div><div class="pub-plat-acct">Coming soon</div></div>
+                </div>
+                <button class="pub-connect-btn connect" disabled>Connect</button>
+              </div>
+              <div class="pub-platform-row">
+                <div class="pub-plat-info">
+                  <div class="pub-plat-icon" style="background:#1877F2">FB</div>
+                  <div><div class="pub-plat-name">Facebook Page</div><div class="pub-plat-acct">Coming soon</div></div>
+                </div>
+                <button class="pub-connect-btn connect" disabled>Connect</button>
+              </div>
+            </div>
+            <button class="pub-publish-btn" disabled style="margin-top:10px;opacity:.4;cursor:not-allowed">↑ Publish Now</button>
+            <div class="setup-note" style="display:block;margin-top:8px">
+              🔜 Direct publishing coming soon — export above for now.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- SAVE MODAL -->
+<div class="sp-save-modal" id="spSaveModal">
+  <div class="sp-save-box">
+    <h3>Save Post</h3>
+    <p>Saved to My Documents for later editing.</p>
+    <input class="sp-save-input" id="spSaveTitle" placeholder="Post title…">
+    <div class="sp-save-btns">
+      <button class="sp-save-cancel" onclick="document.getElementById('spSaveModal').style.display='none'">Cancel</button>
+      <button class="sp-save-confirm" id="spSaveConfirm">Save to Documents</button>
+    </div>
+  </div>
+</div>
+
+<!-- CROP MODAL -->
+<div class="crop-modal" id="cropModal">
+  <div class="crop-modal-title">Crop Image</div>
+  <div class="crop-stage">
+    <img src="" alt="">
+    <div class="crop-selection"></div>
+  </div>
+  <div class="crop-btns">
+    <button class="crop-apply-btn">Apply Crop</button>
+    <button class="crop-cancel-btn">Cancel</button>
+  </div>
+  <div class="crop-hint">Click and drag to select crop area</div>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase-client.js"></script>
+<script>if(_supabase){_supabase.auth.getUser().then(({data:{user}})=>{if(!user)window.location.href='/login?redirect='+encodeURIComponent(location.pathname+location.search);});}</script>
+<script src="/js/docstore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let currentPlatform = 'instagram';
+let currentBg       = 'linear-gradient(135deg,#f093fb,#f5576c,#4facfe)';
+let currentImgUrl   = '';
+let currentOverlay  = 0;   // no overlay by default — auto-enables when image is set
+let currentBlur     = 0;
+let activeShapeColor = '#ffffff';
+let selectedTextEl  = null;
+let selectedObj     = null;
+let lastContent     = null; // { headline, subtext, cta, hashtags, v2_headline, v2_subtext, v3_headline, v3_subtext }
+
+const canvas    = document.getElementById('spCanvas');
+const bgLayer   = document.getElementById('spBgLayer');
+const imgLayer  = document.getElementById('spImgLayer');
+const ovLayer   = document.getElementById('spOvLayer');
+const objLayer  = document.getElementById('spObjLayer');
+const textLayer = document.getElementById('spTextLayer');
+
+/* ══ UI THEME ══ */
+const THEME_KEY = 'StreamInk_AppTheme';
+
+function setUiTheme(theme) {
+  const nextTheme = theme === 'dark' ? 'dark' : 'light';
+  document.body.dataset.uiTheme = nextTheme;
+  try { localStorage.setItem(THEME_KEY, nextTheme); } catch(e){}
+  document.querySelectorAll('.sp-theme-btn,[data-theme-choice]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.themeChoice === nextTheme);
+  });
+}
+
+// Apply stored theme immediately (head script may have already set it)
+try { setUiTheme(localStorage.getItem(THEME_KEY) || 'light'); } catch(e){ setUiTheme('light'); }
+
+document.querySelectorAll('.sp-theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => setUiTheme(btn.dataset.themeChoice));
+});
+
+/* ══ SIDEBAR TABS ══ */
+document.querySelectorAll('.sp-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sp-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.sp-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('sp-panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+/* ══ PLATFORM SELECTION ══ */
+document.querySelectorAll('.sp-plat').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sp-plat').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPlatform = btn.dataset.plat;
+    resizeCanvas(parseInt(btn.dataset.w), parseInt(btn.dataset.h));
+    syncPlatformSelect();
+  });
+});
+
+function resizeCanvas(w, h) {
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
+}
+
+const PLAT_LABELS = {
+  instagram:'Instagram post · 1080×1080',
+  twitter:'X / Twitter · 1600×900',
+  linkedin:'LinkedIn post · 1200×1200',
+  facebook:'Facebook post · 1200×630',
+  story:'Story · 1080×1920'
+};
+function syncPlatformSelect() {
+  const sizes = { instagram:'500x500', twitter:'600x338', linkedin:'600x314', facebook:'600x315', story:'320x568' };
+  const sel = document.getElementById('platformSizeSelect');
+  if (sel) sel.value = sizes[currentPlatform] || '500x500';
+  const crumb = document.getElementById('socCrumb');
+  if (crumb) crumb.textContent = PLAT_LABELS[currentPlatform] || 'Instagram post · 1080×1080';
+}
+
+const PLAT_SIZE_MAP = { '500x500':'instagram', '600x338':'twitter', '600x314':'linkedin', '600x315':'facebook', '320x568':'story' };
+
+window.spChangePlatform = val => {
+  const [w, h] = val.split('x').map(Number);
+  resizeCanvas(w, h);
+  // Sync currentPlatform and left sidebar buttons
+  const platKey = PLAT_SIZE_MAP[val];
+  if (platKey) {
+    currentPlatform = platKey;
+    document.querySelectorAll('.sp-plat').forEach(b => {
+      b.classList.toggle('active', b.dataset.plat === platKey);
+    });
+  }
+};
+
+/* ══ BACKGROUND SWATCHES ══ */
+document.querySelectorAll('.sp-swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.sp-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    currentBg = sw.dataset.bg;
+    bgLayer.style.background = currentBg;
+  });
+});
+
+/* Custom gradient */
+document.getElementById('spApplyGrad').addEventListener('click', () => {
+  const c1  = document.getElementById('spGrad1').value;
+  const c2  = document.getElementById('spGrad2').value;
+  const dir = document.getElementById('spGradDir').value;
+  currentBg = `linear-gradient(${dir},${c1},${c2})`;
+  bgLayer.style.background = currentBg;
+  document.querySelectorAll('.sp-swatch').forEach(s => s.classList.remove('active'));
+});
+
+/* ══ OVERLAY / BLUR ══ */
+function spSetOverlay(val) {
+  currentOverlay = parseFloat(val);
+  ovLayer.style.background = `rgba(0,0,0,${currentOverlay})`;
+  document.getElementById('spOvDark').value    = val;
+  document.getElementById('spOvSlider2').value = val;
+  document.getElementById('spOvDarkVal').textContent = Math.round(currentOverlay * 100) + '%';
+}
+function spSetBlur(val) {
+  currentBlur = parseInt(val);
+  imgLayer.style.filter = currentBlur > 0 ? `blur(${currentBlur}px)` : '';
+  document.getElementById('spImgBlur').value    = val;
+  document.getElementById('spBlurSlider2').value = val;
+  document.getElementById('spImgBlurVal').textContent = currentBlur + 'px';
+}
+document.getElementById('spOvDark').oninput  = e => spSetOverlay(e.target.value);
+document.getElementById('spImgBlur').oninput = e => spSetBlur(e.target.value);
+// Sync initial slider values to state defaults
+document.getElementById('spOvDark').value    = currentOverlay;
+document.getElementById('spOvSlider2').value = currentOverlay;
+document.getElementById('spOvDarkVal').textContent = Math.round(currentOverlay * 100) + '%';
+
+/* ══ IMAGE UPLOAD ══ */
+document.getElementById('sp-img-upload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  setCanvasImage(url);
+});
+
+function setCanvasImage(url) {
+  currentImgUrl = url;
+  const img = document.getElementById('spBgImg');
+  if (!url.startsWith('blob:') && !url.startsWith('data:')) img.crossOrigin = 'anonymous';
+  img.src = url;
+  img.style.display = 'block';
+  imgScale = 1;
+  imgRotate = 0;
+  imgBright = 1;
+  imgTranslateX = 0;
+  imgTranslateY = 0;
+  imgFlipX = 1;
+  imgFlipY = 1;
+  updateImgTransform();
+  syncImageControls();
+  document.getElementById('sp-img-thumb').src = url;
+  document.getElementById('imgEditorPreview').classList.add('has-img');
+  document.getElementById('imgEditorThumb').src = url;
+  document.getElementById('sp-img-preview-wrap').style.display = 'block';
+  img.classList.add('img-visible');
+  // Auto-enable a light overlay so text stays readable over photos
+  if (currentOverlay === 0) spSetOverlay(0.35);
+}
+
+/* ══ IMAGE EDITOR ══ */
+let imgRepositionMode = false;
+let imgScale = 1;
+let imgRotate = 0;
+let imgBright = 1;
+let imgTranslateX = 0;
+let imgTranslateY = 0;
+let imgFlipX = 1;
+let imgFlipY = 1;
+
+function toggleReposition() {
+  imgRepositionMode = !imgRepositionMode;
+  const canvas = document.getElementById('spCanvas');
+  const btn = document.getElementById('imgRepositionBtn');
+  const hint = document.getElementById('imgMoveHint');
+  if (imgRepositionMode) {
+    canvas.classList.add('reposition-mode');
+    btn.classList.add('active');
+    hint.classList.add('active-hint');
+  } else {
+    canvas.classList.remove('reposition-mode');
+    btn.classList.remove('active');
+    hint.classList.remove('active-hint');
+  }
+}
+
+function onImgScale(val) {
+  imgScale = val / 100;
+  updateImgTransform();
+  document.getElementById('imgScaleVal').textContent = val + '%';
+}
+
+function onImgRotate(val) {
+  imgRotate = val;
+  updateImgTransform();
+  document.getElementById('imgRotateVal').textContent = val + '°';
+}
+
+function onImgBright(val) {
+  imgBright = val / 100;
+  updateImgTransform();
+  document.getElementById('imgBrightVal').textContent = val + '%';
+}
+
+function updateImgTransform() {
+  const img = document.getElementById('spBgImg');
+  img.style.transform = `translate(calc(-50% + ${imgTranslateX}px), calc(-50% + ${imgTranslateY}px)) scale(${imgScale * imgFlipX}, ${imgScale * imgFlipY}) rotate(${imgRotate}deg)`;
+  img.style.filter = `brightness(${imgBright})`;
+}
+
+function flipImage(dir) {
+  if (dir === 'h') imgFlipX *= -1;
+  if (dir === 'v') imgFlipY *= -1;
+  updateImgTransform();
+}
+
+function resetImgTransform() {
+  imgScale = 1;
+  imgRotate = 0;
+  imgBright = 1;
+  imgTranslateX = 0;
+  imgTranslateY = 0;
+  imgFlipX = 1;
+  imgFlipY = 1;
+  updateImgTransform();
+  syncImageControls();
+}
+
+function syncImageControls() {
+  document.getElementById('imgScaleSlider').value = 100;
+  document.getElementById('imgScaleVal').textContent = '100%';
+  document.getElementById('imgRotateSlider').value = 0;
+  document.getElementById('imgRotateVal').textContent = '0°';
+  document.getElementById('imgBrightSlider').value = 100;
+  document.getElementById('imgBrightVal').textContent = '100%';
+}
+
+function removeImage() {
+  currentImgUrl = '';
+  const img = document.getElementById('spBgImg');
+  img.src = '';
+  img.classList.remove('img-visible');
+  img.style.transform = '';
+  img.style.filter = '';
+  document.getElementById('sp-img-preview-wrap').style.display = 'none';
+  document.getElementById('imgEditorPreview').classList.remove('has-img');
+  if (imgRepositionMode) toggleReposition();
+  // Reset overlay when image removed so gradient looks clean
+  spSetOverlay(0);
+}
+
+/* Reposition drag */
+canvas.addEventListener('mousedown', e => {
+  if (!imgRepositionMode || !currentImgUrl) return;
+  e.preventDefault();
+  const img = document.getElementById('spBgImg');
+  const startX = e.clientX - imgTranslateX;
+  const startY = e.clientY - imgTranslateY;
+  const onMove = ev => {
+    imgTranslateX = ev.clientX - startX;
+    imgTranslateY = ev.clientY - startY;
+    updateImgTransform();
+  };
+  const onUp = () => {
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  };
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+});
+
+/* ══ CROP MODAL ══ */
+let cropImgNaturalW = 0;
+let cropImgNaturalH = 0;
+let cropStartX = 0, cropStartY = 0;
+
+function openCropModal() {
+  if (!currentImgUrl) return;
+  const modal = document.getElementById('cropModal');
+  const stage = modal.querySelector('.crop-stage');
+  const img = stage.querySelector('img');
+  const sel = stage.querySelector('.crop-selection');
+  sel.style.display = 'none';
+  img.src = currentImgUrl;
+  img.onload = () => {
+    cropImgNaturalW = img.naturalWidth;
+    cropImgNaturalH = img.naturalHeight;
+    const maxW = window.innerWidth * 0.8;
+    const maxH = window.innerHeight * 0.6;
+    const fit = Math.min(maxW / cropImgNaturalW, maxH / cropImgNaturalH, 1);
+    const displayW = Math.round(cropImgNaturalW * fit);
+    const displayH = Math.round(cropImgNaturalH * fit);
+    stage.style.width = displayW + 'px';
+    stage.style.height = displayH + 'px';
+    img.style.width = displayW + 'px';
+    img.style.height = displayH + 'px';
+    modal.classList.add('open');
+  };
+}
+
+function initCrop() {
+  const stage = document.querySelector('.crop-stage');
+  const img = stage.querySelector('img');
+  const sel = document.querySelector('.crop-selection');
+
+  stage.addEventListener('mousedown', e => {
+    if (e.target !== img) return;
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    cropStartX = e.clientX - rect.left;
+    cropStartY = e.clientY - rect.top;
+    sel.style.left = cropStartX + 'px';
+    sel.style.top = cropStartY + 'px';
+    sel.style.width = '0px';
+    sel.style.height = '0px';
+    sel.style.display = 'block';
+
+    const onMove = ev => {
+      const x = Math.max(0, Math.min(ev.clientX - rect.left, rect.width));
+      const y = Math.max(0, Math.min(ev.clientY - rect.top, rect.height));
+      const dx = x - cropStartX;
+      const dy = y - cropStartY;
+      sel.style.width = Math.abs(dx) + 'px';
+      sel.style.height = Math.abs(dy) + 'px';
+      sel.style.left = (dx < 0 ? x : cropStartX) + 'px';
+      sel.style.top = (dy < 0 ? y : cropStartY) + 'px';
+    };
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initCrop);
+
+document.querySelector('.crop-apply-btn').addEventListener('click', () => {
+  const sel = document.querySelector('.crop-selection');
+  if (!sel.style.display || sel.style.display === 'none') return;
+  const stage = document.querySelector('.crop-stage');
+  const img = stage.querySelector('img');
+  const stageRect = stage.getBoundingClientRect();
+  const x = parseFloat(sel.style.left) || 0;
+  const y = parseFloat(sel.style.top) || 0;
+  const w = parseFloat(sel.style.width) || 0;
+  const h = parseFloat(sel.style.height) || 0;
+  if (w < 8 || h < 8) {
+    showToast('Select a larger crop area');
+    return;
+  }
+  const scaleX = img.naturalWidth / stageRect.width;
+  const scaleY = img.naturalHeight / stageRect.height;
+  const cropCanvas = document.createElement('canvas');
+  cropCanvas.width = Math.round(w * scaleX);
+  cropCanvas.height = Math.round(h * scaleY);
+  const ctx = cropCanvas.getContext('2d');
+  try {
+    ctx.drawImage(img, x * scaleX, y * scaleY, w * scaleX, h * scaleY, 0, 0, cropCanvas.width, cropCanvas.height);
+    setCanvasImage(cropCanvas.toDataURL('image/png'));
+    document.getElementById('cropModal').classList.remove('open');
+    showToast('Crop applied');
+  } catch (err) {
+    showToast('Crop failed: image source blocked canvas access');
+  }
+});
+
+document.querySelector('.crop-cancel-btn').addEventListener('click', () => {
+  document.getElementById('cropModal').classList.remove('open');
+});
+
+/* ══ IMAGE STYLE SELECTOR ══ */
+let currentImgStyle = 'photo';
+
+document.querySelectorAll('.sp-img-style-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sp-img-style-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentImgStyle = btn.dataset.style;
+    const picker = document.getElementById('spMediaPicker');
+    if (currentImgStyle === 'gif' || currentImgStyle === 'sticker') {
+      picker.classList.add('show');
+      document.getElementById('spMediaQuery').placeholder =
+        currentImgStyle === 'gif' ? 'Search GIFs…' : 'Search stickers…';
+      const topic = document.getElementById('sp-topic').value.trim();
+      if (topic) { document.getElementById('spMediaQuery').value = topic; searchMedia(); }
+    } else {
+      picker.classList.remove('show');
+    }
+  });
+});
+
+/* ── GIF / STICKER SEARCH ── */
+async function searchMedia() {
+  const q    = document.getElementById('spMediaQuery').value.trim();
+  const grid = document.getElementById('spMediaGrid');
+  if (!q) return;
+
+  grid.innerHTML = '<div class="sp-media-empty">Searching…</div>';
+
+  try {
+    const res  = await fetch(`/api/media/search?q=${encodeURIComponent(q)}&type=${currentImgStyle}`);
+    const data = await res.json();
+    const items = data.results || [];
+
+    if (!items.length) {
+      grid.innerHTML = '<div class="sp-media-empty">No results — try another search</div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    items.forEach(item => {
+      const thumb = document.createElement('div');
+      thumb.className = 'sp-media-thumb';
+      const img = document.createElement('img');
+      img.src = item.preview;
+      img.alt = item.title || '';
+      img.loading = 'lazy';
+      thumb.appendChild(img);
+      thumb.addEventListener('click', () => {
+        setCanvasImage(item.url);
+        addToGallery(item.url, currentImgStyle);
+        showToast('Applied!');
+      });
+      grid.appendChild(thumb);
+    });
+  } catch(err) {
+    grid.innerHTML = `<div class="sp-media-empty">Error: ${err.message}</div>`;
+  }
+}
+
+document.getElementById('spMediaQuery').addEventListener('keydown', e => {
+  if (e.key === 'Enter') searchMedia();
+});
+
+/* ══ AI IMAGE GENERATION ══ */
+document.getElementById('sp-ai-img-btn').addEventListener('click', async () => {
+  if (currentImgStyle === 'gif' || currentImgStyle === 'sticker') {
+    // For GIF/sticker, trigger media search instead
+    const topic = document.getElementById('sp-img-keyword').value.trim()
+      || document.getElementById('sp-topic').value.trim();
+    if (topic) document.getElementById('spMediaQuery').value = topic;
+    document.getElementById('spMediaPicker').classList.add('show');
+    searchMedia();
+    return;
+  }
+
+  const keyword = document.getElementById('sp-img-keyword').value.trim()
+    || document.getElementById('sp-topic').value.trim().split(' ').slice(0,3).join(' ')
+    || 'professional business';
+
+  const stylePromptMap = {
+    photo:   keyword,
+    '2d':    `${keyword}, flat 2D illustration, vector art, colorful cartoon style`,
+    '3d':    `${keyword}, 3D render, CGI, photorealistic 3D, cinema 4d style, volumetric lighting`,
+    sticker: `${keyword}, sticker design, thick outline, cute cartoon, transparent background`,
+  };
+  const finalPrompt = stylePromptMap[currentImgStyle] || keyword;
+
+  const loading    = document.getElementById('aiImgLoading');
+  const loadingTxt = document.getElementById('aiImgLoadingTxt');
+  loading.classList.add('show');
+  loadingTxt.textContent = `Generating ${currentImgStyle === '2d' ? '2D art' : currentImgStyle === '3d' ? '3D render' : 'image'}…`;
+
+  try {
+    const r = await fetch('/api/ai-image/generate', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ prompt: finalPrompt, style: currentImgStyle })
+    });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+    if (data.imageUrl) {
+      setCanvasImage(data.imageUrl);
+      addToGallery(data.imageUrl, currentImgStyle);
+      showToast('Image generated!');
+    } else throw new Error('No image received');
+  } catch (err) {
+    showToast('Trying direct generation…');
+    const w = parseInt(canvas.style.width) || 1024;
+    const h = parseInt(canvas.style.height) || 1024;
+    const modelMap = { photo:'flux', '2d':'flux-anime', '3d':'flux-3d', sticker:'flux' };
+    const model    = modelMap[currentImgStyle] || 'flux';
+    const seed     = Math.floor(Math.random() * 99999);
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?model=${model}&width=${w}&height=${h}&nologo=true&seed=${seed}`;
+    const imgEl = document.getElementById('spBgImg');
+    imgEl.crossOrigin = 'anonymous';
+    imgEl.onload = () => { addToGallery(url, currentImgStyle); showToast('Image ready!'); };
+    setCanvasImage(url);
+  }
+  loading.classList.remove('show');
+});
+
+/* ══ IMAGE GALLERY ══ */
+const GALLERY_KEY = 'StreamInk_ImgGallery';
+let galleryItems = [];
+
+function loadGallery() {
+  try { galleryItems = JSON.parse(localStorage.getItem(GALLERY_KEY) || '[]'); } catch(e) { galleryItems = []; }
+  renderGallery();
+}
+
+function addToGallery(url, type = 'photo') {
+  // Avoid duplicates
+  if (galleryItems.find(g => g.url === url)) return;
+  galleryItems.unshift({ url, type, addedAt: Date.now() });
+  if (galleryItems.length > 18) galleryItems = galleryItems.slice(0, 18);
+  try { localStorage.setItem(GALLERY_KEY, JSON.stringify(galleryItems)); } catch(e){}
+  renderGallery();
+}
+
+function renderGallery() {
+  const wrap = document.getElementById('imgGallery');
+  const grid = document.getElementById('galleryGrid');
+  if (!wrap || !grid) return;
+
+  if (!galleryItems.length) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  grid.innerHTML = '';
+  galleryItems.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'sp-gallery-item';
+
+    const img = document.createElement('img');
+    img.src = item.url;
+    img.alt = '';
+    img.loading = 'lazy';
+    div.appendChild(img);
+
+    const tag = document.createElement('div');
+    tag.className = 'gal-tag';
+    tag.textContent = item.type || 'photo';
+    div.appendChild(tag);
+
+    const del = document.createElement('div');
+    del.className = 'gal-del';
+    del.textContent = '×';
+    del.addEventListener('click', e => { e.stopPropagation(); deleteGalleryItem(idx); });
+    div.appendChild(del);
+
+    div.addEventListener('click', () => {
+      setCanvasImage(item.url);
+      showToast('Image applied to canvas');
+    });
+
+    grid.appendChild(div);
+  });
+}
+
+function deleteGalleryItem(idx) {
+  galleryItems.splice(idx, 1);
+  try { localStorage.setItem(GALLERY_KEY, JSON.stringify(galleryItems)); } catch(e){}
+  renderGallery();
+}
+
+function clearGallery() {
+  if (!confirm('Clear all saved images?')) return;
+  galleryItems = [];
+  try { localStorage.removeItem(GALLERY_KEY); } catch(e){}
+  renderGallery();
+}
+
+// Save uploaded images to gallery too
+document.getElementById('sp-img-upload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => addToGallery(ev.target.result, 'upload');
+  reader.readAsDataURL(file);
+});
+
+loadGallery();
+
+/* ══ GENERATE ══ */
+const TEXT_DEFAULTS = {
+  headline: { text:'Your Headline Here', size:'36px', weight:'900', color:'#ffffff', x:30, y:180, w:440 },
+  subtext:  { text:'Supporting message goes here', size:'16px', weight:'400', color:'rgba(255,255,255,.85)', x:30, y:240, w:440 },
+  hashtags: { text:'#tag1 #tag2 #tag3', size:'13px', weight:'600', color:'rgba(255,255,255,.7)', x:30, y:440, w:440 },
+  cta:      { text:'Learn More →', size:'15px', weight:'800', color:'#ffffff', x:30, y:400, w:'auto', bg:'linear-gradient(135deg,#5750D8,#3F37AC)', pad:'10px 22px', radius:'999px' },
+};
+
+function createTextEl(type, overrides = {}) {
+  const d = { ...TEXT_DEFAULTS[type] || TEXT_DEFAULTS.subtext, ...overrides };
+  const wrap = document.createElement('div');
+  wrap.className = 'sp-text-el';
+  wrap.dataset.type = type;
+  // Support w:'auto' for CTA buttons
+  wrap.style.cssText = d.w === 'auto' ? `left:${d.x}px;top:${d.y}px;width:auto;` : `left:${d.x}px;top:${d.y}px;width:${d.w}px;`;
+
+  const inner = document.createElement('div');
+  inner.className = 'sp-text-inner';
+  inner.contentEditable = 'true';
+  inner.style.cssText = `font-size:${d.size};font-weight:${d.weight};color:${d.color};font-family:Inter,sans-serif;line-height:1.3;${d.bg ? `background:${d.bg};padding:${d.pad};border-radius:${d.radius};display:inline-block;box-shadow:0 4px 15px rgba(0,0,0,0.3);` : ''}`;
+  inner.textContent = d.text;
+  wrap.appendChild(inner);
+
+  // Link badge
+  const linkBadge = document.createElement('div');
+  linkBadge.className = 'el-link-badge';
+  linkBadge.textContent = '🔗';
+  wrap.appendChild(linkBadge);
+
+  const resizeH = document.createElement('div'); resizeH.className = 'el-resize'; wrap.appendChild(resizeH);
+  const delBtn  = document.createElement('div'); delBtn.className  = 'el-del';    delBtn.textContent = '×'; wrap.appendChild(delBtn);
+
+  textLayer.appendChild(wrap);
+  activateTextEl(wrap, resizeH, delBtn);
+  return wrap;
+}
+
+function activateTextEl(wrap, resizeH, delBtn) {
+  wrap.addEventListener('mousedown', e => {
+    if (e.target === resizeH || e.target === delBtn || e.target.classList.contains('sp-text-inner')) return;
+    selectTextEl(wrap);
+    startTextDrag(e, wrap);
+  });
+  wrap.querySelector('.sp-text-inner').addEventListener('focus', () => selectTextEl(wrap));
+  delBtn.addEventListener('click', e => { e.stopPropagation(); wrap.remove(); if (selectedTextEl === wrap) selectedTextEl = null; });
+  resizeH.addEventListener('mousedown', e => {
+    e.stopPropagation(); e.preventDefault();
+    const sx = e.clientX, sw = wrap.offsetWidth;
+    const onMove = ev => { wrap.style.width = Math.max(60, sw + ev.clientX - sx) + 'px'; };
+    const onUp   = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+    window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
+  });
+}
+
+function selectTextEl(el) {
+  document.querySelectorAll('.sp-text-el').forEach(e => e.classList.remove('sel-el'));
+  el.classList.add('sel-el');
+  selectedTextEl = el;
+  // Show link toolbar with current link value
+  showLinkToolbar(el);
+}
+
+function startTextDrag(e, wrap) {
+  e.preventDefault();
+  const sx = e.clientX - wrap.offsetLeft;
+  const sy = e.clientY - wrap.offsetTop;
+  const cr = canvas.getBoundingClientRect();
+  const onMove = ev => {
+    wrap.style.left = Math.max(0, Math.min(ev.clientX - sx, cr.width  - wrap.offsetWidth))  + 'px';
+    wrap.style.top  = Math.max(0, Math.min(ev.clientY - sy, cr.height - wrap.offsetHeight)) + 'px';
+  };
+  const onUp = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+  window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (!e.target.closest('.sp-text-el') && !e.target.closest('.be-object-wrap')) {
+    document.querySelectorAll('.sp-text-el').forEach(el => el.classList.remove('sel-el'));
+    selectedTextEl = null;
+    document.querySelectorAll('.be-object-wrap').forEach(w => w.classList.remove('obj-selected'));
+    selectedObj = null;
+    hideLinkToolbar();
+  }
+});
+
+window.spAddTextBox = () => createTextEl('subtext', { text:'Click to edit', x:50, y:80, size:'20px', weight:'700' });
+
+/* ══ TEXT STYLING ══ */
+function getSelectedInner() {
+  if (!selectedTextEl) return null;
+  return selectedTextEl.querySelector('.sp-text-inner');
+}
+window.spExecCmd     = cmd  => { const el = getSelectedInner(); if (el) { el.focus(); document.execCommand(cmd, false, null); } };
+window.spApplyFont   = fam  => { const el = getSelectedInner(); if (el) el.style.fontFamily = fam; };
+window.spApplyFontSize = sz => { const el = getSelectedInner(); if (el) el.style.fontSize  = sz; };
+window.spApplyTextColor = c => {
+  const el = getSelectedInner();
+  if (el) { el.focus(); document.execCommand('foreColor', false, c); el.style.color = c; }
+};
+window.spTextAlign = dir => {
+  const el = getSelectedInner();
+  if (el) el.style.textAlign = dir;
+};
+
+/* ══ SHAPE SYSTEM ══ */
+window.spAddShape = type => {
+  const color = activeShapeColor;
+  const wrap  = document.createElement('div');
+  wrap.className = 'be-object-wrap';
+  const defSizes = { line:'width:120px;height:5px', circle:'width:80px;height:80px', triangle:'width:80px;height:70px' };
+  wrap.style.cssText = `left:80px;top:80px;${defSizes[type] || 'width:100px;height:100px'}`;
+  const inner = document.createElement('div');
+  inner.className = `obj-inner obj-shape-${type}`;
+  if (!['triangle','arrow','star'].includes(type)) inner.style.background = color;
+  if (type === 'box') inner.textContent = 'Text';
+  wrap.appendChild(inner);
+  const rotLine = document.createElement('div'); rotLine.className = 'obj-rot-line'; wrap.appendChild(rotLine);
+  const rotH = document.createElement('div'); rotH.className = 'obj-handle obj-h-rot'; wrap.appendChild(rotH);
+  ['nw','ne','sw','se'].forEach(p => { const h = document.createElement('div'); h.className = `obj-handle obj-h-${p}`; wrap.appendChild(h); });
+  const tb = document.createElement('div'); tb.className = 'obj-toolbar';
+  tb.innerHTML = `<div style="position:relative"><div class="obj-color-swatch" style="background:${color}"></div><input type="color" class="obj-color-input" value="${color}"></div><button class="obj-tb-btn" data-action="opacity">◑</button><button class="obj-tb-btn" data-action="bring-front">⬆</button><button class="obj-tb-btn" data-action="send-back">⬇</button><button class="obj-tb-btn" data-action="duplicate">⧉</button><button class="obj-tb-btn" data-action="delete" style="color:#f87171">✕</button>`;
+  // Link badge for shapes
+  const shapeLinkBadge = document.createElement('div');
+  shapeLinkBadge.className = 'el-link-badge';
+  shapeLinkBadge.textContent = '🔗';
+  wrap.appendChild(shapeLinkBadge);
+
+  wrap.appendChild(tb);
+  objLayer.style.pointerEvents = 'all';
+  objLayer.appendChild(wrap);
+  activateShape(wrap); selectShape(wrap);
+};
+
+function selectShape(wrap) {
+  document.querySelectorAll('.be-object-wrap').forEach(w => w.classList.remove('obj-selected'));
+  wrap.classList.add('obj-selected'); selectedObj = wrap;
+  // Show link toolbar for shapes too
+  showLinkToolbar(wrap);
+}
+
+function activateShape(wrap) {
+  let rot = 0;
+  wrap.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('obj-handle') || e.target.closest('.obj-toolbar')) return;
+    selectShape(wrap); startShapeDrag(e, wrap);
+  });
+  wrap.querySelector('.obj-h-rot').addEventListener('mousedown', e => {
+    e.stopPropagation(); e.preventDefault(); selectShape(wrap);
+    const rect = wrap.getBoundingClientRect();
+    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+    const onMove = ev => { rot = Math.round(Math.atan2(ev.clientY-cy, ev.clientX-cx)*180/Math.PI+90); wrap.style.transform = `rotate(${rot}deg)`; };
+    const onUp   = () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+    window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
+  });
+  wrap.querySelectorAll('.obj-h-nw,.obj-h-ne,.obj-h-sw,.obj-h-se').forEach(h => {
+    h.addEventListener('mousedown', e => {
+      e.stopPropagation(); e.preventDefault(); selectShape(wrap);
+      const sx = e.clientX, sy = e.clientY, sw = wrap.offsetWidth, sh = wrap.offsetHeight, sl = wrap.offsetLeft, st = wrap.offsetTop;
+      const dir = h.className.match(/obj-h-(\w+)/)[1];
+      const onMove = ev => {
+        const dx = ev.clientX-sx, dy = ev.clientY-sy;
+        let nw=sw,nh=sh,nl=sl,nt=st;
+        if(dir.includes('e')) nw=Math.max(20,sw+dx); if(dir.includes('s')) nh=Math.max(20,sh+dy);
+        if(dir.includes('w')){nw=Math.max(20,sw-dx);nl=sl+sw-nw;} if(dir.includes('n')){nh=Math.max(20,sh-dy);nt=st+sh-nh;}
+        wrap.style.width=nw+'px';wrap.style.height=nh+'px';wrap.style.left=nl+'px';wrap.style.top=nt+'px';
+      };
+      const onUp = () => { window.removeEventListener('mousemove',onMove); window.removeEventListener('mouseup',onUp); };
+      window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp);
+    });
+  });
+  wrap.querySelector('.obj-toolbar').addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]'); if (!btn) return;
+    if (btn.dataset.action==='delete') wrap.remove();
+    if (btn.dataset.action==='bring-front') wrap.style.zIndex=(parseInt(wrap.style.zIndex||20)+1)+'';
+    if (btn.dataset.action==='send-back')   wrap.style.zIndex=Math.max(1,(parseInt(wrap.style.zIndex||20)-1))+'';
+    if (btn.dataset.action==='opacity') { const c=parseFloat(wrap.style.opacity||1); wrap.style.opacity=c>0.2?(c-0.2).toFixed(1):'1'; }
+    if (btn.dataset.action==='duplicate') { const cl=wrap.cloneNode(true); cl.style.left=(wrap.offsetLeft+15)+'px'; cl.style.top=(wrap.offsetTop+15)+'px'; objLayer.appendChild(cl); activateShape(cl); selectShape(cl); }
+  });
+  const sw=wrap.querySelector('.obj-color-swatch'), ci=wrap.querySelector('.obj-color-input');
+  if(sw) sw.addEventListener('click',()=>ci.click());
+  if(ci) ci.addEventListener('input',e=>{sw.style.background=e.target.value;const inn=wrap.querySelector('.obj-inner');if(inn&&!inn.classList.contains('obj-shape-triangle')&&!inn.classList.contains('obj-shape-star')&&!inn.classList.contains('obj-shape-arrow'))inn.style.background=e.target.value;});
+}
+
+function startShapeDrag(e, wrap) {
+  e.preventDefault();
+  const sx = e.clientX - wrap.offsetLeft, sy = e.clientY - wrap.offsetTop;
+  const cr = canvas.getBoundingClientRect();
+  const onMove = ev => { wrap.style.left=Math.max(-20,Math.min(ev.clientX-sx,cr.width+20))+'px'; wrap.style.top=Math.max(-20,Math.min(ev.clientY-sy,cr.height+20))+'px'; };
+  const onUp   = () => { window.removeEventListener('mousemove',onMove); window.removeEventListener('mouseup',onUp); };
+  window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp);
+}
+
+/* Shape color swatches */
+document.querySelectorAll('.sp-color-sw').forEach(sw => {
+  sw.addEventListener('click', () => {
+    document.querySelectorAll('.sp-color-sw').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    activeShapeColor = sw.dataset.color || sw.style.background;
+  });
+});
+document.getElementById('spColorCustom').addEventListener('input', e => { activeShapeColor = e.target.value; });
+
+/* ══ GENERATE ══ */
+document.getElementById('sp-gen-btn').addEventListener('click', async () => {
+  const btn   = document.getElementById('sp-gen-btn');
+  const topic = document.getElementById('sp-topic').value.trim();
+  if (!topic) { showToast('Enter a topic or message'); return; }
+
+  btn.textContent = 'Generating…'; btn.disabled = true;
+
+  try {
+    const userCta = document.getElementById('sp-cta').value.trim();
+    const fd = new FormData();
+    fd.append('topic',    topic);
+    fd.append('brand',    document.getElementById('sp-brand').value);
+    fd.append('platform', currentPlatform);
+    fd.append('tone',     document.getElementById('sp-tone').value);
+    fd.append('cta',      userCta);
+    fd.append('brief',    document.getElementById('sp-brief').value);
+
+    const r    = await fetch('/api/social/generate', { method:'POST', body:fd });
+    const data = await r.json();
+    if (data.error) throw new Error(data.error);
+
+    lastContent = data.data;
+    if (data.bg) { bgLayer.style.background = data.bg; currentBg = data.bg; }
+    if (data.heroImg) setCanvasImage(data.heroImg);
+
+    renderTextContent(lastContent);
+    renderVariations(lastContent);
+
+  } catch (err) {
+    showToast('Error: ' + err.message);
+  }
+  btn.textContent = 'Generate Post'; btn.disabled = false;
+});
+
+function renderTextContent(d) {
+  textLayer.innerHTML = '';
+  // Calculate positions based on canvas size
+  const cw = parseInt(canvas.style.width)  || 500;
+  const ch = parseInt(canvas.style.height) || 500;
+  const pad = Math.round(cw * 0.06);
+  const isPortrait = ch > cw;
+
+  // Headline — upper third
+  createTextEl('headline', {
+    text: d.headline || 'Your Headline',
+    x: pad, y: Math.round(ch * (isPortrait ? 0.12 : 0.2)),
+    w: cw - pad*2, size: cw > 400 ? '38px' : '24px'
+  });
+  // Subtext — middle
+  createTextEl('subtext', {
+    text: d.subtext || '',
+    x: pad, y: Math.round(ch * (isPortrait ? 0.30 : 0.42)),
+    w: cw - pad*2
+  });
+  // CTA button — clearly visible, below subtext
+  const ctaText = (d.cta && d.cta.trim()) ? d.cta.trim() : 'Learn More →';
+  createTextEl('cta', {
+    text: ctaText,
+    x: pad, y: Math.round(ch * (isPortrait ? 0.44 : 0.60)),
+    w: 'auto',
+    size: '15px', weight:'800', color:'#ffffff',
+    bg: 'linear-gradient(135deg,#5750D8,#3F37AC)',
+    pad: '12px 28px', radius: '999px'
+  });
+  // Hashtags — bottom
+  if (d.hashtags) {
+    createTextEl('hashtags', {
+      text: d.hashtags,
+      x: pad, y: ch - Math.round(ch * 0.08),
+      w: cw - pad*2, size:'12px'
+    });
+  }
+}
+
+/* ══ VARIATIONS ══ */
+const VARIATION_THEMES = [
+  { name:'Bold Dark',    bg:'linear-gradient(135deg,#0f0c29,#302b63,#24243e)', ovAlpha:0.2, titleColor:'#fff',    bodyColor:'rgba(255,255,255,.8)' },
+  { name:'Warm Sunset',  bg:'linear-gradient(135deg,#f7971e,#ffd200)',         ovAlpha:0.3, titleColor:'#1c1917', bodyColor:'#44403c' },
+  { name:'Fresh Teal',   bg:'linear-gradient(135deg,#11998e,#38ef7d)',         ovAlpha:0.25,titleColor:'#fff',    bodyColor:'rgba(255,255,255,.85)' },
+];
+
+function renderVariations(d) {
+  const varGrid = document.getElementById('spVarGrid');
+  varGrid.innerHTML = '';
+  const cw = parseInt(canvas.style.width)  || 500;
+  const ch = parseInt(canvas.style.height) || 500;
+  const scale = 160 / cw;
+  const vw = Math.round(cw * scale), vh = Math.round(ch * scale);
+
+  const allVariations = [
+    { ...VARIATION_THEMES[0], headline: d.headline,     subtext: d.subtext    },
+    { ...VARIATION_THEMES[1], headline: d.v2_headline || d.headline, subtext: d.v2_subtext || d.subtext },
+    { ...VARIATION_THEMES[2], headline: d.v3_headline || d.headline, subtext: d.v3_subtext || d.subtext },
+  ];
+
+  allVariations.forEach((theme, i) => {
+    const card = document.createElement('div');
+    card.className = 'sp-var-card';
+    card.style.width = vw + 'px';
+
+    const preview = document.createElement('div');
+    preview.className = 'sp-var-preview';
+    preview.style.cssText = `width:${vw}px;height:${vh}px;background:${theme.bg};position:relative;overflow:hidden`;
+
+    if (currentImgUrl) {
+      const imgDiv = document.createElement('div');
+      imgDiv.style.cssText = `position:absolute;inset:0;background:url("${currentImgUrl}") center/cover no-repeat;filter:blur(${currentBlur}px)`;
+      preview.appendChild(imgDiv);
+    }
+
+    const ov = document.createElement('div');
+    ov.style.cssText = `position:absolute;inset:0;background:rgba(0,0,0,${theme.ovAlpha})`;
+    preview.appendChild(ov);
+
+    const textDiv = document.createElement('div');
+    textDiv.style.cssText = `position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:${Math.round(vw*0.08)}px;`;
+    textDiv.innerHTML = `<div style="font-size:${Math.round(14*scale*2)}px;font-weight:900;color:${theme.titleColor};line-height:1.2;margin-bottom:6px">${theme.headline}</div><div style="font-size:${Math.round(10*scale*2)}px;color:${theme.bodyColor};line-height:1.5">${theme.subtext}</div>`;
+    preview.appendChild(textDiv);
+
+    const label = document.createElement('div');
+    label.className = 'sp-var-label';
+    label.innerHTML = `<span>Style ${i+1}: ${theme.name}</span><button class="sp-var-apply">Apply →</button>`;
+    preview.appendChild(label);
+    card.appendChild(preview);
+
+    label.querySelector('.sp-var-apply').addEventListener('click', e => {
+      e.stopPropagation();
+      bgLayer.style.background = theme.bg; currentBg = theme.bg;
+      spSetOverlay(theme.ovAlpha);
+      if (lastContent) renderTextContent({ ...lastContent, headline: theme.headline, subtext: theme.subtext });
+      showToast(`Applied "${theme.name}" style`);
+    });
+
+    card.addEventListener('click', () => {
+      bgLayer.style.background = theme.bg; currentBg = theme.bg;
+      spSetOverlay(theme.ovAlpha);
+    });
+
+    varGrid.appendChild(card);
+  });
+
+  document.getElementById('spVarSection').style.display = '';
+}
+
+/* ══ EXPORT ══ */
+function captureCanvas() {
+  return html2canvas(document.getElementById('spCanvas'), {
+    scale:2, useCORS:true, allowTaint:true, backgroundColor:null
+  });
+}
+
+function dlDataUrl(dataUrl, filename) {
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = filename;
+  a.click();
+}
+
+window.spExportPng = () => {
+  captureCanvas().then(c => dlDataUrl(c.toDataURL('image/png'), 'post.png'));
+};
+
+window.spExportJpg = () => {
+  captureCanvas().then(c => dlDataUrl(c.toDataURL('image/jpeg', 0.92), 'post.jpg'));
+};
+
+window.spExportAll = async () => {
+  if (!lastContent) {
+    showToast('Generate a post first to export all variants');
+    return;
+  }
+  showToast('Exporting all variants…');
+
+  const ALL_VARIANT_THEMES = [
+    { name:'v1', bg:currentBg,                                               ovAlpha:currentOverlay },
+    { name:'v2', bg:'linear-gradient(135deg,#0f0c29,#302b63,#24243e)',       ovAlpha:0.2 },
+    { name:'v3', bg:'linear-gradient(135deg,#f7971e,#ffd200)',               ovAlpha:0.3 },
+    { name:'v4', bg:'linear-gradient(135deg,#11998e,#38ef7d)',               ovAlpha:0.25 },
+  ];
+
+  const savedBg   = bgLayer.style.background;
+  const savedOv   = ovLayer.style.background;
+
+  for (let i = 0; i < ALL_VARIANT_THEMES.length; i++) {
+    const theme = ALL_VARIANT_THEMES[i];
+    bgLayer.style.background = theme.bg;
+    ovLayer.style.background = `rgba(0,0,0,${theme.ovAlpha})`;
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // let DOM repaint
+    const c = await captureCanvas();
+    dlDataUrl(c.toDataURL('image/png'), `post-${theme.name}.png`);
+    await new Promise(r => setTimeout(r, 300)); // stagger downloads
+  }
+
+  // Restore original state
+  bgLayer.style.background = savedBg;
+  ovLayer.style.background = savedOv;
+  showToast('✓ All 4 variants downloaded');
+};
+
+/* ══ SAVE ══ */
+document.getElementById('sp-save-btn').addEventListener('click', () => {
+  const h1 = textLayer.querySelector('[data-type="headline"] .sp-text-inner');
+  document.getElementById('spSaveTitle').value = h1 ? h1.textContent.trim() : 'Social Post';
+  document.getElementById('spSaveModal').style.display = 'flex';
+});
+document.getElementById('spSaveConfirm').addEventListener('click', async () => {
+  const title = document.getElementById('spSaveTitle').value.trim() || 'Social Post';
+  const id = await DocStore.save({
+    title, category:'social', template: currentPlatform,
+    content: JSON.stringify({
+      bg: currentBg, overlay: currentOverlay, blur: currentBlur, platform: currentPlatform,
+      imgUrl: currentImgUrl, canvasW: canvas.style.width, canvasH: canvas.style.height,
+      imgTransform: { scale: imgScale, rotate: imgRotate, bright: imgBright, x: imgTranslateX, y: imgTranslateY, flipX: imgFlipX, flipY: imgFlipY },
+      textEls: [...textLayer.querySelectorAll('.sp-text-el')].map(el => ({
+        type: el.dataset.type, left: el.style.left, top: el.style.top, width: el.style.width,
+        html: el.querySelector('.sp-text-inner').innerHTML,
+        style: el.querySelector('.sp-text-inner').style.cssText,
+      })),
+    }),
+    canvasStyles: '',
+  });
+  if (id) { document.getElementById('spSaveModal').style.display='none'; showToast('✓ Saved to My Documents'); }
+});
+
+/* Load saved doc */
+const params = new URLSearchParams(location.search);
+const docId  = params.get('doc');
+if (docId) {
+  DocStore.get(docId).then(doc => {
+    if (!doc || !doc.content) return;
+    try {
+      const d = JSON.parse(doc.content);
+      if (d.bg)       { bgLayer.style.background = d.bg; currentBg = d.bg; }
+      if (d.overlay)  spSetOverlay(d.overlay);
+      if (d.blur)     spSetBlur(d.blur);
+      if (d.imgUrl) {
+        setCanvasImage(d.imgUrl);
+        if (d.imgTransform) {
+          imgScale = d.imgTransform.scale ?? 1;
+          imgRotate = d.imgTransform.rotate ?? 0;
+          imgBright = d.imgTransform.bright ?? 1;
+          imgTranslateX = d.imgTransform.x ?? 0;
+          imgTranslateY = d.imgTransform.y ?? 0;
+          imgFlipX = d.imgTransform.flipX ?? 1;
+          imgFlipY = d.imgTransform.flipY ?? 1;
+          updateImgTransform();
+          document.getElementById('imgScaleSlider').value = Math.round(imgScale * 100);
+          document.getElementById('imgScaleVal').textContent = Math.round(imgScale * 100) + '%';
+          document.getElementById('imgRotateSlider').value = imgRotate;
+          document.getElementById('imgRotateVal').textContent = imgRotate + '°';
+          document.getElementById('imgBrightSlider').value = Math.round(imgBright * 100);
+          document.getElementById('imgBrightVal').textContent = Math.round(imgBright * 100) + '%';
+        }
+      }
+      if (d.canvasW && d.canvasH) { canvas.style.width = d.canvasW; canvas.style.height = d.canvasH; }
+      if (d.textEls) {
+        textLayer.innerHTML = '';
+        d.textEls.forEach(t => {
+          const wrap = document.createElement('div');
+          wrap.className = 'sp-text-el'; wrap.dataset.type = t.type;
+          wrap.style.left = t.left; wrap.style.top = t.top; wrap.style.width = t.width;
+          const inner = document.createElement('div');
+          inner.className = 'sp-text-inner'; inner.contentEditable = 'true';
+          inner.innerHTML = t.html; inner.style.cssText = t.style;
+          wrap.appendChild(inner);
+          const rh = document.createElement('div'); rh.className = 'el-resize'; wrap.appendChild(rh);
+          const db = document.createElement('div'); db.className = 'el-del'; db.textContent = '×'; wrap.appendChild(db);
+          textLayer.appendChild(wrap);
+          activateTextEl(wrap, rh, db);
+        });
+      }
+    } catch(e) { console.error(e); }
+  });
+}
+
+/* ══ TOAST ══ */
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#211C14;color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:2000;box-shadow:0 6px 20px rgba(0,0,0,.3)';
+  t.textContent = msg; document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+/* ══ BRAND KIT AUTOFILL ══ */
+try {
+  const kit = JSON.parse(localStorage.getItem('StreamInk_BrandKit') || '{}');
+  if (kit.url && !document.getElementById('sp-brand').value) document.getElementById('sp-brand').value = kit.url;
+} catch(e){}
+
+/* ══════════════════════════════════════════════════
+   SOCIAL PUBLISHING — CONNECT & PUBLISH
+══════════════════════════════════════════════════ */
+
+const SOCIAL_TOKENS_KEY = 'StreamInk_SocialTokens';
+let SOCIAL_TOKENS = {};
+
+function loadSocialTokens() {
+  try { SOCIAL_TOKENS = JSON.parse(localStorage.getItem(SOCIAL_TOKENS_KEY) || '{}'); }
+  catch(e) { SOCIAL_TOKENS = {}; }
+  renderPubPlatforms();
+  checkSetupStatus();
+}
+
+function saveSocialTokens() {
+  try { localStorage.setItem(SOCIAL_TOKENS_KEY, JSON.stringify(SOCIAL_TOKENS)); } catch(e){}
+}
+
+const PLATFORM_META = {
+  instagram: { name: 'Instagram', bg: 'linear-gradient(45deg,#f09433,#dc2743,#bc1888)' },
+  twitter:   { name: 'Twitter/X', bg: '#000' },
+  linkedin:  { name: 'LinkedIn',  bg: '#0A66C2' },
+  facebook:  { name: 'Facebook',  bg: '#1877F2' },
+};
+
+function renderPubPlatforms() {
+  ['instagram','twitter','linkedin','facebook'].forEach(plat => {
+    const tok = SOCIAL_TOKENS[plat];
+    const acctEl = document.getElementById(`pubAcct-${plat}`);
+    const btnEl  = document.getElementById(`pubBtn-${plat}`);
+    const chkEl  = document.getElementById(`pubCheck-${plat}`);
+    if (!acctEl || !btnEl) return;
+
+    if (tok && tok.accessToken) {
+      acctEl.textContent = tok.accountName || 'Connected ✓';
+      btnEl.textContent  = 'Disconnect';
+      btnEl.className    = 'pub-connect-btn connected';
+      btnEl.onclick      = () => disconnectAccount(plat);
+      if (chkEl) chkEl.className = 'pub-plat-check visible';
+    } else {
+      acctEl.textContent = 'Not connected';
+      btnEl.textContent  = 'Connect';
+      btnEl.className    = 'pub-connect-btn connect';
+      btnEl.onclick      = () => connectAccount(plat);
+      if (chkEl) chkEl.className = 'pub-plat-check';
+    }
+  });
+
+  // Enable publish button only if at least one is connected
+  const anyConnected = Object.values(SOCIAL_TOKENS).some(t => t && t.accessToken);
+  const publishBtn = document.getElementById('pubPublishBtn');
+  if (publishBtn) publishBtn.disabled = !anyConnected;
+}
+
+function checkSetupStatus() {
+  // Ping server to see if API keys are configured
+  fetch('/api/social/status').then(r => r.json()).then(data => {
+    const note = document.getElementById('pubSetupNote');
+    if (note) {
+      const allMissing = !data.instagram && !data.twitter && !data.linkedin && !data.facebook;
+      note.style.display = allMissing ? 'block' : 'none';
+    }
+  }).catch(() => {});
+}
+
+/* ── OAUTH CONNECT ── */
+function connectAccount(platform) {
+  // Get current user ID for state
+  const userId = _supabase
+    ? _supabase.auth.getUser().then(({ data: { user } }) => user?.id || 'anon')
+    : Promise.resolve('anon');
+
+  userId.then(uid => {
+    const stateStr = uid + ':' + platform + ':' + Date.now();
+    const encoded  = btoa(stateStr);
+
+    // Open OAuth popup
+    const w = 520, h = 660;
+    const left = (screen.width  / 2) - (w / 2);
+    const top  = (screen.height / 2) - (h / 2);
+    const popup = window.open(
+      `/auth/${platform}?state=${encoded}`,
+      `StreamInk_OAuth_${platform}`,
+      `width=${w},height=${h},left=${left},top=${top},toolbar=0,menubar=0,scrollbars=1`
+    );
+
+    // Poll for popup close (fallback if postMessage fails)
+    const poll = setInterval(() => {
+      if (popup && popup.closed) {
+        clearInterval(poll);
+        // Re-read tokens from storage (popup may have written them)
+        loadSocialTokens();
+      }
+    }, 600);
+  });
+}
+
+// Called by OAuth callback page via postMessage
+window.addEventListener('message', (e) => {
+  if (e.origin !== location.origin) return;
+  const { type, platform, accessToken, accountName, error } = e.data || {};
+  if (type !== 'STREAMINK_OAUTH') return;
+
+  if (error) {
+    showPubStatus('error', `Connection failed: ${error}`);
+    return;
+  }
+
+  if (platform && accessToken) {
+    SOCIAL_TOKENS[platform] = { accessToken, accountName, connectedAt: Date.now() };
+    saveSocialTokens();
+    renderPubPlatforms();
+    showPubStatus('success', `✓ ${PLATFORM_META[platform]?.name || platform} connected as ${accountName || 'account'}`);
+  }
+});
+
+function disconnectAccount(platform) {
+  if (!confirm(`Disconnect ${PLATFORM_META[platform]?.name || platform}?`)) return;
+  delete SOCIAL_TOKENS[platform];
+  saveSocialTokens();
+  renderPubPlatforms();
+  showPubStatus('success', `Disconnected ${PLATFORM_META[platform]?.name || platform}`);
+}
+
+/* ── PUBLISH ── */
+async function publishPost() {
+  const platforms = ['instagram','twitter','linkedin','facebook']
+    .filter(p => {
+      const tok = SOCIAL_TOKENS[p];
+      const cb  = document.getElementById(`pubCb-${p}`);
+      return tok && tok.accessToken && cb && cb.checked;
+    });
+
+  if (!platforms.length) {
+    showPubStatus('error', 'Select at least one connected platform to publish.');
+    return;
+  }
+
+  const btn = document.getElementById('pubPublishBtn');
+  btn.disabled = true;
+  showPubStatus('loading', `Capturing post image…`);
+
+  try {
+    // 1. Capture the canvas as base64 PNG
+    const canvasEl = document.getElementById('spCanvas');
+    const snapshot  = await html2canvas(canvasEl, { scale: 2, useCORS: true, logging: false, allowTaint: true });
+    const imageDataUrl = snapshot.toDataURL('image/png');
+
+    // 2. Get caption (or use topic as fallback)
+    let caption = (document.getElementById('pubCaption').value || '').trim();
+    if (!caption) {
+      const topic   = (document.getElementById('sp-topic')?.value || '').trim();
+      const brand   = (document.getElementById('sp-brand')?.value || '').trim();
+      caption = [brand, topic].filter(Boolean).join(' — ') || 'Posted with StreamInk Studio';
+    }
+
+    // 3. Post to each selected platform
+    const results = [];
+    for (const plat of platforms) {
+      showPubStatus('loading', `Publishing to ${PLATFORM_META[plat].name}…`);
+      try {
+        const res = await fetch('/api/social/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            platform:    plat,
+            imageData:   imageDataUrl,
+            caption,
+            accessToken: SOCIAL_TOKENS[plat].accessToken,
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        results.push({ platform: plat, success: true, url: data.postUrl });
+      } catch(err) {
+        results.push({ platform: plat, success: false, error: err.message });
+      }
+    }
+
+    // 4. Show results
+    const successes = results.filter(r => r.success);
+    const failures  = results.filter(r => !r.success);
+    if (successes.length && !failures.length) {
+      showPubStatus('success', `✓ Published to ${successes.map(r => PLATFORM_META[r.platform].name).join(', ')}!`);
+    } else if (failures.length && !successes.length) {
+      showPubStatus('error', `Failed: ${failures.map(r => `${PLATFORM_META[r.platform].name}: ${r.error}`).join('; ')}`);
+    } else {
+      showPubStatus('success', `✓ ${successes.map(r=>PLATFORM_META[r.platform].name).join(', ')} posted. ⚠ ${failures.map(r=>PLATFORM_META[r.platform].name).join(', ')} failed.`);
+    }
+  } catch(err) {
+    showPubStatus('error', `Error: ${err.message}`);
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function showPubStatus(type, msg) {
+  const el = document.getElementById('pubStatus');
+  if (!el) return;
+  el.className = `pub-status ${type}`;
+  el.textContent = msg;
+}
+
+// Handle OAuth callback result if we're the landing page after OAuth
+(function checkOAuthReturn() {
+  const params = new URLSearchParams(location.search);
+  const oauthOk  = params.get('oauth_ok');
+  const platform  = params.get('platform');
+  const token     = params.get('token');
+  const acctName  = params.get('account');
+  const oauthErr  = params.get('oauth_error');
+
+  if (oauthOk && platform && token) {
+    SOCIAL_TOKENS[platform] = { accessToken: token, accountName: acctName || 'Account', connectedAt: Date.now() };
+    saveSocialTokens();
+    // Clean URL
+    const clean = location.pathname;
+    window.history.replaceState({}, '', clean);
+    showPubStatus('success', `✓ ${PLATFORM_META[platform]?.name || platform} connected as ${acctName || 'account'}!`);
+    renderPubPlatforms();
+  } else if (oauthErr) {
+    showPubStatus('error', `Connection failed: ${decodeURIComponent(oauthErr)}`);
+    window.history.replaceState({}, '', location.pathname);
+  }
+})();
+
+// Init
+loadSocialTokens();
+
+/* ══════════════════════════════════════════════════
+   RIGHT BAR TABS
+══════════════════════════════════════════════════ */
+function switchRB(tab) {
+  document.querySelectorAll('.rb-tab').forEach(t => t.classList.toggle('on', t.dataset.rb === tab));
+  document.querySelectorAll('.rb-pane').forEach(p => p.classList.toggle('on', p.id === 'rbPane' + tab.charAt(0).toUpperCase() + tab.slice(1)));
+  if (tab === 'layers')  refreshLayers();
+  if (tab === 'frames')  renderFramesGrid();
+  if (tab === 'effects') renderPresetsGrid();
+}
+
+/* ══════════════════════════════════════════════════
+   LAYERS PANEL
+══════════════════════════════════════════════════ */
+let selectedLayerEl = null;
+
+function refreshLayers() {
+  const list = document.getElementById('layersList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const addItem = (icon, name, el, type) => {
+    const div = document.createElement('div');
+    div.className = 'layer-item';
+    div.innerHTML = `
+      <div class="layer-thumb">${icon}</div>
+      <div class="layer-name">${name}</div>
+      <span class="layer-vis" title="Toggle visibility" onclick="toggleLayerVis(event,this,'${type}')">👁</span>`;
+    div.addEventListener('click', () => selectLayer(div, el));
+    list.appendChild(div);
+  };
+
+  addItem('🖼', 'Background', document.getElementById('spBgLayer'), 'bg');
+  if (currentImgUrl) addItem('📷', 'Image', document.getElementById('spImgLayer'), 'img');
+
+  document.querySelectorAll('#spObjLayer .be-object-wrap').forEach((el, i) => {
+    addItem('⬛', `Shape ${i+1}`, el, 'shape');
+  });
+  document.querySelectorAll('#spTextLayer .sp-text-el').forEach((el, i) => {
+    const txt = (el.textContent || '').substring(0, 14) || `Text ${i+1}`;
+    addItem('T', txt, el, 'text');
+  });
+
+  const frameLayer = document.getElementById('spFrameLayer');
+  if (frameLayer && frameLayer.innerHTML.trim()) {
+    addItem('✨', 'Frame', frameLayer, 'frame');
+  }
+  const drawCanvas = document.getElementById('spDrawCanvas');
+  if (drawCanvas && drawCanvas.style.display !== 'none') {
+    addItem('✏', 'Drawing', drawCanvas, 'draw');
+  }
+
+  if (!list.children.length) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;font-size:11px;color:#A89E8C">No layers yet</div>';
+  }
+}
+
+function selectLayer(div, el) {
+  document.querySelectorAll('.layer-item').forEach(d => d.classList.remove('sel'));
+  div.classList.add('sel');
+  selectedLayerEl = el;
+
+  const controls = document.getElementById('layerControls');
+  if (controls) {
+    controls.style.display = '';
+    const op = Math.round((parseFloat(el.style.opacity ?? 1)) * 100);
+    const slider = document.getElementById('layerOpacitySlider');
+    const valEl  = document.getElementById('layerOpacityVal');
+    if (slider) slider.value = op;
+    if (valEl)  valEl.textContent = op + '%';
+    const bm = el.style.mixBlendMode || 'normal';
+    const blendSel = document.getElementById('layerBlendSel');
+    if (blendSel) blendSel.value = bm;
+  }
+}
+
+function toggleLayerVis(e, btn, type) {
+  e.stopPropagation();
+  const item   = btn.closest('.layer-item');
+  const layerEls = {
+    bg:    document.getElementById('spBgLayer'),
+    img:   document.getElementById('spImgLayer'),
+    frame: document.getElementById('spFrameLayer'),
+    draw:  document.getElementById('spDrawCanvas'),
+  };
+  let el = layerEls[type];
+  if (!el) {
+    const allShapes = [...document.querySelectorAll('#spObjLayer .be-object-wrap')];
+    const allTexts  = [...document.querySelectorAll('#spTextLayer .sp-text-el')];
+    el = allShapes.find(s => item.querySelector('.layer-name')?.textContent.includes('Shape')) || allTexts[0];
+  }
+  if (!el) return;
+  const isHidden = el.style.visibility === 'hidden' || el.style.display === 'none';
+  if (type === 'draw') {
+    el.style.display = isHidden ? 'block' : 'none';
+  } else {
+    el.style.visibility = isHidden ? '' : 'hidden';
+    el.style.opacity    = isHidden ? '' : '0';
+  }
+  btn.classList.toggle('hidden', !isHidden);
+}
+
+function setLayerOpacity(val) {
+  if (selectedLayerEl) selectedLayerEl.style.opacity = val / 100;
+  const valEl = document.getElementById('layerOpacityVal');
+  if (valEl) valEl.textContent = val + '%';
+}
+
+function setLayerBlend(val) {
+  if (selectedLayerEl) selectedLayerEl.style.mixBlendMode = val;
+}
+
+/* ══════════════════════════════════════════════════
+   FILTER PRESETS
+══════════════════════════════════════════════════ */
+const FILTER_PRESETS = [
+  { name:'Normal',    filter:'none',                                          bg:'linear-gradient(135deg,#f093fb,#f5576c)' },
+  { name:'Vivid',     filter:'saturate(1.9) contrast(1.15)',                  bg:'linear-gradient(135deg,#f9d423,#ff4e50)' },
+  { name:'Muted',     filter:'saturate(0.55) brightness(1.1)',                bg:'linear-gradient(135deg,#bdc3c7,#2c3e50)' },
+  { name:'Vintage',   filter:'sepia(0.5) saturate(1.3) hue-rotate(-15deg)',   bg:'linear-gradient(135deg,#f2994a,#f2c94c)' },
+  { name:'B&W',       filter:'grayscale(1) contrast(1.15)',                   bg:'linear-gradient(135deg,#333,#888)' },
+  { name:'Faded',     filter:'saturate(0.65) brightness(1.25) contrast(0.82)',bg:'linear-gradient(135deg,#e0eafc,#cfdef3)' },
+  { name:'Neon',      filter:'saturate(2.8) hue-rotate(20deg) brightness(1.2)',bg:'linear-gradient(135deg,#12c2e9,#c471ed,#f64f59)' },
+  { name:'Dramatic',  filter:'contrast(1.5) brightness(0.88) saturate(1.4)', bg:'linear-gradient(135deg,#0f0c29,#302b63)' },
+  { name:'Warm',      filter:'sepia(0.25) saturate(1.5) hue-rotate(-25deg)',  bg:'linear-gradient(135deg,#f7971e,#ffd200)' },
+  { name:'Cool',      filter:'hue-rotate(35deg) saturate(1.3) brightness(1.06)', bg:'linear-gradient(135deg,#4facfe,#00f2fe)' },
+  { name:'Cinematic', filter:'contrast(1.35) saturate(0.75) brightness(0.92)', bg:'linear-gradient(135deg,#1c1c2e,#24243e)' },
+  { name:'Pop Art',   filter:'saturate(3) contrast(1.5) brightness(1.1)',     bg:'linear-gradient(135deg,#ff6b6b,#feca57)' },
+];
+
+let currentPreset = 'Normal';
+
+function renderPresetsGrid() {
+  const grid = document.getElementById('presetGrid');
+  if (!grid || grid.children.length > 0) return;
+  FILTER_PRESETS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn' + (p.name === currentPreset ? ' on' : '');
+    btn.dataset.preset = p.name;
+    btn.innerHTML = `<span class="preset-thumb" style="background:${p.bg};filter:${p.filter !== 'none' ? p.filter : ''}"></span><span class="preset-name">${p.name}</span>`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      currentPreset = p.name;
+      applyPresetFilter(p.filter);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function applyPresetFilter(filterStr) {
+  getAdjWrap().dataset.presetFilter = filterStr === 'none' ? '' : filterStr;
+  applyAdj();
+}
+
+function getAdjWrap() {
+  let w = document.getElementById('spAdjWrap');
+  if (!w) {
+    const canvasEl = document.getElementById('spCanvas');
+    w = document.createElement('div');
+    w.id = 'spAdjWrap';
+    w.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:60;';
+    canvasEl.appendChild(w);
+  }
+  return w;
+}
+
+function applyAdj() {
+  const bright   = +document.getElementById('adjBright').value;
+  const contrast = +document.getElementById('adjContrast').value;
+  const sat      = +document.getElementById('adjSat').value;
+  const hue      = +document.getElementById('adjHue').value;
+  const blur     = +document.getElementById('adjBlur').value;
+  const sharp    = +document.getElementById('adjSharp').value;
+  const fade     = +document.getElementById('adjFade').value;
+
+  document.getElementById('adjBrightVal').textContent  = bright;
+  document.getElementById('adjContrastVal').textContent = contrast;
+  document.getElementById('adjSatVal').textContent      = sat;
+  document.getElementById('adjHueVal').textContent      = hue + '°';
+  document.getElementById('adjBlurVal').textContent     = blur + 'px';
+  document.getElementById('adjSharpVal').textContent    = sharp;
+  document.getElementById('adjFadeVal').textContent     = fade;
+
+  const brt  = 1 + bright   / 100;
+  const con  = 1 + contrast / 100;
+  const sat2 = 1 + sat      / 100;
+  const sharpContrast = 1 + sharp / 200;
+
+  let f = `brightness(${brt.toFixed(2)}) contrast(${(con * sharpContrast).toFixed(2)}) saturate(${sat2.toFixed(2)}) hue-rotate(${hue}deg)`;
+  if (blur > 0) f += ` blur(${blur}px)`;
+
+  const adjWrapEl = document.getElementById('spAdjWrap');
+  const presetFilter = adjWrapEl ? (adjWrapEl.dataset.presetFilter || '') : '';
+
+  const targets = [document.getElementById('spBgLayer'), document.getElementById('spImgLayer')];
+  targets.forEach(t => { if (t) t.style.filter = [presetFilter, f].filter(Boolean).join(' '); });
+
+  const adjWrap = getAdjWrap();
+  adjWrap.style.background = fade > 0 ? `rgba(255,255,255,${fade/100 * 0.6})` : '';
+}
+
+function resetAdj() {
+  ['adjBright','adjContrast','adjSat','adjHue','adjBlur','adjSharp','adjFade','adjVignette','adjGrain'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = 0;
+  });
+  currentPreset = 'Normal';
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('on', b.dataset.preset === 'Normal'));
+
+  [document.getElementById('spBgLayer'), document.getElementById('spImgLayer')].forEach(t => {
+    if (t) t.style.filter = '';
+  });
+
+  applyVignette(0);
+  applyGrain(0);
+  const adjWrap = getAdjWrap();
+  adjWrap.style.background = '';
+
+  ['adjBrightVal','adjContrastVal','adjSatVal'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = '0';
+  });
+  document.getElementById('adjHueVal').textContent     = '0°';
+  document.getElementById('adjBlurVal').textContent    = '0px';
+  document.getElementById('adjSharpVal').textContent   = '0';
+  document.getElementById('adjFadeVal').textContent    = '0';
+  document.getElementById('adjVignetteVal').textContent= '0';
+  document.getElementById('adjGrainVal').textContent   = '0';
+}
+
+/* Vignette overlay */
+function applyVignette(val) {
+  document.getElementById('adjVignetteVal').textContent = val;
+  let vig = document.getElementById('spVignetteLayer');
+  if (!vig) {
+    vig = document.createElement('div');
+    vig.id = 'spVignetteLayer';
+    vig.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:44;border-radius:inherit;';
+    document.getElementById('spCanvas').appendChild(vig);
+  }
+  const alpha = val / 100 * 0.85;
+  vig.style.background = val > 0
+    ? `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,${alpha}) 100%)`
+    : '';
+}
+
+/* Grain overlay using SVG noise */
+function applyGrain(val) {
+  document.getElementById('adjGrainVal').textContent = val;
+  let grain = document.getElementById('spGrainLayer');
+  if (!grain) {
+    grain = document.createElement('div');
+    grain.id = 'spGrainLayer';
+    grain.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:46;border-radius:inherit;';
+    document.getElementById('spCanvas').appendChild(grain);
+  }
+  if (val <= 0) { grain.style.background = ''; grain.innerHTML = ''; return; }
+  const freq = 0.65;
+  grain.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="position:absolute;inset:0"><filter id="grain-${val}"><feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#grain-${val})" opacity="${val/100*0.6}"/></svg>`;
+}
+
+function setImgBlend(val) {
+  const imgLayer = document.getElementById('spImgLayer');
+  if (imgLayer) imgLayer.style.mixBlendMode = val;
+}
+
+/* ══════════════════════════════════════════════════
+   IMPACT FRAMES
+══════════════════════════════════════════════════ */
+let currentFrameId = null;
+
+const IMPACT_FRAMES = [
+  { id:'none',         name:'None',           color:false, preview:'transparent' },
+  { id:'vignette-fr',  name:'Vignette',       color:false, preview:'radial-gradient(ellipse,transparent 40%,rgba(0,0,0,.8) 100%)' },
+  { id:'speed-lines',  name:'Speed Lines',    color:true,  preview:'conic-gradient(from 0deg at 50% 50%,rgba(0,0,0,.5) 0deg,transparent 6deg,rgba(0,0,0,.5) 12deg,transparent 18deg,rgba(0,0,0,.5) 24deg,transparent 30deg,rgba(0,0,0,.5) 36deg,transparent 42deg,rgba(0,0,0,.5) 48deg,transparent 54deg,rgba(0,0,0,.5) 60deg,transparent 66deg,rgba(0,0,0,.5) 72deg,transparent 78deg,rgba(0,0,0,.5) 84deg,transparent 90deg,rgba(0,0,0,.5) 96deg,transparent 102deg,rgba(0,0,0,.5) 108deg,transparent 114deg,rgba(0,0,0,.5) 120deg,transparent 126deg,rgba(0,0,0,.5) 132deg,transparent 138deg,rgba(0,0,0,.5) 144deg,transparent 150deg,rgba(0,0,0,.5) 156deg,transparent 162deg,rgba(0,0,0,.5) 168deg,transparent 174deg,rgba(0,0,0,.5) 180deg,transparent 186deg,rgba(0,0,0,.5) 192deg,transparent 198deg,rgba(0,0,0,.5) 204deg,transparent 210deg,rgba(0,0,0,.5) 216deg,transparent 222deg,rgba(0,0,0,.5) 228deg,transparent 234deg,rgba(0,0,0,.5) 240deg,transparent 246deg,rgba(0,0,0,.5) 252deg,transparent 258deg,rgba(0,0,0,.5) 264deg,transparent 270deg,rgba(0,0,0,.5) 276deg,transparent 282deg,rgba(0,0,0,.5) 288deg,transparent 294deg,rgba(0,0,0,.5) 300deg,transparent 306deg,rgba(0,0,0,.5) 312deg,transparent 318deg,rgba(0,0,0,.5) 324deg,transparent 330deg,rgba(0,0,0,.5) 336deg,transparent 342deg,rgba(0,0,0,.5) 348deg,transparent 354deg,rgba(0,0,0,.5) 360deg)' },
+  { id:'halftone',     name:'Halftone',       color:true,  preview:'radial-gradient(circle,rgba(0,0,0,.5) 2px,transparent 2px) 0 0/8px 8px' },
+  { id:'scan-lines',   name:'Scan Lines',     color:false, preview:'repeating-linear-gradient(0deg,rgba(0,0,0,.2) 0px,rgba(0,0,0,.2) 1px,transparent 1px,transparent 4px)' },
+  { id:'light-pink',   name:'Light Leak Pink',color:false, preview:'linear-gradient(135deg,rgba(255,105,180,.7) 0%,rgba(255,200,100,.4) 40%,transparent 70%)' },
+  { id:'light-blue',   name:'Light Leak Blue',color:false, preview:'linear-gradient(225deg,rgba(0,200,255,.7) 0%,rgba(100,50,255,.4) 40%,transparent 70%)' },
+  { id:'neon-frame',   name:'Neon Frame',     color:true,  preview:'transparent' },
+  { id:'glitch',       name:'Glitch RGB',     color:false, preview:'linear-gradient(45deg,rgba(255,0,60,.3),rgba(0,255,200,.3))' },
+  { id:'duotone-pu',   name:'Duotone Purple', color:false, preview:'linear-gradient(135deg,rgba(75,67,196,.6),rgba(182,83,52,.5))' },
+  { id:'duotone-bw',   name:'Duotone B&W',    color:false, preview:'linear-gradient(135deg,rgba(0,0,0,.6),rgba(200,200,200,.4))' },
+  { id:'fire-glow',    name:'Fire Glow',      color:false, preview:'linear-gradient(0deg,rgba(255,60,0,.7) 0%,rgba(255,180,0,.3) 40%,transparent 65%)' },
+  { id:'bold-frame',   name:'Bold Frame',     color:true,  preview:'transparent' },
+  { id:'magazine',     name:'Magazine Band',  color:true,  preview:'linear-gradient(180deg,rgba(0,0,0,.7) 0%,transparent 25%,transparent 75%,rgba(0,0,0,.7) 100%)' },
+  { id:'comic-burst',  name:'Comic Burst',    color:true,  preview:'radial-gradient(circle at 50% 50%,rgba(255,220,0,.5) 0%,transparent 60%)' },
+  { id:'diagonal',     name:'Diagonal Slash', color:true,  preview:'linear-gradient(135deg,rgba(75,67,196,.5) 0%,transparent 45%,transparent 55%,rgba(182,83,52,.4) 100%)' },
+];
+
+function renderFramesGrid() {
+  const grid = document.getElementById('framesGrid');
+  if (!grid || grid.children.length > 0) return;
+
+  IMPACT_FRAMES.forEach(fr => {
+    const card = document.createElement('div');
+    card.className = 'frame-card' + (fr.id === (currentFrameId || 'none') ? ' on' : '');
+    card.dataset.frameId = fr.id;
+
+    const preview = document.createElement('div');
+    preview.className = 'frame-preview';
+    preview.style.background = fr.id !== 'none' ? fr.preview : '#E8E0D0';
+    if (fr.id === 'neon-frame') preview.style.cssText += ';box-shadow:inset 0 0 12px rgba(123,65,201,.8),inset 0 0 4px rgba(123,65,201,1)';
+    if (fr.id === 'bold-frame') preview.style.cssText += ';box-shadow:inset 0 0 0 6px rgba(75,67,196,.8)';
+
+    const name = document.createElement('div');
+    name.className = 'frame-name';
+    name.textContent = fr.name;
+
+    card.appendChild(preview);
+    card.appendChild(name);
+    card.addEventListener('click', () => applyFrame(fr.id));
+    grid.appendChild(card);
+  });
+}
+
+function applyFrame(id) {
+  currentFrameId = id;
+  document.querySelectorAll('.frame-card').forEach(c => c.classList.toggle('on', c.dataset.frameId === id));
+
+  const layer   = document.getElementById('spFrameLayer');
+  const cw      = parseInt(document.getElementById('spCanvas').style.width)  || 500;
+  const ch      = parseInt(document.getElementById('spCanvas').style.height) || 500;
+  const color   = document.getElementById('frameColor')?.value || '#7B41C9';
+  const opacity = (document.getElementById('frameOpacity')?.value || 80) / 100;
+  const controls = document.getElementById('frameControls');
+
+  if (id === 'none') {
+    layer.innerHTML = '';
+    layer.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:45;overflow:hidden';
+    if (controls) controls.style.display = 'none';
+    return;
+  }
+  if (controls) {
+    controls.style.display = '';
+    const colorRow = document.getElementById('frameColorRow');
+    const fr = IMPACT_FRAMES.find(f => f.id === id);
+    if (colorRow) colorRow.style.display = fr?.color ? '' : 'none';
+  }
+
+  layer.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:45;overflow:hidden';
+  layer.style.opacity = opacity;
+
+  switch(id) {
+    case 'vignette-fr':
+      layer.innerHTML = '';
+      layer.style.background = 'radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.85) 100%)';
+      break;
+    case 'speed-lines':
+      layer.innerHTML = buildSpeedLinesSVG(cw, ch, color);
+      layer.style.background = '';
+      break;
+    case 'halftone':
+      layer.innerHTML = '';
+      layer.style.background = `radial-gradient(circle,${color}88 2px,transparent 2px) 0 0/10px 10px`;
+      break;
+    case 'scan-lines':
+      layer.innerHTML = '';
+      layer.style.background = 'repeating-linear-gradient(0deg,rgba(0,0,0,0.18) 0px,rgba(0,0,0,0.18) 1px,transparent 1px,transparent 4px)';
+      break;
+    case 'light-pink':
+      layer.innerHTML = '';
+      layer.style.background = 'linear-gradient(135deg,rgba(255,105,180,0.75) 0%,rgba(255,200,100,0.45) 35%,transparent 65%)';
+      break;
+    case 'light-blue':
+      layer.innerHTML = '';
+      layer.style.background = 'linear-gradient(225deg,rgba(0,200,255,0.75) 0%,rgba(100,50,255,0.45) 35%,transparent 65%)';
+      break;
+    case 'neon-frame':
+      layer.innerHTML = '';
+      layer.style.background = 'transparent';
+      layer.style.boxShadow = `inset 0 0 0 6px ${color}, inset 0 0 30px ${color}88, inset 0 0 60px ${color}44`;
+      break;
+    case 'glitch':
+      layer.innerHTML = buildGlitchSVG(cw, ch);
+      layer.style.background = '';
+      layer.style.animation = 'glitch-shift 3s steps(1) infinite';
+      break;
+    case 'duotone-pu':
+      layer.innerHTML = '';
+      layer.style.background = `linear-gradient(135deg,rgba(75,67,196,0.65),rgba(182,83,52,0.55))`;
+      layer.style.mixBlendMode = 'color';
+      break;
+    case 'duotone-bw':
+      layer.innerHTML = '';
+      layer.style.background = 'linear-gradient(135deg,rgba(20,20,20,0.6),rgba(180,180,180,0.4))';
+      layer.style.mixBlendMode = 'color';
+      break;
+    case 'fire-glow':
+      layer.innerHTML = '';
+      layer.style.background = 'linear-gradient(0deg,rgba(255,50,0,0.75) 0%,rgba(255,150,0,0.35) 35%,transparent 60%)';
+      break;
+    case 'bold-frame':
+      layer.innerHTML = '';
+      layer.style.background = 'transparent';
+      layer.style.boxShadow = `inset 0 0 0 14px ${color}`;
+      break;
+    case 'magazine':
+      layer.innerHTML = `<div style="position:absolute;top:0;left:0;right:0;height:18%;background:${color};opacity:.9"></div><div style="position:absolute;bottom:0;left:0;right:0;height:14%;background:${color};opacity:.9"></div>`;
+      layer.style.background = '';
+      break;
+    case 'comic-burst':
+      layer.innerHTML = buildComicBurstSVG(cw, ch, color);
+      layer.style.background = '';
+      break;
+    case 'diagonal':
+      layer.innerHTML = '';
+      layer.style.background = `linear-gradient(135deg,${color}55 0%,transparent 40%,transparent 60%,${color}44 100%)`;
+      break;
+  }
+
+  if (!['neon-frame','bold-frame'].includes(id)) layer.style.boxShadow = '';
+  if (!['duotone-pu','duotone-bw'].includes(id)) layer.style.mixBlendMode = '';
+  if (id !== 'glitch') layer.style.animation = '';
+}
+
+function buildSpeedLinesSVG(w, h, color) {
+  const cx = w/2, cy = h/2;
+  const lines = [];
+  const count = 36;
+  const hex = color.replace('#','');
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2;
+    const spread = 0.04;
+    const a1 = angle - spread, a2 = angle + spread;
+    const r = Math.sqrt(w*w+h*h);
+    lines.push(`<polygon points="${cx},${cy} ${cx+Math.cos(a1)*r},${cy+Math.sin(a1)*r} ${cx+Math.cos(a2)*r},${cy+Math.sin(a2)*r}" fill="#${hex}" opacity="${i%2===0?0.25:0.12}"/>`);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" style="position:absolute;inset:0">${lines.join('')}</svg>`;
+}
+
+function buildComicBurstSVG(w, h, color) {
+  const cx = w/2, cy = h/2;
+  const points = [];
+  const spikes = 24;
+  const outer = Math.sqrt(w*w+h*h)/2;
+  const inner = outer * 0.45;
+  for (let i = 0; i < spikes*2; i++) {
+    const angle = (i / (spikes*2)) * Math.PI * 2 - Math.PI/2;
+    const r = i % 2 === 0 ? outer : inner;
+    points.push(`${cx+Math.cos(angle)*r},${cy+Math.sin(angle)*r}`);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" style="position:absolute;inset:0"><polygon points="${points.join(' ')}" fill="${color}" opacity="0.35"/></svg>`;
+}
+
+function buildGlitchSVG(w, h) {
+  const rects = [];
+  for (let i=0; i<8; i++) {
+    const y = Math.random()*h, height = 2+Math.random()*20;
+    rects.push(`<rect y="${y}" width="${w}" height="${height}" fill="rgba(255,0,60,0.4)" transform="translate(${-4+Math.random()*8},0)"/>`,
+               `<rect y="${y+2}" width="${w}" height="${height}" fill="rgba(0,255,200,0.4)" transform="translate(${4-Math.random()*8},0)"/>`);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" style="position:absolute;inset:0">${rects.join('')}</svg>`;
+}
+
+function setFrameOpacity(val) {
+  document.getElementById('frameOpacityVal').textContent = val + '%';
+  const layer = document.getElementById('spFrameLayer');
+  if (layer) layer.style.opacity = val / 100;
+}
+
+function reapplyFrame() {
+  if (currentFrameId && currentFrameId !== 'none') applyFrame(currentFrameId);
+}
+
+function removeFrame() {
+  applyFrame('none');
+}
+
+/* ══════════════════════════════════════════════════
+   TEXT EFFECTS
+══════════════════════════════════════════════════ */
+function applyTextEffect(type) {
+  const el = selectedTextEl?.querySelector('.sp-text-inner');
+  if (!el) { showToast('Select a text element first'); return; }
+
+  const color = document.getElementById('txFxColor').value || '#7B41C9';
+  const intensity = +document.getElementById('txFxIntensity').value || 8;
+
+  el.style.textShadow  = '';
+  el.style.webkitTextStroke = '';
+  el.style.backgroundImage  = '';
+  el.style.webkitBackgroundClip = '';
+  el.style.webkitTextFillColor = '';
+  el.style.backgroundClip = '';
+  el.style.filter      = '';
+  el.style.transform   = '';
+  el.style.color       = el.style.color || '#ffffff';
+
+  switch(type) {
+    case 'shadow':
+      el.style.textShadow = `${intensity/2}px ${intensity/2}px ${intensity}px rgba(0,0,0,0.8), 0 0 ${intensity*2}px rgba(0,0,0,0.4)`;
+      break;
+    case 'glow':
+      el.style.textShadow = `0 0 ${intensity}px ${color}, 0 0 ${intensity*2}px ${color}, 0 0 ${intensity*3}px ${color}88`;
+      break;
+    case 'stroke':
+      el.style.webkitTextStroke = `${Math.max(1,intensity/4)}px ${color}`;
+      break;
+    case 'gradient-text': {
+      const contrastColor = color === '#7B41C9' ? '#B65334' : '#4B43C4';
+      el.style.backgroundImage = `linear-gradient(135deg, ${color}, ${contrastColor})`;
+      el.style.webkitBackgroundClip = 'text';
+      el.style.backgroundClip = 'text';
+      el.style.webkitTextFillColor = 'transparent';
+      el.style.color = 'transparent';
+      break;
+    }
+    case '3d': {
+      const shadows = [];
+      for (let i=1; i<=intensity/2; i++) {
+        shadows.push(`${i}px ${i}px 0 ${color}`);
+      }
+      el.style.textShadow = shadows.join(', ');
+      break;
+    }
+    case 'none':
+      break;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   DRAWING TOOLS
+══════════════════════════════════════════════════ */
+let currentDrawTool = 'move';
+let drawColor  = '#ffffff';
+let drawSize   = 14;
+let drawOpacity = 1;
+let isDrawing  = false;
+let drawCtx    = null;
+let lastDrawX  = 0, lastDrawY = 0;
+
+function setDrawTool(tool) {
+  currentDrawTool = tool;
+  ['Move','Draw','Erase'].forEach(t => {
+    const btn1 = document.getElementById('toolBtn' + t);
+    const btn2 = document.getElementById('db' + t);
+    if (btn1) btn1.classList.toggle('on', tool === t.toLowerCase());
+    if (btn2) btn2.classList.toggle('on', tool === t.toLowerCase());
+  });
+
+  const spCanvas   = document.getElementById('spCanvas');
+  const drawCanvas = document.getElementById('spDrawCanvas');
+
+  if (tool === 'draw' || tool === 'erase') {
+    if (!drawCtx) initDrawCanvas();
+    drawCanvas.style.display = 'block';
+    drawCanvas.style.pointerEvents = 'all';
+    spCanvas.style.cursor = tool === 'draw' ? 'crosshair' : 'cell';
+  } else {
+    if (drawCanvas) drawCanvas.style.pointerEvents = 'none';
+    spCanvas.style.cursor = '';
+  }
+}
+
+function initDrawCanvas() {
+  const spCanvas   = document.getElementById('spCanvas');
+  const drawCanvas = document.getElementById('spDrawCanvas');
+  const cw = parseInt(spCanvas.style.width)  || 500;
+  const ch = parseInt(spCanvas.style.height) || 500;
+  drawCanvas.width  = cw;
+  drawCanvas.height = ch;
+  drawCanvas.style.width  = cw + 'px';
+  drawCanvas.style.height = ch + 'px';
+  drawCtx = drawCanvas.getContext('2d');
+
+  drawCanvas.addEventListener('mousedown', e => {
+    if (currentDrawTool !== 'draw' && currentDrawTool !== 'erase') return;
+    isDrawing = true;
+    const rect = drawCanvas.getBoundingClientRect();
+    const scaleX = parseInt(spCanvas.style.width) / rect.width;
+    const scaleY = parseInt(spCanvas.style.height) / rect.height;
+    lastDrawX = (e.clientX - rect.left) * scaleX;
+    lastDrawY = (e.clientY - rect.top)  * scaleY;
+  });
+
+  drawCanvas.addEventListener('mousemove', e => {
+    if (!isDrawing) return;
+    const rect  = drawCanvas.getBoundingClientRect();
+    const scaleX = parseInt(spCanvas.style.width) / rect.width;
+    const scaleY = parseInt(spCanvas.style.height) / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top)  * scaleY;
+
+    drawCtx.beginPath();
+    if (currentDrawTool === 'erase') {
+      drawCtx.globalCompositeOperation = 'destination-out';
+      drawCtx.arc(x, y, drawSize * 2, 0, Math.PI * 2);
+      drawCtx.fill();
+    } else {
+      drawCtx.globalCompositeOperation = 'source-over';
+      drawCtx.globalAlpha = drawOpacity;
+      drawCtx.strokeStyle = drawColor;
+      drawCtx.lineWidth   = drawSize;
+      drawCtx.lineCap     = 'round';
+      drawCtx.lineJoin    = 'round';
+      drawCtx.moveTo(lastDrawX, lastDrawY);
+      drawCtx.lineTo(x, y);
+      drawCtx.stroke();
+    }
+    lastDrawX = x;
+    lastDrawY = y;
+  });
+
+  const stopDraw = () => { isDrawing = false; };
+  drawCanvas.addEventListener('mouseup', stopDraw);
+  drawCanvas.addEventListener('mouseleave', stopDraw);
+}
+
+function clearDrawing() {
+  const drawCanvas = document.getElementById('spDrawCanvas');
+  if (drawCtx && drawCanvas) {
+    drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  }
+}
+
+// Sync draw color from topbar color picker
+document.addEventListener('DOMContentLoaded', () => {
+  const cp = document.getElementById('drawColorPick');
+  if (cp) cp.addEventListener('input', e => {
+    drawColor = e.target.value;
+    const cp2 = document.getElementById('drawColor2');
+    if (cp2) cp2.value = e.target.value;
+  });
+  const ss = document.getElementById('drawSizeSel');
+  if (ss) ss.addEventListener('change', e => { drawSize = +e.target.value; });
+
+  // Init frames + presets
+  renderFramesGrid();
+  renderPresetsGrid();
+});
+
+/* ══════════════════════════════════════════════════
+   LINK SYSTEM — attach URLs to any element
+══════════════════════════════════════════════════ */
+let _linkTargetEl = null; // the element currently showing the link toolbar
+
+function showLinkToolbar(el) {
+  _linkTargetEl = el;
+  const toolbar  = document.getElementById('spLinkToolbar');
+  const input    = document.getElementById('spLinkInput');
+  if (!toolbar || !input) return;
+  toolbar.classList.add('show');
+  // Populate with existing link if any
+  input.value = el.dataset.link || '';
+  // Highlight the input if a link already exists
+  input.style.borderColor = el.dataset.link ? '#4B43C4' : '';
+}
+
+function hideLinkToolbar() {
+  _linkTargetEl = null;
+  const toolbar = document.getElementById('spLinkToolbar');
+  const input   = document.getElementById('spLinkInput');
+  if (toolbar) toolbar.classList.remove('show');
+  if (input)   input.value = '';
+}
+
+function setElementLink() {
+  if (!_linkTargetEl) { showToast('Select an element first'); return; }
+  const url = document.getElementById('spLinkInput').value.trim();
+  if (!url) { clearElementLink(); return; }
+  // Basic URL validation
+  let finalUrl = url;
+  if (!/^https?:\/\//i.test(url) && !url.startsWith('mailto:') && !url.startsWith('tel:')) {
+    finalUrl = 'https://' + url;
+    document.getElementById('spLinkInput').value = finalUrl;
+  }
+  _linkTargetEl.dataset.link = finalUrl;
+  document.getElementById('spLinkInput').style.borderColor = '#4B43C4';
+  showToast('🔗 Link set: ' + finalUrl);
+}
+
+function clearElementLink() {
+  if (!_linkTargetEl) return;
+  delete _linkTargetEl.dataset.link;
+  document.getElementById('spLinkInput').value = '';
+  document.getElementById('spLinkInput').style.borderColor = '';
+  showToast('Link removed');
+}
+
+/* ══════════════════════════════════════════════════
+   HTML EXPORT WITH LINKS
+   Generates a self-contained HTML version of the post
+   where linked elements become <a> tags
+══════════════════════════════════════════════════ */
+function exportAsHTML() {
+  const cw = parseInt(canvas.style.width)  || 500;
+  const ch = parseInt(canvas.style.height) || 500;
+
+  // Gather background
+  const bgStyle = document.getElementById('spBgLayer').style.background || '#fff';
+  const imgEl   = document.getElementById('spBgImg');
+  const imgSrc  = imgEl ? imgEl.src : '';
+
+  // Gather text elements
+  let textHTML = '';
+  document.querySelectorAll('#spTextLayer .sp-text-el').forEach(el => {
+    const inner   = el.querySelector('.sp-text-inner');
+    if (!inner) return;
+    const content = inner.innerHTML;
+    const style   = `position:absolute;left:${el.style.left};top:${el.style.top};width:${el.style.width || 'auto'}`;
+    const inStyle = inner.style.cssText;
+    const link    = el.dataset.link;
+    if (link) {
+      textHTML += `<a href="${link}" target="_blank" style="${style};text-decoration:none"><div style="${inStyle}">${content}</div></a>\n`;
+    } else {
+      textHTML += `<div style="${style}"><div style="${inStyle}">${content}</div></div>\n`;
+    }
+  });
+
+  // Gather shapes
+  let shapeHTML = '';
+  document.querySelectorAll('#spObjLayer .be-object-wrap').forEach(el => {
+    const inner  = el.querySelector('.obj-inner');
+    if (!inner) return;
+    const style  = `position:absolute;left:${el.style.left};top:${el.style.top};width:${el.style.width};height:${el.style.height};transform:${el.style.transform || ''}`;
+    const iStyle = inner.style.cssText;
+    const link   = el.dataset.link;
+    const div    = `<div style="${style};pointer-events:all"><div style="${iStyle}"></div></div>`;
+    shapeHTML += link ? `<a href="${link}" target="_blank" style="text-decoration:none">${div}</a>\n` : div + '\n';
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StreamInk Post</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#F1ECE1;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+  .post-canvas{position:relative;width:${cw}px;height:${ch}px;overflow:hidden;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+  .bg-layer{position:absolute;inset:0;background:${bgStyle}}
+  .img-layer{position:absolute;inset:0;overflow:hidden}
+  .img-layer img{width:100%;height:100%;object-fit:cover}
+  .content-layer{position:absolute;inset:0}
+</style>
+</head>
+<body>
+<div class="post-canvas">
+  <div class="bg-layer"></div>
+  ${imgSrc ? `<div class="img-layer"><img src="${imgSrc}" alt=""></div>` : ''}
+  <div class="content-layer">
+    ${shapeHTML}
+    ${textHTML}
+  </div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'streamink-post.html' });
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('✅ HTML exported with links!');
+}
+</script>
+<script src="/js/config.js"></script>
+<script src="/js/auth-gate.js"></script>
+<script src="/js/settings-prefill.js"></script>
+</body>
+</html>

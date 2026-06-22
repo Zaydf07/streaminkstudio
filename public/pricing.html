@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — StreamInk Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECE1; --panel:#FFFFFF; --panel-2:#FBF7EF; --field:#F2EDE2;
+  --line:#E3DACA; --line-soft:#EDE6D8;
+  --text:#211C14; --muted:#6E6557; --faint:#A89E8C;
+  --cyan:#2E8EAC; --blue:#4B43C4; --violet:#7B41C9; --clay:#B65334;
+  --ink:#4B43C4; --ink-d:#39329F;
+  --green:#2E8E6A;
+  --grad:linear-gradient(165deg,#5750D8,#3F37AC);
+  --ff-d:'Newsreader',Georgia,serif; --ff-b:'Hanken Grotesk',system-ui,sans-serif; --ff-m:'JetBrains Mono',ui-monospace,monospace;
+  --r-lg:16px; --r-md:11px; --r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 30px}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:50;background:rgba(241,236,225,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-soft)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:74px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{height:32px;width:auto;display:block}
+.brand-name{font-family:var(--ff-d);font-weight:600;font-size:21px;letter-spacing:.005em;line-height:1}
+.brand-name small{display:block;font-family:var(--ff-m);font-weight:500;font-size:9px;letter-spacing:.36em;color:var(--faint);text-transform:uppercase;margin-top:3px}
+.nav-links{display:flex;gap:30px;font-size:14.5px;font-weight:500;color:var(--muted)}
+.nav-links a:hover{color:var(--text)}
+.nav-links a.on{color:var(--ink);font-weight:600}
+.nav-cta{display:flex;align-items:center;gap:18px}
+.nav-login{font-size:14.5px;font-weight:600;color:var(--muted)}
+.nav-login:hover{color:var(--text)}
+@media(max-width:880px){.nav-links{display:none}}
+
+.btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:14px;border-radius:999px;padding:11px 22px;border:1px solid transparent;cursor:pointer;transition:transform .18s,box-shadow .18s,background .18s,border-color .18s,color .18s;text-decoration:none}
+.btn-ink{color:#fff;background:var(--grad);box-shadow:0 10px 24px -12px rgba(75,67,196,.7)}
+.btn-ink:hover{transform:translateY(-1px)}
+.btn-ghost{border-color:var(--line);color:var(--text);background:var(--panel)}
+.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+.btn-block{width:100%;justify-content:center}
+
+/* ── PRICE HEAD ── */
+.price-head{text-align:center;padding:64px 0 0}
+.eyebrow{display:inline-flex;align-items:center;gap:11px;font-family:var(--ff-m);font-size:11px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;margin-bottom:18px;color:var(--ink)}
+.eyebrow::before,.eyebrow::after{content:"";width:26px;height:1px;background:currentColor;opacity:.55}
+.page-sub{color:var(--muted);font-size:15px;max-width:540px;margin:12px auto 0;line-height:1.65}
+
+/* ── BILLING TOGGLE ── */
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px;gap:2px;margin-top:28px}
+.seg button{padding:9px 22px;border-radius:999px;border:none;background:none;font-size:13.5px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--grad);color:#fff}
+.seg .save{font-size:10px;font-weight:700;background:rgba(46,142,106,.12);color:#2E8E6A;border-radius:999px;padding:2px 7px;margin-left:6px}
+.seg button.on .save{background:rgba(255,255,255,.2);color:#fff}
+
+/* ── CREDIT EXPLAINER ── */
+.credit-explainer{max-width:900px;margin:48px auto 0;padding:0 30px}
+.credit-explainer-inner{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px 30px;display:flex;align-items:flex-start;gap:40px;flex-wrap:wrap}
+.ce-left{flex:0 0 auto}
+.ce-title{font-family:var(--ff-d);font-weight:600;font-size:17px;margin-bottom:5px}
+.ce-sub{font-size:13px;color:var(--muted);max-width:260px;line-height:1.6}
+.ce-costs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:1;min-width:260px}
+.ce-item{background:var(--panel-2);border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ce-item-label{font-size:12.5px;color:var(--muted)}
+.ce-item-cost{font-family:var(--ff-m);font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap}
+.ce-note{width:100%;font-size:12px;color:var(--faint);margin-top:4px}
+
+/* ── PLANS ── */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:1080px;margin:40px auto 0;padding:0 30px 16px;align-items:start}
+@media(max-width:900px){.plans{grid-template-columns:1fr;max-width:480px}}
+.plan{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 28px;position:relative;transition:transform .2s,box-shadow .2s}
+.plan:hover{transform:translateY(-3px);box-shadow:0 18px 40px -22px rgba(33,28,20,.25)}
+.plan.pop{background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--grad) border-box;border:2px solid transparent;box-shadow:0 16px 40px -16px rgba(91,108,240,.4)}
+.pop-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 16px;border-radius:999px;white-space:nowrap;font-family:var(--ff-m)}
+.pname{font-family:var(--ff-m);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+.pprice{display:flex;align-items:baseline;gap:5px;margin-bottom:4px;font-family:var(--ff-d)}
+.pprice b{font-size:42px;font-weight:600;letter-spacing:-.02em}
+.pprice small{font-size:14px;color:var(--faint);font-family:var(--ff-b)}
+.pbill{font-size:12px;color:var(--faint);margin-bottom:18px}
+
+/* Credit badge on each plan */
+.pcredit{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:999px;padding:7px 14px;margin-bottom:16px;width:fit-content}
+.pcredit-icon{font-size:14px}
+.pcredit-val{font-family:var(--ff-m);font-size:13px;font-weight:700;color:var(--ink)}
+.pcredit-label{font-size:12px;color:var(--muted)}
+.plan.pop .pcredit{background:color-mix(in srgb,var(--ink) 6%,transparent);border-color:color-mix(in srgb,var(--ink) 18%,transparent)}
+
+/* Free plan credit meter */
+.credit-meter{margin-bottom:16px}
+.meter-track{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin-bottom:6px}
+.meter-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),#4EB884);transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.meter-fill.warn{background:linear-gradient(90deg,#D98E72,#E36B3E)}
+.meter-fill.full{background:linear-gradient(90deg,#C0392B,#E74C3C)}
+.meter-labels{display:flex;justify-content:space-between;font-family:var(--ff-m);font-size:10.5px;color:var(--faint)}
+.meter-labels span:last-child{color:var(--muted);font-weight:600}
+
+/* Credits exceeded callout */
+.exceeded-banner{display:none;background:linear-gradient(135deg,rgba(182,83,52,.08),rgba(75,67,196,.06));border:1.5px solid rgba(182,83,52,.28);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:16px}
+.exceeded-banner.visible{display:block}
+.exceeded-title{font-size:12.5px;font-weight:700;color:var(--clay);margin-bottom:3px}
+.exceeded-sub{font-size:12px;color:var(--muted);line-height:1.5}
+.exceeded-sub a{color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+
+.pdesc{font-size:13px;color:var(--muted);line-height:1.6;padding-bottom:16px;border-bottom:1px solid var(--line-soft);margin-bottom:16px}
+.pfeat{list-style:none;margin-bottom:24px;display:flex;flex-direction:column;gap:9px}
+.pfeat li{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--text)}
+.pfeat li.dim{color:var(--faint)}
+.pfeat svg{width:14px;height:14px;flex:none;margin-top:2px}
+
+/* ── CREDIT SIMULATOR ── */
+.simulator{max-width:900px;margin:56px auto 0;padding:0 30px}
+.sim-inner{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px 32px}
+.sim-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.sim-title{font-family:var(--ff-d);font-weight:600;font-size:19px;margin-bottom:5px}
+.sim-sub{font-size:13px;color:var(--muted)}
+.sim-reset{font-size:12px;font-weight:600;color:var(--ink);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px}
+.sim-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+@media(max-width:600px){.sim-actions{grid-template-columns:1fr}}
+.sim-btn{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 16px;text-align:left;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between}
+.sim-btn:hover{border-color:var(--ink);background:#fff}
+.sim-btn-label{font-size:13px;font-weight:500;color:var(--text)}
+.sim-btn-cost{font-family:var(--ff-m);font-size:11.5px;font-weight:700;color:var(--faint)}
+.sim-meter-area{}
+.sim-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.sim-track{flex:1;height:12px;background:var(--line);border-radius:999px;overflow:hidden}
+.sim-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),#4EB884);transition:width .4s cubic-bezier(.34,1.56,.64,1);max-width:100%}
+.sim-fill.warn{background:linear-gradient(90deg,#D98E72,#E36B3E)}
+.sim-fill.full{background:linear-gradient(90deg,#C0392B,#E74C3C)}
+.sim-counter{font-family:var(--ff-m);font-size:12.5px;font-weight:700;min-width:90px;text-align:right}
+.sim-counter.ok{color:var(--green)}
+.sim-counter.warn{color:#D98E72}
+.sim-counter.full{color:#C0392B}
+.sim-upgrade{display:none;background:linear-gradient(135deg,rgba(182,83,52,.07),rgba(75,67,196,.05));border:1.5px solid rgba(182,83,52,.25);border-radius:var(--r-md);padding:16px 18px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;opacity:0;transition:opacity .3s}
+.sim-upgrade.show{opacity:1}
+.sim-upgrade-text strong{display:block;font-size:14px;color:var(--clay);margin-bottom:3px}
+.sim-upgrade-text span{font-size:12.5px;color:var(--muted)}
+.sim-upgrade-btns{display:flex;gap:10px;flex-wrap:wrap}
+.sim-up-btn{padding:9px 18px;border-radius:999px;font-size:13px;font-weight:700;text-decoration:none;transition:.15s}
+.sim-up-pro{background:var(--grad);color:#fff}
+.sim-up-pro:hover{opacity:.88}
+.sim-up-agency{background:rgba(123,65,201,.1);color:var(--violet);border:1px solid rgba(123,65,201,.25)}
+.sim-up-agency:hover{background:rgba(123,65,201,.16)}
+
+/* ── COMPARE TABLE ── */
+.compare{max-width:920px;margin:80px auto 0;padding:0 30px}
+.compare-head{text-align:center;margin-bottom:36px}
+.compare-head p{color:var(--muted);font-size:14.5px;margin-top:8px}
+.cmp-table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.cmp-table th{padding:14px 18px;font-family:var(--ff-m);font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.12em;text-align:left;border-bottom:1px solid var(--line)}
+.cmp-table th:not(:first-child){text-align:center}
+.cmp-table td{padding:13px 18px;font-size:13px;color:var(--text);border-bottom:1px solid var(--line-soft)}
+.cmp-table td:not(:first-child){text-align:center}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table .cmp-section td{background:var(--panel-2);font-family:var(--ff-m);font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;padding:10px 18px}
+.cmp-yes{color:#2E8E6A;font-size:16px}
+.cmp-no{color:var(--faint);font-size:16px}
+.cmp-val{font-weight:700;color:var(--ink)}
+.cmp-highlight td{background:color-mix(in srgb,var(--ink) 3%,var(--panel))}
+
+/* ── FAQ ── */
+.faq{max-width:700px;margin:80px auto 0;padding:0 30px}
+.faq-head{text-align:center;margin-bottom:36px}
+.faq-head p{color:var(--muted);font-size:14.5px;margin-top:8px}
+.faq-item{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:10px;overflow:hidden}
+.faq-q{padding:17px 20px;font-size:14.5px;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;font-family:var(--ff-d)}
+.faq-q:hover{color:var(--ink)}
+.faq-icon{font-size:18px;color:var(--faint);transition:.25s;flex-shrink:0;font-family:var(--ff-b)}
+.faq-item.open .faq-icon{transform:rotate(45deg);color:var(--ink)}
+.faq-a{display:none;padding:0 20px 18px;font-size:13.5px;color:var(--muted);line-height:1.7}
+.faq-item.open .faq-a{display:block}
+
+/* ── BOTTOM CTA ── */
+.bottom-cta{margin:90px 0 0;position:relative;overflow:hidden;background:
+  radial-gradient(640px 480px at 82% 6%,rgba(123,65,201,.30),transparent 62%),
+  radial-gradient(640px 480px at 6% 94%,rgba(46,142,172,.18),transparent 60%),
+  linear-gradient(162deg,#181428,#221D40);
+  padding:84px 24px;text-align:center;color:#fff}
+.bottom-cta h2{font-family:var(--ff-d);font-weight:500;font-size:clamp(26px,3.4vw,40px);margin-bottom:12px}
+.bottom-cta p{font-size:15px;color:#B9B5E3;max-width:480px;margin:0 auto 32px;line-height:1.6}
+.bottom-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.bottom-btn{padding:13px 26px;border-radius:999px;font-weight:600;font-size:14.5px;text-decoration:none;transition:.2s}
+.bottom-btn-main{background:var(--grad);color:#fff;box-shadow:0 10px 26px -10px rgba(91,108,240,.6)}
+.bottom-btn-main:hover{transform:translateY(-1px)}
+.bottom-btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.bottom-btn-ghost:hover{background:rgba(255,255,255,.14)}
+
+/* ── FOOTER ── */
+.foot{padding:48px 24px 60px;text-align:center;color:var(--faint);font-size:12.5px}
+.foot a{color:var(--muted);font-weight:600}
+.foot a:hover{color:var(--ink)}
+
+h1{font-family:var(--ff-d);font-weight:500;font-size:clamp(28px,3.8vw,46px);letter-spacing:-.015em;line-height:1.08}
+h1 .g{color:var(--ink);font-style:italic;font-weight:500}
+h2{font-family:var(--ff-d);font-weight:600;font-size:clamp(22px,2.6vw,30px);letter-spacing:-.01em}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="/" aria-label="StreamInk Studio home">
+      <img class="brand-mark" src="/images/streamink-mark.png" alt="">
+      <span class="brand-name">StreamInk<small>Studio</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/pricing" class="on">Pricing</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="nav-login" href="/login">Log in</a>
+      <a class="btn btn-ink" href="/dashboard">Get started →</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PRICE HEAD ============ -->
+<section class="price-head">
+  <span class="eyebrow">Pricing</span>
+  <h1>Pay with <span class="g">credits, not limits</span></h1>
+  <p class="page-sub">Start free with 100 credits a month. Every generation, export, and AI action spends credits — upgrade when you need more.</p>
+  <div class="seg" id="billSeg">
+    <button class="on" id="toggleMonthly" onclick="setToggle('monthly')" type="button">Monthly</button>
+    <button id="toggleAnnual" onclick="setToggle('annual')" type="button">Annual <span class="save">Save 30%</span></button>
+  </div>
+</section>
+
+<!-- ============ CREDIT EXPLAINER ============ -->
+<div class="credit-explainer">
+  <div class="credit-explainer-inner">
+    <div class="ce-left">
+      <p class="ce-title">How credits work</p>
+      <p class="ce-sub">Each action spends a small number of credits. Credits reset on the 1st of every month.</p>
+    </div>
+    <div class="ce-costs">
+      <div class="ce-item"><span class="ce-item-label">Blog post (long)</span><span class="ce-item-cost">15 cr</span></div>
+      <div class="ce-item"><span class="ce-item-label">Article</span><span class="ce-item-cost">10 cr</span></div>
+      <div class="ce-item"><span class="ce-item-label">Email newsletter</span><span class="ce-item-cost">8 cr</span></div>
+      <div class="ce-item"><span class="ce-item-label">Social post</span><span class="ce-item-cost">3 cr</span></div>
+      <div class="ce-item"><span class="ce-item-label">PDF export</span><span class="ce-item-cost">5 cr</span></div>
+      <div class="ce-item"><span class="ce-item-label">AI Refine</span><span class="ce-item-cost">2 cr</span></div>
+      <p class="ce-note">* Exact costs vary slightly by content length. Credits are deducted on completion.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PLANS ============ -->
+<div class="plans">
+
+  <!-- FREE -->
+  <div class="plan" id="freePlan">
+    <p class="pname">Free</p>
+    <p class="pprice"><b>$0</b><small>/mo</small></p>
+    <p class="pbill">Free forever · no card needed</p>
+
+    <div class="pcredit">
+      <span class="pcredit-icon">⬡</span>
+      <span class="pcredit-val">100</span>
+      <span class="pcredit-label">credits / month</span>
+    </div>
+
+    <div class="credit-meter">
+      <div class="meter-track"><div class="meter-fill" id="freeMeter" style="width:38%"></div></div>
+      <div class="meter-labels"><span id="freeMeterUsed">38 used</span><span>100 total</span></div>
+    </div>
+
+    <div class="exceeded-banner" id="exceededBanner">
+      <div class="exceeded-title">Monthly limit reached</div>
+      <div class="exceeded-sub">You've used all 100 free credits. <a href="#planPro">Upgrade to Pro</a> or <a href="#planAgency">Agency</a> to keep creating.</div>
+    </div>
+
+    <p class="pdesc">Perfect for exploring all six engines and creating occasional content.</p>
+    <ul class="pfeat">
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>All six content engines</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Up to 10 saved documents</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF + PNG export</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#2E8EAC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Brand kit (1 brand)</li>
+      <li class="dim"><svg viewBox="0 0 16 16" fill="none"><path d="M4 8h8" stroke-width="2" stroke-linecap="round" stroke="#C8BFAC"/></svg>AI Refine</li>
+      <li class="dim"><svg viewBox="0 0 16 16" fill="none"><path d="M4 8h8" stroke-width="2" stroke-linecap="round" stroke="#C8BFAC"/></svg>Priority generation</li>
+    </ul>
+    <a href="/dashboard" class="btn btn-ghost btn-block">Start for free</a>
+  </div>
+
+  <!-- PRO (POPULAR) -->
+  <div class="plan pop" id="planPro">
+    <span class="pop-badge">Most popular</span>
+    <p class="pname">Pro</p>
+    <p class="pprice"><b id="proPrice">$29</b><small>/mo</small></p>
+    <p class="pbill" id="proNote">Billed monthly</p>
+
+    <div class="pcredit">
+      <span class="pcredit-icon">⬡</span>
+      <span class="pcredit-val">2,000</span>
+      <span class="pcredit-label">credits / month</span>
+    </div>
+
+    <p class="pdesc">For writers and professionals who create content daily and need room to grow.</p>
+    <ul class="pfeat">
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Free</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited documents</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>AI Refine (unlimited)</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority AI generation</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF + HTML + DOCX export</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Custom fonts &amp; brand kit</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#4B43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Document history &amp; bulk export</li>
+    </ul>
+    <a href="/dashboard" class="btn btn-ink btn-block">Get Pro →</a>
+  </div>
+
+  <!-- AGENCY -->
+  <div class="plan" id="planAgency">
+    <p class="pname">Agency</p>
+    <p class="pprice"><b id="agencyPrice">$79</b><small>/mo</small></p>
+    <p class="pbill" id="agencyNote">Billed monthly</p>
+
+    <div class="pcredit">
+      <span class="pcredit-icon">⬡</span>
+      <span class="pcredit-val" style="color:var(--violet)">Unlimited</span>
+      <span class="pcredit-label">credits / month</span>
+    </div>
+
+    <p class="pdesc">For teams and agencies managing high-volume content across multiple clients.</p>
+    <ul class="pfeat">
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#7B41C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Pro</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#7B41C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited credits</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#7B41C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>5 team members</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#7B41C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Client workspaces</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#7B41C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>White-label exports</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#7B41C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Analytics dashboard</li>
+      <li><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5l3.5 3.5L13.5 4" stroke="#7B41C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated onboarding</li>
+    </ul>
+    <a href="mailto:hello@streamink.studio" class="btn btn-ghost btn-block">Contact sales</a>
+  </div>
+
+</div>
+
+<!-- ============ CREDIT SIMULATOR ============ -->
+<div class="simulator">
+  <div class="sim-inner">
+    <div class="sim-head">
+      <div>
+        <p class="sim-title">See how far your credits go</p>
+        <p class="sim-sub">Click actions below to simulate a typical month. Watch your free limit in real time.</p>
+      </div>
+      <button class="sim-reset" onclick="resetSim()">Reset</button>
+    </div>
+    <div class="sim-actions">
+      <button class="sim-btn" onclick="useCredits(15,'Blog post (long)')"><span class="sim-btn-label">Write a blog post</span><span class="sim-btn-cost">−15 cr</span></button>
+      <button class="sim-btn" onclick="useCredits(10,'Article')"><span class="sim-btn-label">Write an article</span><span class="sim-btn-cost">−10 cr</span></button>
+      <button class="sim-btn" onclick="useCredits(8,'Email newsletter')"><span class="sim-btn-label">Create an email newsletter</span><span class="sim-btn-cost">−8 cr</span></button>
+      <button class="sim-btn" onclick="useCredits(3,'Social post')"><span class="sim-btn-label">Write a social post</span><span class="sim-btn-cost">−3 cr</span></button>
+      <button class="sim-btn" onclick="useCredits(5,'PDF export')"><span class="sim-btn-label">Export to PDF</span><span class="sim-btn-cost">−5 cr</span></button>
+      <button class="sim-btn" onclick="useCredits(2,'AI Refine')"><span class="sim-btn-label">AI Refine suggestion</span><span class="sim-btn-cost">−2 cr</span></button>
+    </div>
+    <div class="sim-meter-area">
+      <div class="sim-bar-row">
+        <div class="sim-track"><div class="sim-fill" id="simFill" style="width:0%"></div></div>
+        <div class="sim-counter ok" id="simCounter">0 / 100 cr</div>
+      </div>
+      <div id="simLog" style="font-size:12px;color:var(--faint);min-height:18px"></div>
+    </div>
+    <div class="sim-upgrade" id="simUpgrade">
+      <div class="sim-upgrade-text">
+        <strong>Free credits exhausted</strong>
+        <span>You'd need a paid plan to continue this month.</span>
+      </div>
+      <div class="sim-upgrade-btns">
+        <a href="#planPro" class="sim-up-btn sim-up-pro">Pro — 2,000 cr/mo</a>
+        <a href="#planAgency" class="sim-up-btn sim-up-agency">Agency — Unlimited</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ COMPARE TABLE ============ -->
+<section class="compare">
+  <div class="compare-head">
+    <h2>Compare all features</h2>
+    <p>Every plan includes all core content types. Here's what sets them apart.</p>
+  </div>
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th style="width:42%">Feature</th>
+        <th>Free</th>
+        <th>Pro</th>
+        <th>Agency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="cmp-section"><td colspan="4">Credits</td></tr>
+      <tr class="cmp-highlight">
+        <td>Monthly credits</td>
+        <td>100 cr</td>
+        <td><span class="cmp-val">2,000 cr</span></td>
+        <td><span class="cmp-val">Unlimited</span></td>
+      </tr>
+      <tr><td>Credits reset</td><td>Monthly</td><td>Monthly</td><td>Monthly</td></tr>
+      <tr><td>Rollover unused credits</td><td>—</td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr class="cmp-section"><td colspan="4">Content creation</td></tr>
+      <tr><td>All six engines</td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr><td>AI generation speed</td><td>Standard</td><td><span class="cmp-val">Priority</span></td><td><span class="cmp-val">Priority</span></td></tr>
+      <tr><td>AI Refine (inline editing)</td><td><span class="cmp-no">–</span></td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr><td>Bulk content generation</td><td><span class="cmp-no">–</span></td><td><span class="cmp-no">–</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr class="cmp-section"><td colspan="4">Documents &amp; export</td></tr>
+      <tr><td>Saved documents</td><td>10</td><td><span class="cmp-val">Unlimited</span></td><td><span class="cmp-val">Unlimited</span></td></tr>
+      <tr><td>PDF export</td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr><td>HTML + DOCX export</td><td><span class="cmp-no">–</span></td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr><td>White-label exports</td><td><span class="cmp-no">–</span></td><td><span class="cmp-no">–</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr class="cmp-section"><td colspan="4">Workspace</td></tr>
+      <tr><td>Brand kit</td><td>1 brand</td><td><span class="cmp-val">Unlimited</span></td><td><span class="cmp-val">Unlimited</span></td></tr>
+      <tr><td>Custom fonts</td><td><span class="cmp-no">–</span></td><td><span class="cmp-yes">✓</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr><td>Team members</td><td>1</td><td>1</td><td><span class="cmp-val">Up to 5</span></td></tr>
+      <tr><td>Client workspaces</td><td><span class="cmp-no">–</span></td><td><span class="cmp-no">–</span></td><td><span class="cmp-yes">✓</span></td></tr>
+      <tr><td>Analytics dashboard</td><td><span class="cmp-no">–</span></td><td><span class="cmp-no">–</span></td><td><span class="cmp-yes">✓</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq">
+  <div class="faq-head">
+    <h2>Frequently asked questions</h2>
+    <p>Everything you need to know about StreamInk Studio pricing.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What is a credit and how many do I need? <span class="faq-icon">+</span></div>
+    <div class="faq-a">Credits are the currency for AI actions on StreamInk. A blog post costs 15 credits, an article 10, a social post 3, an email newsletter 8, a PDF export 5, and an AI Refine suggestion 2. Free users get 100 credits a month — enough for about 6–7 blog posts or 30+ social posts. Pro users get 2,000 and Agency users have no limit.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What happens when I run out of free credits? <span class="faq-icon">+</span></div>
+    <div class="faq-a">Once your 100 free monthly credits are used up, new AI generations and credit-spending actions will pause until the 1st of the next month — when your credits reset automatically. You can upgrade to Pro or Agency at any time to continue immediately with a higher allowance.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Do unused credits roll over? <span class="faq-icon">+</span></div>
+    <div class="faq-a">On the Free plan, unused credits expire at the end of each month. Pro and Agency users get rollover: up to one month's worth of unused credits carry forward (up to 2,000 on Pro; unlimited on Agency), so a quiet month means extra headroom next month.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I try Pro before paying? <span class="faq-icon">+</span></div>
+    <div class="faq-a">Yes — start on the Free plan and explore all six engines with 100 credits. You can upgrade to Pro at any time. We offer a 14-day refund guarantee on all paid plans, no questions asked.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What happens to my documents if I downgrade? <span class="faq-icon">+</span></div>
+    <div class="faq-a">Your documents are never deleted. If you downgrade from Pro to Free, your existing documents remain accessible — you just won't be able to create new ones beyond the 10-document limit, and your monthly credits drop back to 100.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I change plans at any time? <span class="faq-icon">+</span></div>
+    <div class="faq-a">Absolutely. Upgrade any time — the new credit allowance kicks in immediately and you're charged the prorated difference. Downgrades take effect at the end of your current billing period.</div>
+  </div>
+</section>
+
+<!-- ============ BOTTOM CTA ============ -->
+<section class="bottom-cta">
+  <h2>Start with 100 free credits today</h2>
+  <p>No card required. Explore every engine and upgrade only when your output grows.</p>
+  <div class="bottom-btns">
+    <a href="/dashboard" class="bottom-btn bottom-btn-main">Start for free →</a>
+    <a href="/" class="bottom-btn bottom-btn-ghost">See all engines</a>
+  </div>
+</section>
+
+<footer class="foot">
+  StreamInk Studio · <a href="/">Home</a> · <a href="/dashboard">Dashboard</a> · <a href="/login">Log in</a>
+</footer>
+
+<script>
+/* ── BILLING TOGGLE ── */
+let billingCycle = 'monthly';
+function setToggle(cycle) {
+  billingCycle = cycle;
+  document.getElementById('toggleMonthly').classList.toggle('on', cycle === 'monthly');
+  document.getElementById('toggleAnnual').classList.toggle('on',  cycle === 'annual');
+  if (cycle === 'annual') {
+    document.getElementById('proPrice').textContent    = '$20';
+    document.getElementById('agencyPrice').textContent = '$55';
+    document.getElementById('proNote').textContent     = 'Billed annually ($240/yr)';
+    document.getElementById('agencyNote').textContent  = 'Billed annually ($660/yr)';
+  } else {
+    document.getElementById('proPrice').textContent    = '$29';
+    document.getElementById('agencyPrice').textContent = '$79';
+    document.getElementById('proNote').textContent     = 'Billed monthly';
+    document.getElementById('agencyNote').textContent  = 'Billed monthly';
+  }
+}
+
+/* ── CREDIT SIMULATOR ── */
+const FREE_LIMIT = 100;
+let simUsed = 0;
+let simLog = [];
+
+function useCredits(amount, label) {
+  if (simUsed >= FREE_LIMIT) return;
+  const prev = simUsed;
+  simUsed = Math.min(simUsed + amount, FREE_LIMIT);
+  const actual = simUsed - prev;
+  simLog.unshift(`+${actual} cr — ${label}`);
+  updateSim();
+}
+
+function resetSim() {
+  simUsed = 0;
+  simLog = [];
+  updateSim();
+}
+
+function updateSim() {
+  const pct = (simUsed / FREE_LIMIT) * 100;
+  const fill = document.getElementById('simFill');
+  const counter = document.getElementById('simCounter');
+  const upgrade = document.getElementById('simUpgrade');
+  const logEl = document.getElementById('simLog');
+
+  fill.style.width = pct + '%';
+  fill.className = 'sim-fill' + (pct >= 100 ? ' full' : pct >= 70 ? ' warn' : '');
+  counter.textContent = simUsed + ' / ' + FREE_LIMIT + ' cr';
+  counter.className = 'sim-counter' + (pct >= 100 ? ' full' : pct >= 70 ? ' warn' : ' ok');
+
+  logEl.textContent = simLog.slice(0,3).join('  ·  ');
+
+  if (pct >= 100) {
+    upgrade.classList.add('show');
+    upgrade.style.display = 'flex';
+  } else {
+    upgrade.classList.remove('show');
+    if (!upgrade.classList.contains('show')) upgrade.style.display = 'none';
+  }
+}
+updateSim();
+
+/* ── FAQ ── */
+function toggleFaq(el) {
+  const item = el.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>
