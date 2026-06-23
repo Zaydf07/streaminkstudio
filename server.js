@@ -226,13 +226,23 @@ const oauthStateStore = {
 // Use memory storage — works in both local and serverless (Netlify Functions)
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Convert multer memory buffer to base64 data URL (works in serverless)
+function fileToDataUrl(file) {
+  if (!file) return null;
+  if (file.buffer) {
+    const mime = file.mimetype || 'image/png';
+    return `data:${mime};base64,${file.buffer.toString('base64')}`;
+  }
+  // Fallback for disk storage (local dev)
+  if (file.filename) return `/uploads/${file.filename}`;
+  if (file.path)     return `/uploads/${path.basename(file.path)}`;
+  return null;
+}
+
 function saveGeneratedImage(buffer, ext = 'png') {
-  const uploadsDir = path.join(__dirname, 'uploads');
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-  const safeExt = ext.replace(/[^a-z0-9]/gi, '').toLowerCase() || 'png';
-  const filename = `${Date.now()}-ai-background.${safeExt}`;
-  fs.writeFileSync(path.join(uploadsDir, filename), buffer);
-  return `/uploads/${filename}`;
+  // In serverless, return a data URL instead of writing to disk
+  const mime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'image/png';
+  return `data:${mime};base64,${buffer.toString('base64')}`;
 }
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1024,7 +1034,7 @@ Output ONLY HTML tags.`);
 app.post('/api/social/generate', requireAuth, aiLimit, checkCredits(CREDIT_COSTS.social,'social'), upload.any(), async (req, res) => {
   try {
     const { topic, platform, tone, brief, url, brand } = req.body;
-    const imgs = (req.files || []).map(f => `/uploads/${f.filename}`);
+    const imgs = (req.files || []).map(f => fileToDataUrl(f)).filter(Boolean);
     const heroImg = imgs[0] || '';
 
     const site     = url ? await fetchSiteData(url) : {};
