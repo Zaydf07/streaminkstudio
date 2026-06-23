@@ -223,11 +223,8 @@ const oauthStateStore = {
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    MULTER  â€“ save uploaded images
 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename:    (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_')),
-});
-const upload = multer({ storage });
+// Use memory storage — works in both local and serverless (Netlify Functions)
+const upload = multer({ storage: multer.memoryStorage() });
 
 function saveGeneratedImage(buffer, ext = 'png') {
   const uploadsDir = path.join(__dirname, 'uploads');
