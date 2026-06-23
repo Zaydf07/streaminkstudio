@@ -2438,4 +2438,9 @@ function startServer(port, retryLimit = 10) {
   });
 }
 
-startServer(DEFAULT_PORT);
+// Only start the HTTP server when run directly (not when required by Netlify Functions)
+if (require.main === module) {
+  startServer(DEFAULT_PORT);
+}
+
+module.exports = app;
