@@ -31,16 +31,54 @@
     return !!s;
   }
 
+  /* ── get stored access token ─────────────────────────── */
+  function getStoredToken() {
+    try {
+      // supabase-js v2 stores under sb-<ref>-auth-token
+      const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+      if (!key) return null;
+      const data = JSON.parse(localStorage.getItem(key));
+      return data?.access_token || data?.session?.access_token || null;
+    } catch { return null; }
+  }
+
   /* ── fetch interceptor ────────────────────────────────── */
   const _fetch = window.fetch.bind(window);
   window.fetch = async function (url, opts) {
+    // Auto-inject auth token for all /api/ requests
+    if (typeof url === 'string' && url.startsWith('/api/')) {
+      const token = getStoredToken();
+      if (token) {
+        opts = opts ? { ...opts } : {};
+        // Don't override if caller already set Authorization
+        if (opts.headers instanceof Headers) {
+          if (!opts.headers.has('Authorization')) opts.headers.set('Authorization', 'Bearer ' + token);
+        } else {
+          opts.headers = opts.headers || {};
+          if (!opts.headers['Authorization']) opts.headers['Authorization'] = 'Bearer ' + token;
+        }
+      }
+    }
+
     const res = await _fetch(url, opts);
+
+    // 401 = not logged in → show signup/login modal
     if (res.status === 401 && typeof url === 'string' && url.startsWith('/api/')) {
-      // clone so callers can still read the body
       const cloned = res.clone();
       AuthGate.open('You need an account to generate content. It\'s free.');
       return cloned;
     }
+
+    // 402 = credit limit reached → show upgrade modal (not signup)
+    if (res.status === 402 && typeof url === 'string' && url.startsWith('/api/')) {
+      const cloned = res.clone();
+      try {
+        const d = await res.clone().json();
+        AuthGate.showUpgrade(d.plan, d.creditsUsed, d.creditsLimit);
+      } catch { AuthGate.showUpgrade(); }
+      return cloned;
+    }
+
     return res;
   };
 
@@ -380,6 +418,32 @@
       document.querySelector('.ag-tabs').style.display = 'none';
       document.getElementById('ag-success').style.display = 'block';
       setTimeout(() => location.reload(), 1800);
+    },
+
+    showUpgrade(plan, used, limit) {
+      buildModal();
+      const overlay = document.getElementById('ag-overlay');
+      const body    = document.getElementById('ag-body');
+      if (!overlay || !body) return;
+      body.innerHTML = `
+        <div style="text-align:center;padding:12px 0 8px">
+          <div style="font-size:42px;margin-bottom:14px">⚡</div>
+          <h3 style="font-size:18px;font-weight:700;color:#211C14;margin-bottom:8px">You've used all your credits</h3>
+          <p style="font-size:13.5px;color:#6E6557;line-height:1.6;margin-bottom:20px">
+            ${used && limit ? `${used} / ${limit} credits used this month on your <strong>${plan||'free'}</strong> plan.` : 'Your monthly credit limit has been reached.'}
+            <br>Upgrade to keep generating content.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+            <a href="/pricing.html" style="display:block;padding:13px;background:linear-gradient(165deg,#5750D8,#3F37AC);color:#fff;border-radius:999px;font-weight:700;font-size:14.5px;text-decoration:none">
+              Upgrade to Pro — $29/mo →
+            </a>
+            <a href="/pricing.html" style="display:block;padding:11px;border:1.5px solid #E3DACA;border-radius:999px;color:#211C14;font-weight:600;font-size:13px;text-decoration:none">
+              See all plans
+            </a>
+          </div>
+          <p style="font-size:11.5px;color:#A89E8C">Credits reset on the 1st of each month</p>
+        </div>`;
+      overlay.classList.add('open');
     }
   };
 
