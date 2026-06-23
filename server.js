@@ -426,7 +426,7 @@ app.post('/api/generate', requireAuth, aiLimit, checkCredits(CREDIT_COSTS.blog,'
     const templateId = body.template   || '';
 
     /* uploaded image URLs */
-    const imgs = (req.files || []).map(f => `/uploads/${f.filename}`);
+    const imgs = (req.files || []).map(f => fileToDataUrl(f)).filter(Boolean);
 
     /* site data */
     const site     = url ? await fetchSiteData(url) : {};
@@ -768,7 +768,7 @@ app.post('/api/article/generate', requireAuth, aiLimit, checkCredits(CREDIT_COST
     const wordCount = parseInt(body.wordCount) || 0;
     const template = body.template || 'editorial-spread';
 
-    const imgs    = (req.files || []).map(f => `/uploads/${f.filename}`);
+    const imgs    = (req.files || []).map(f => fileToDataUrl(f)).filter(Boolean);
     const heroImg = imgs[0] || '';
 
     const site     = url ? await fetchSiteData(url) : {};
@@ -1263,7 +1263,7 @@ app.post('/api/ai-image/generate', async (req, res) => {
 app.post('/api/email/generate', requireAuth, aiLimit, checkCredits(CREDIT_COSTS.email,'email'), upload.any(), async (req, res) => {
   try {
     const { topic, url, subject, sections, tone, length } = req.body;
-    const imgs = (req.files || []).map(f => `/uploads/${f.filename}`);
+    const imgs = (req.files || []).map(f => fileToDataUrl(f)).filter(Boolean);
 
     const site     = url ? await fetchSiteData(url) : {};
     const practice = site.practice_name || '';
@@ -2451,3 +2451,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
